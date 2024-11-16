@@ -1,0 +1,35 @@
+package ChangerLevel
+
+import SetterLevel
+import ClosureTimers
+import GameObjects
+import ClosureForGroups
+import GameState
+
+public class ChangerLevel
+    bool isDone = false
+    function run(int level)
+        doAfter(3.0) ->
+            forDestructablesInRect(GetWorldBounds(), (destructable d) -> d.remove())
+            for obj in GameState.ALL_OBJECTS_IN_CHALLENGE
+                obj.destr()
+            GameState.ALL_OBJECTS_IN_CHALLENGE.clear()
+            for obj in GameState.ALL_OBJECTS_IN_CHAPTER
+                obj.destr()
+            GameState.ALL_OBJECTS_IN_CHAPTER.clear()
+
+            let setterLvL = new SetterLevel()
+            setterLvL.setLevel(level)
+            doPeriodically(1.0) in_cb ->
+                if setterLvL.makerTerrain.isDone and setterLvL.makerDestructs.isDone
+                    destroy setterLvL
+                    destroy in_cb
+                    this.isDone = true
+    
+    function isDone() returns bool
+        return this.isDone
+                    
+public function waitUntilChangerIsDone(ChangerLevel changer)
+    while not changer.isDone()
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+

@@ -1,0 +1,44 @@
+package Turner
+
+import GameObject
+import UnitClass
+import Abilities
+import DummyUnitEffect
+import Heroes
+import initlater UsefulFunctions
+import initlater MovementSystem
+
+public function createTurner(vec2 pos,
+                            string path, real scale, angle startAngle,
+                            real radius, group whichGroupToTurn) returns unit
+    return new Turner(pos, path, scale, startAngle, radius, whichGroupToTurn).getUnit()
+
+public function createTurnerOnLevel(vec2 pos,
+                            string path, real scale, angle startAngle, real radius) returns unit
+    unit u = createTurner(pos, path, scale, startAngle, radius, MainHero.MAIN_HEROES_GROUP)
+    u.getUnit().addObjectToGroups()
+    return u
+
+public function createTurnerOnLevel(vec2 pos, angle startAngle) returns unit
+    return createTurnerOnLevel(pos, Abilities.sorceressMissile, 3., startAngle, 120.)
+
+public class Turner extends DummyUnitEffect
+    group whichGroupToTurn
+    real radius
+
+    construct(vec2 pos, string path, real scale, angle startAngle,
+                real radius, group whichGroupToTurn)
+        super(pos, path, scale, radius, startAngle)
+        this.whichGroupToTurn = whichGroupToTurn
+        this.radius = radius
+
+        this.typeClass = "Turner"
+
+    override function makeAction(unit triggerUnit)
+        if this.whichGroupToTurn.contains(triggerUnit) 
+            and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.radius)
+
+            if triggerUnit.isSliding()
+                triggerUnit.getIceClass().setCurrentAngle(this.currentAngle)
+            else
+                triggerUnit.setFacing(this.currentAngle)

@@ -1,0 +1,130 @@
+package Dialogues
+
+import Heroes
+import GameState
+
+constant real SCENE_DURATION_CONSTANT = 50000.
+constant int NEXT_ARROW_ABILITY = 'A003'
+trigger clickTrigger
+string NAME_SPEAKER = ""
+bool array countTimesClicked
+texttag array MAIN_TEXTTAG
+int TEXT_TAG_SIZE = 0
+constant real SIZE_OF_TTX = 16.
+
+init
+    for i = 0 to 23
+        countTimesClicked[i] = false
+    clickTrigger = CreateTrigger()
+    ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+    ..addCondition(Condition(() -> GetSpellAbilityId() == NEXT_ARROW_ABILITY))
+    ..addAction(function callClickTrigger)
+
+function createTTExArrayly(vec3 pos3, string message, real size)
+    MAIN_TEXTTAG[TEXT_TAG_SIZE] = createTTEx(pos3, NAME_SPEAKER + ": " + message, size)
+    TEXT_TAG_SIZE++
+
+function callClickTrigger()
+    unit u = GetTriggerUnit()
+    u.disableAbility(NEXT_ARROW_ABILITY, true, false)
+    countTimesClicked[u.getOwner().getId()] = true
+
+public function startDialogMode()
+    if GameState.IS_GAME_IN_SKIP_MODE
+        return
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.addAbility(NEXT_ARROW_ABILITY)
+    GameState.IS_GAME_IN_DIALOUE_MODE_NOW = true
+
+public function changeDialogueNameSpeaker(string name)
+    NAME_SPEAKER = name
+
+public function endDialogMode()
+    if GameState.IS_GAME_IN_SKIP_MODE and not GameState.IS_GAME_IN_DIALOUE_MODE_NOW
+        return
+    for i = 0 to 23
+        countTimesClicked[i] = false
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.removeAbility(NEXT_ARROW_ABILITY)
+    // removing objects
+    GameState.IS_GAME_IN_DIALOUE_MODE_NOW = false
+
+    for i = 0 to TEXT_TAG_SIZE
+        MAIN_TEXTTAG[i].destr()
+    TEXT_TAG_SIZE = 0
+
+    NAME_SPEAKER = ""
+
+public function makeDialog(vec3 pos, string message, real size, bool doPolledWait, bool doDestroyPrevious)
+    if not GameState.IS_GAME_IN_DIALOUE_MODE_NOW or GameState.IS_GAME_IN_SKIP_MODE
+        return
+    if doDestroyPrevious
+        for i = 0 to TEXT_TAG_SIZE
+            MAIN_TEXTTAG[i].destr()
+        TEXT_TAG_SIZE = 0
+
+    createTTExArrayly(pos, message, size)
+    if doPolledWait
+        polledWaitDialog()
+
+public function makeDialog(unit talker, string message, real size, bool doPolledWait, bool doDestroyPrevious)
+    makeDialog(talker.getPos3Fly(), message, size, false, doDestroyPrevious)
+    if doPolledWait
+        polledWaitDialog()
+
+public function makeDialog(unit talker, string message, real size)
+    makeDialog(talker, message, size, true, true)
+
+public function makeDialog(unit talker, string message)
+    makeDialog(talker, message, SIZE_OF_TTX)
+
+public function makeDialog(unit talker1, unit talker2, string message, real size)
+    makeDialog(talker1, message, size, false, true)
+    makeDialog(talker2, message, size, true, false)
+
+public function makeDialog(unit talker1, unit talker2, string message)
+    makeDialog(talker1, talker2, message, SIZE_OF_TTX)
+    
+public function makeDialog(unit talker1, unit talker2, unit talker3, string message, real size)
+    makeDialog(talker1, message, size, false, true)
+    makeDialog(talker2, message, size, false, false)
+    makeDialog(talker3, message, size, true, false)
+
+public function makeDialog(unit talker1, unit talker2, unit talker3, string message)
+    makeDialog(talker1, talker2, talker3, message, SIZE_OF_TTX)
+
+public function makeDialog(unit talker1, unit talker2, unit talker3, unit talker4, string message, real size)
+    makeDialog(talker1, message, size, false, true)
+    makeDialog(talker2, message, size, false, false)
+    makeDialog(talker3, message, size, false, false)
+    makeDialog(talker4, message, size, true, false)
+
+public function makeDialog(unit talker1, unit talker2, unit talker3, unit talker4, string message)
+    makeDialog(talker1, talker2, talker3, talker4, message, SIZE_OF_TTX)
+
+public function makeDialog(rect placeRect, string message, real size, bool doPolledWait, bool doDestroyPrevious)
+    makeDialog(placeRect.getCenter().toVec3(), message, size, doPolledWait, doDestroyPrevious)
+
+public function makeDialog(rect placeRect, string message)
+    makeDialog(placeRect, message, SIZE_OF_TTX, true, true)
+
+function polledWaitDialog()
+    while checkConditionOnLost() and not isLeadingClicked()
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.disableAbility(NEXT_ARROW_ABILITY, false, false)
+    for i = 0 to 23
+        countTimesClicked[i] = false
+
+// function isEveryoneClicked() returns bool
+//     bool flag = true
+//     for i = 0 to 23
+//         if players[i].isIngame()
+//             flag = flag and countTimesClicked[i]
+//     return flag 
+
+function isLeadingClicked() returns bool
+    int id = GameState.hostPlayer.getId()
+    return countTimesClicked[id] 
+

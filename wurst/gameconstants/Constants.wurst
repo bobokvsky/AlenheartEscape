@@ -1,0 +1,33 @@
+package Constants
+
+// main map constants
+public constant int COUNT_PLAYERS = 24
+public constant int LENGTH = 96
+public constant int WIDTH = 96
+public constant real minZ = 512.
+public constant TILES_BLP_NEIGHBOURHOOD = 10.
+public constant TILES_BLP_VISIBLITY_HEIGHT_DIFF = 100.
+public constant TILES_BLP_VISIBLITY_NEIGHBOURHOOD_OBJ = 50.
+public constant TILES_BLP_VISIBLITY_NEIGHBOURHOOD_RECT = 128.
+public constant real MAIN_TIMER_EVENT = 0.03
+public constant GRAVITY_CONSTANT_Z = (21 + 2/3) * MAIN_TIMER_EVENT
+public constant int ID_PLAYER = 0
+public constant real LOADING_TIMER = 0.1
+public constant real LOADING_TIMER_LOOPING = 0.03
+
+public constant real CAMERA_DEFAULT_DISTANCE = 1650
+public constant real CAMERA_MINIMUM_DISTANCE = 300.
+public constant real CAMERA_MAXIMUM_DISTANCE = 3000.
+
+
+enum 	CircleOfResurrection_deadUNIT_KEY
+	CircleOfResurrection_CIRCLE_UNIT_KEY
+
+// camera constants
+// constant integer   bj_CAMERA_MIN_FARZ               = 100
+// constant integer   bj_CAMERA_DEFAULT_DISTANCE       = 1650
+// constant integer   bj_CAMERA_DEFAULT_FARZ           = 5000
+// constant integer   bj_CAMERA_DEFAULT_AOA            = 304
+// constant integer   bj_CAMERA_DEFAULT_FOV            = 70
+// constant integer   bj_CAMERA_DEFAULT_ROLL           = 0
+// constant integer   bj_CAMERA_DEFAULT_ROTATION       = 90

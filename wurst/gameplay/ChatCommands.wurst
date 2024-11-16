@@ -1,0 +1,103 @@
+package ChatCommands
+
+import Chapters
+import Challengers
+import GameObjects
+import GameState
+import CameraSystem
+
+init
+    trigger playerLeft = CreateTrigger()
+    ..addAction(function playerLeft)
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        playerLeft..registerPlayerEvent(players[i], EVENT_PLAYER_LEAVE)
+
+function playerLeft()
+    player p = GetTriggerPlayer()
+    printTimed(p.getNameColored() + " has left the game.", 15.)
+    p.getMainHero().destr()
+    GameState.playingPlayers.remove(p)
+    GameState.playingPlayersForce.removePlayer(p)
+    if GameState.hostPlayer == p
+        GameState.findHost()
+
+init
+    // set a chapter
+    trigger chapterTrigger = CreateTrigger()
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        chapterTrigger.registerPlayerChatEvent(players[i], "-chapter ", false)
+        chapterTrigger.registerPlayerChatEvent(players[i], "-startzone", false)
+    chapterTrigger
+    ..addCondition(Condition(() -> GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST 
+                    and GetTriggerPlayer() == GameState.hostPlayer))
+    ..addAction(() -> 
+    begin
+        string strAll = GetEventPlayerChatString()
+        if strAll == "-startzone"
+            setChapter(0)
+        else
+            int level = strAll.substring(9).toInt()
+            if 1 <= level and level <= GameState.levelCounts
+                setChapter(level)
+    end)
+
+    // set a challenge
+    trigger challengeTrigger = CreateTrigger()
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        challengeTrigger.registerPlayerChatEvent(players[i], "-challenge ", false)
+    challengeTrigger
+    ..addCondition(Condition(() -> GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST 
+                    and GetTriggerPlayer() == GameState.hostPlayer))
+    ..addAction(() ->
+    begin
+        string strAll = GetEventPlayerChatString()
+        int challenge = strAll.substring(11).toInt()
+        int level = challengeToLevel(challenge)
+
+        if level != -1
+            GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST = false
+            setChallenge(challenge, GameState.currentLevel != level, true)
+    end)
+
+    // zoom command
+    trigger cameraTrigger = CreateTrigger()
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        cameraTrigger.registerPlayerChatEvent(players[i], "-zoom ", false)
+        cameraTrigger.registerPlayerChatEvent(players[i], "-camera ", false)
+        cameraTrigger.registerPlayerChatEvent(players[i], "-z ", false)
+        cameraTrigger.registerPlayerChatEvent(players[i], "-cam ", false)
+
+    cameraTrigger
+    ..addAction(() ->
+    begin
+        player p = GetTriggerPlayer()
+        string strAll = GetEventPlayerChatString()
+        int camInt = 0
+        if strAll.substring(0, 2) == "-z"
+            camInt = strAll.substring(3).toInt()
+        if strAll.substring(0, 4) == "-cam"
+            camInt = strAll.substring(5).toInt()
+        if strAll.substring(0, 5) == "-zoom"
+            camInt = strAll.substring(6).toInt()
+        if strAll.substring(0, 7) == "-camera"
+            camInt = strAll.substring(8).toInt()
+        if camInt >= 300 and camInt <= 3000
+            p.setChosenCameraFieldDistance(camInt.toReal())
+    end)
+
+    // cam lock
+    trigger lockCamTrigger = CreateTrigger()
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        lockCamTrigger.registerPlayerChatEvent(players[i], "-locks", true)
+        lockCamTrigger.registerPlayerChatEvent(players[i], "-unlocks", true)
+
+    lockCamTrigger
+    ..addAction(() ->
+    begin
+        player p = GetTriggerPlayer()
+        string strAll = GetEventPlayerChatString()
+        if strAll == "-locks"
+            p.setCameraAttachedToMainHero(true)
+        if strAll == "-unlocks"
+            p.setCameraAttachedToMainHero(false)
+    end)

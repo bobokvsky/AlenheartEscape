@@ -1,0 +1,80 @@
+package ManyRectsPatrol
+
+import GameObject
+import HashList
+import EventHelper
+import TriggerUtils
+
+public function createManyRectsPatrol(unit mainUnit, HashList<rect> rects, bool isCyclical) returns ManyRectsPatrol
+    return new ManyRectsPatrol(mainUnit, rects, isCyclical)
+
+public function createManyRectsPatrolOnLevel(unit mainUnit, HashList<rect> rects, bool isCyclical) returns ManyRectsPatrol
+    return createManyRectsPatrol(mainUnit, rects, isCyclical)
+            ..addObjectToGroups()
+
+public function unit.patrolManyRects(HashList<rect> rects, bool isCyclical)
+    createManyRectsPatrolOnLevel(this, rects, isCyclical)
+
+public class ManyRectsPatrol extends GameObject
+    HashList<rect> rects
+    HashList<trigger> triggers
+    bool isCyclical
+    bool isForward
+    unit mainUnit
+
+    int currentRect
+
+    construct(unit mainUnit, HashList<rect> rects, bool isCyclical)
+        super()
+        this.mainUnit = mainUnit
+        this.rects = rects
+        this.triggers = new HashList<trigger>()
+        this.isCyclical = isCyclical
+        this.isForward = true
+
+        this.currentRect = 0
+
+        for rect_i in this.rects
+            let trig = CreateTrigger()
+            ..registerRectEnterEventSource(rect_i)
+            ..setData(this castTo int)
+            ..addCondition(Condition(
+                () -> (GetTriggeringTrigger().getData() castTo ManyRectsPatrol).mainUnit == GetTriggerUnit())
+                )
+            ..addAction(function callMakeNextPatrol)
+            this.triggers.add(trig)
+
+        this.makeNextPatrol()
+        
+        this.typeClass = "ManyRectsPatrol"
+
+    static function callMakeNextPatrol()
+        (GetTriggeringTrigger().getData() castTo ManyRectsPatrol).makeNextPatrol()
+
+    function makeNextPatrol()
+        if this.isCyclical
+            if this.currentRect == this.rects.size() - 1
+                this.currentRect = 0
+            else
+                this.currentRect += 1
+        else
+            if this.isForward
+                if not (this.currentRect == this.rects.size() - 1)
+                    this.currentRect += 1
+                else
+                    this.isForward = false
+                    this.currentRect -= 1
+            else
+                if this.currentRect > 0
+                    this.currentRect -= 1
+                else
+                    this.isForward = true
+                    this.currentRect += 1
+        
+        this.mainUnit.issuePointOrder("patrol", this.rects.get(this.currentRect).getCenter())
+
+    ondestroy
+        for t in this.triggers
+            t.release()
+        destroy this.triggers
+        destroy this.rects

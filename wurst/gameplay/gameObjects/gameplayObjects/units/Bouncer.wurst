@@ -1,0 +1,100 @@
+package Bouncer
+
+import GameObject
+import Heroes
+import UnitClass
+import Abilities
+import DummyUnitEffect
+import initlater UsefulFunctions
+import ClosureTimers
+
+public function createBouncer(vec2 pos, string path, real scale, 
+                                angle startAngle, group whichGroupCanJump, real radius, real velocity) returns unit
+    return new Bouncer(pos, path, scale, startAngle, whichGroupCanJump, radius, velocity).getUnit()
+
+public function createBouncerOnLevel(vec2 pos, string path, real scale, 
+                                angle startAngle, real radius, real velocity) returns unit
+    unit u = createBouncer(pos, path, scale, startAngle, MainHero.MAIN_HEROES_GROUP, radius, velocity)
+    u.getUnit().addObjectToGroups()
+    return u
+
+public function createBouncerOnLevel(vec2 pos, real scale, real radius, real velocity) returns unit
+    return createBouncerOnLevel(pos, Abilities.tornadoElementalSmall, scale, angle(0.), radius, velocity)
+
+constant CONVERTER_HEIGHT_TO_VELOCITY = SquareRoot(1.22023475)
+
+constant real BLUE_COLOR_HEIGHT = 150.  // until ~220
+constant real GREEN_COLOR_HEIGHT = 250  // until  ~306
+constant real YELLOW_COLOR_HEIGHT = 350  // until ~500
+
+public function createBouncerOnLevelByHeightWithColor(vec2 pos, real heightUp) returns unit
+    playercolor col
+    real scale
+    real radius
+    if heightUp <= BLUE_COLOR_HEIGHT
+        col = PLAYER_COLOR_BLUE
+        scale = 0.3
+        radius = 70.
+    else if heightUp <= GREEN_COLOR_HEIGHT
+        col = PLAYER_COLOR_GREEN
+        scale = 0.4
+        radius = 80.
+    else if heightUp <= YELLOW_COLOR_HEIGHT
+        col = PLAYER_COLOR_YELLOW
+        scale = 0.5
+        radius = 90.
+    else
+        col = PLAYER_COLOR_RED
+        scale = 0.6
+        radius = 100.
+
+    real velocity = CONVERTER_HEIGHT_TO_VELOCITY * SquareRoot(heightUp)
+    unit u = createBouncerOnLevel(pos, scale, radius, velocity)
+    ..setColor2(col)
+
+    return u
+
+public function createBouncerOnLevel(vec2 pos, real heightUp) returns unit
+    return createBouncerOnLevelByHeightWithColor(pos, heightUp)
+
+//*********************
+constant real MAIN_WAITER_TIMER_EVENT = 1.
+constant real BOUNCER_MOVE_SPEED_BASIC = 180
+
+
+public class Bouncer extends DummyUnitEffect
+    real velocity
+    real radius
+    group whichGroupCanJump
+
+    static group waitGroup = CreateGroup()
+    
+    construct(vec2 pos, string path, real scale, angle startAngle, group whichGroupCanJump, real radius, real velocity)
+        super(pos, path, scale, radius, startAngle)
+        this.mainUnit.setMoveSpeed(BOUNCER_MOVE_SPEED_BASIC)
+        this.velocity = velocity
+        this.whichGroupCanJump = whichGroupCanJump
+        this.radius = radius
+        
+        this.typeClass = "Bouncer"
+
+
+    override function makeAction(unit triggerUnit)
+        if not Bouncer.waitGroup.contains(triggerUnit) and this.whichGroupCanJump.contains(triggerUnit) 
+            and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.radius)
+            
+            if triggerUnit.getVelocity().z < 0
+                triggerUnit.plusVelocity(vec3(0, 0, -triggerUnit.getVelocity().z))
+            triggerUnit.plusVelocity(vec3(0, 0, this.velocity))
+            Bouncer.waitGroup.addUnit(triggerUnit)
+            doAfter(MAIN_WAITER_TIMER_EVENT) ->
+                waitGroup.removeUnit(triggerUnit)
+
+    function setVelocity(real velocity)
+        this.velocity = velocity
+
+    function plusVelocity(real velocity)
+        this.velocity += velocity
+
+    function getVelocity() returns real
+        return this.velocity

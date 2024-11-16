@@ -1,0 +1,34 @@
+package FuncLevels
+
+import GameObjects
+import HashList
+import GameState
+import SomeMaths
+
+public function waitUntilUnitJoinsRectWithKey(rect whichRegion, group whichGroup, Key key)
+    while checkConditionOnLost() and not isAnyoneInRectWithKey(whichRegion, whichGroup, key)
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+
+public function createDeadlyCurveSinusoidalBetween(
+                                vec2 pos0, vec2 pos1, real A, int periodicInt, 
+                                string path, real scale, real radius,
+                                real timeStart, real timeDiff, real timeEnd, real timeWait) returns DeadlyCurve
+    var phi = vec2(1, 0).angleTo(pos1-pos0)
+    var lastPos = (pos1 - pos0).rotate(angle(2*PI)-phi)
+    let B = (PI*periodicInt / lastPos.x)
+    let C = 0.
+    let sinParams = new HashList<real>()..add(pos0.x, pos0.y, A, B, C)
+    let tStart = 0.
+    let tDiff = (lastPos.x - tStart) * timeDiff / timeEnd
+    return createDeadlyCurveOnLevel(sinusoidal, sinParams, 
+                            path, scale, radius, 
+                            tStart, tDiff, timeStart, 
+                            timeDiff, timeEnd, timeWait)
+            ..doRotate(pos0, phi)
+
+
+// public function createDestructableZOnLevel(int id, vec3 pos, angle face, real scale, int variation) returns destructable
+//     destructable d = createDestructableZ(id, pos, face, scale, variation)
+//     d.getDestr().addObjectToGroups()
+//     return d

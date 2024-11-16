@@ -1,0 +1,480 @@
+package Chapter2
+
+import CircleOfResurrection
+import FuncLevels
+import UsefulFunctions
+import Dialogues
+import GameObjects
+
+import initlater Chapters
+import initlater Challengers
+import TriggerUtils
+import LinkedList
+import Doodads
+import Abilities
+import TileImage
+import Tiles
+import GameState
+import AssetsConstants
+
+
+//********** RECTS
+rect gg_rct_chap2_PoR1 = Rect(-320.0, 4096.0, -192.0, 4224.0)
+rect gg_rct_chap2_PoR2 = Rect(3456.0, -1920.0, 3584.0, -1792.0)
+rect gg_rct_chap2_challenge4_PoR = Rect(-5120.0, 5120.0, -4992.0, 5248.0)
+rect gg_rct_chap2_challenge5_PoR = Rect(-5248.0, 256.0, -5120.0, 384.0)
+rect gg_rct_chap2_challenge6_PoR = Rect(-1408.0, -4480.0, -1280.0, -4352.0)
+rect gg_rct_chap2_challenge7_PoR = Rect(2816.0, 5376.0, 2944.0, 5504.0)
+rect gg_rct_chap2_gates1 = Rect(64.0, 2432.0, 992.0, 2656.0)
+rect gg_rct_chap2_gates2 = Rect(896.0, 1376.0, 1376.0, 1504.0)
+rect gg_rct_chap2_gates3 = Rect(3168.0, - 1568.0, 3840.0, - 1408.0)
+rect gg_rct_chap2_gates4 = Rect(3072.0, -3456.0, 3584.0, -3328.0)
+rect gg_rct_chap2_challenge4_end = Rect(-3008.0, 1600.0, -2880.0, 1728.0)
+rect gg_rct_chap2_challenge5_end = Rect(-3648.0, -4000.0, -3520.0, -3872.0)
+rect gg_rct_chap2_challenge6_end = Rect(1856.0, -4800.0, 1984.0, -4672.0)
+rect gg_rct_chap2_challenge7_end = Rect(4544.0, 5312.0, 4672.0, 5440.0)
+rect gg_rct_chap2_plotRect1 = Rect(928.0, 1504.0, 1376.0, 1920.0)
+rect gg_rct_chap2_plotRect2 = Rect(3520.0, -2656.0, 3968.0, -2240.0)
+rect gg_rct_chap2_plotKid1 = Rect(1088.0, 1600.0, 1216.0, 1728.0)
+rect gg_rct_chap2_plotKid2 = Rect(3424.0, -2432.0, 3552.0, -2304.0)
+rect gg_rct_chap2_teleport1 = Rect(2464.0, -2528.0, 2592.0, -2400.0)
+rect gg_rct_chap2_teleport2 = Rect(4032.0, -2752.0, 4160.0, -2624.0)
+rect gg_rct_chap2_teleport3 = Rect(2880.0, -3136.0, 3008.0, -3008.0)
+rect gg_rct_chap2_teleport4 = Rect(3776.0, -3264.0, 3904.0, -3136.0)
+rect gg_rct_chap2_exit = Rect(5664.0, -4608.0, 6144.0, -4096.0)
+rect gg_rct_chap2_spawnLever = Rect(608.0, 2144.0, 768.0, 2304.0)
+rect gg_rct_chap2_spawnKey = Rect(1472.0, -576.0, 1632.0, -416.0)
+rect gg_rct_chap2_spawn1 = Rect(-448.0, -96.0, -288.0, 64.0)
+rect gg_rct_chap2_plotKey = Rect(3232.0, -1440.0, 3808.0, -1184.0)
+rect gg_rct_chap2_challenge4_spawn1 = Rect(-4224.0, 5344.0, -4096.0, 5440.0)
+rect gg_rct_chap2_challenge4_spawn2 = Rect(-3744.0, 4352.0, -3616.0, 4448.0)
+rect gg_rct_chap2_challenge4_spawn3 = Rect(-4672.0, 3776.0, -4544.0, 3904.0)
+rect gg_rct_chap2_challenge4_spawn4 = Rect(-4512.0, 3648.0, -4384.0, 3776.0)
+rect gg_rct_chap2_challenge4_spawn5 = Rect(-4256.0, 3520.0, -4128.0, 3648.0)
+rect gg_rct_chap2_challenge4_spawn6 = Rect(-3136.0, 3776.0, -3008.0, 3904.0)
+rect gg_rct_chap2_challenge4_spawn7 = Rect(-2784.0, 3776.0, -2656.0, 3904.0)
+rect gg_rct_chap2_challenge4_spawn8 = Rect(-2944.0, 2496.0, -2816.0, 2624.0)
+rect gg_rct_chap2_challenge4_spawn9 = Rect(-4576.0, 1760.0, -4448.0, 1888.0)
+rect gg_rct_chap2_challenge4_spawn10 = Rect(-3552.0, 1440.0, -3424.0, 1568.0)
+rect gg_rct_chap2_challenge5_spawn1 = Rect(-4448.0, 192.0, -4320.0, 320.0)
+rect gg_rct_chap2_challenge5_spawn2 = Rect(-3488.0, 320.0, -3360.0, 448.0)
+rect gg_rct_chap2_challenge5_spawn3 = Rect(-3136.0, -320.0, -3008.0, -192.0)
+rect gg_rct_chap2_challenge5_spawn4 = Rect(-2880.0, -1504.0, -2752.0, -1376.0)
+rect gg_rct_chap2_challenge5_spawn5 = Rect(-3520.0, -2112.0, -3392.0, -1984.0)
+rect gg_rct_chap2_challenge5_spawn6 = Rect(-2496.0, -2656.0, -2368.0, -2528.0)
+rect gg_rct_chap2_challenge5_spawn7 = Rect(-5056.0, -544.0, -4928.0, -416.0)
+rect gg_rct_chap2_challenge5_spawn8 = Rect(-5024.0, -2240.0, -4896.0, -2112.0)
+rect gg_rct_chap2_challenge5_spawn9 = Rect(-4480.0, -2912.0, -4352.0, -2784.0)
+rect gg_rct_chap2_challenge5_spawn10 = Rect(-4416.0, -3712.0, -4288.0, -3584.0)
+rect gg_rct_chap2_challenge5_spawnKey1 = Rect(-3200.0, -2144.0, -3072.0, -2016.0)
+rect gg_rct_chap2_challenge5_spawnLever = Rect(-5376.0, -1312.0, -5248.0, -1184.0)
+rect gg_rct_chap2_challenge5_plot1 = Rect(-5568.0, -1088.0, -5184.0, -928.0)
+rect gg_rct_chap2_challenge5_gates1 = Rect(-5504.0, -1184.0, -5184.0, -1056.0)
+rect gg_rct_chap2_challenge5_gates2 = Rect(-4288.0, -3136.0, -3936.0, -3008.0)
+rect gg_rct_chap2_challenge6_spawn1_1 = Rect(-320.0, -3008.0, -192.0, -2880.0)
+rect gg_rct_chap2_challenge6_spawn1_2 = Rect(-320.0, -3232.0, -192.0, -3104.0)
+rect gg_rct_chap2_challenge6_spawn1_3 = Rect(-320.0, -3456.0, -192.0, -3328.0)
+rect gg_rct_chap2_challenge6_spawn2 = Rect(480.0, -2368.0, 608.0, -2240.0)
+rect gg_rct_chap2_challenge6_spawn3 = Rect(1216.0, -3104.0, 1344.0, -2976.0)
+rect gg_rct_chap2_challenge6_spawn4 = Rect(-448.0, -4160.0, -320.0, -4032.0)
+rect gg_rct_chap2_challenge6_spawn5 = Rect(832.0, -4544.0, 992.0, -4416.0)
+rect gg_rct_chap2_challenge4_visiblity = Rect(-5600.0, 864.0, -2016.0, 5792.0)
+rect gg_rct_chap2_challenge5_visiblity = Rect(-5600.0, -4768.0, -2016.0, 992.0)
+rect gg_rct_chap2_challenge6_visiblity = Rect(-2176.0, -5312.0, 2528.0, -1504.0)
+rect gg_rct_chap2_challenge7_visiblity = Rect(1120.0, 4416.0, 5536.0, 6016.0)
+
+unit chap2_uPoR1
+unit chap2_uPoR2
+unit chap2_challenge4_uPoR
+unit chap2_challenge5_uPoR
+unit chap2_challenge6_uPoR
+unit chap2_challenge7_uPoR
+effect effectTp1
+effect effectTp1Exit
+effect effectTp2
+effect effectTp2Exit
+effect effectTp3
+effect effectTp3Exit
+effect effectTp4
+effect effectTp4Exit
+
+Teleport tp1
+Teleport tp2
+Teleport tp3
+Teleport tp4
+
+
+public function startChapter2()
+    chap2_uPoR1 = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_PoR1.getCenter(), angle(0.))
+    chap2_uPoR2 = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_PoR2.getCenter(), angle(0.)) 
+    chap2_challenge4_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge4_PoR.getCenter(), angle(0.))
+    chap2_challenge5_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge5_PoR.getCenter(), angle(0.))
+    chap2_challenge6_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge6_PoR.getCenter(), angle(0.))
+    chap2_challenge7_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge7_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap2_uPoR1, false, false)
+    setNextChapterEnd(function chapter2)
+
+function chapter2()
+    let lever = addEffect2(Doodads.dungeonLever, gg_rct_chap2_spawnLever.getCenter())
+    ..setScale(1.3)
+
+    let gates1 = createGatesOnLevel(gg_rct_chap2_gates1)
+    ..makeEffect(Doodads.iceGate, angle(PI/2), 1.0)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_spawnLever, MainHero.MAIN_HEROES_GROUP)
+
+
+    gates1.destr()
+    lever.destr()
+
+    let gates2 = createGatesOnLevel(gg_rct_chap2_gates2)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_plotRect1, MainHero.MAIN_HEROES_GROUP)
+
+
+    
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ff???|r")
+    makeDialog(gg_rct_chap2_plotKid1, ". . .")
+
+    let effAppear = addEffect2(Abilities.soulBurnbuff, gg_rct_chap2_plotKid1.getCenter())
+    makeDialog(gg_rct_chap2_plotKid1, ". . . . . .")
+
+    effAppear.destr()
+    unit uKid = createUnitOnLevel(UnitDataBase.plotKidAI, 
+                                    gg_rct_chap2_plotKid1.getCenter(), angle(PI/2))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    changeDialogueNameSpeaker("|cffff00ffKid|r")
+    makeDialog(uKid, "Woah!")
+
+    makeDialog(uKid, "Hi. I see you pulled the |cfff3b328lever|r to open gate. Smart.")
+    makeDialog(uKid, "As I stated before. . .")
+    makeDialog(uKid, "I'm telling you about the new things for you.")
+    makeDialog(uKid, "For example, last time I told you about the |cfff3b328deadly-raidus monsters|r.")
+    makeDialog(uKid, "As you have seen, they are really dangerous.")
+    makeDialog(uKid, "So, there are many, many other things! Heh. I'll tell you all about them!")
+    makeDialog(uKid, "Let's discuss about this... wonderful ice.")
+    makeDialog(uKid, "It's the |cfff3b328accelerating ice|r.")
+    makeDialog(uKid, "The ice changes its friction force in a very unusual way.")
+    makeDialog(uKid, "At first, it slow you down a lot, and then. . .")
+    makeDialog(uKid, "It accelerates your skating.")
+    makeDialog(uKid, "You will be faster and faster from there. . .")
+    makeDialog(uKid, ". . . but there is |cfff3b328snow|r everywhere. . .")
+    makeDialog(uKid, "Sounds like there would be more deaths, right?")
+    makeDialog(uKid, "Hehehehehehe. . .")
+
+    uKid.setFacing(angle(PI/2))
+    makeDialog(uKid, "Also, look at this. Woah!")
+    uKid.hide2()
+    flashEffect2(PATH_AQUA_SPIKE, gg_rct_chap2_plotKid1.getCenter())
+    makeDialog(uKid, "This is |cfff3b328Aqua Spike|r.")
+    flashEffect2(PATH_AQUA_SPIKE, gg_rct_chap2_plotKid1.getCenter())
+    makeDialog(uKid, "A huge blast of water out of nowhere.")
+    uKid.show2()
+    makeDialog(uKid, "It was just an illusion, so it was safe. In reality. . . ")
+    makeDialog(uKid, "I think it's easy to see what happens when you're in an explosion.")
+
+    makeDialog(uKid, "Also, there is |cfff3b328key|r not far away.")
+    makeDialog(uKid, "It can open doors. If you die, the key will return to the ground where it was first.")
+
+    makeDialog(uKid, "Well. That's all.")
+    makeDialog(uKid, "Bye.")
+    endDialogMode()
+
+    uKid.setPos2(gg_rct_chap2_plotKid2.getCenter())
+
+    gates2.destr()
+
+    let gates3 = createGatesOnLevel(gg_rct_chap2_gates3)
+    ..makeEffect(Doodads.iceCrownGate, angle(PI/2), 1.0)
+    ..setVertexColor(PLAYER_COLOR_YELLOW.toColor())
+
+    let key = createKeyOnLevel(gg_rct_chap2_spawnKey, PATH_SUN_KEY, 1.0, MainHero.MAIN_HEROES_GROUP)
+    let aquaSpike = createAquaSpikeOnLevel(gg_rct_chap2_spawn1.getCenter(), 2., 0.)
+
+    waitUntilUnitJoinsRectWithKey(gg_rct_chap2_plotKey, MainHero.MAIN_HEROES_GROUP, key)
+
+
+    gates3.destr()
+    key.destr()
+
+    let gates4 = createGatesOnLevel(gg_rct_chap2_gates4)
+    ..makeEffect(Doodads.iceGate, angle(PI/2), 1.0)
+
+    waitUntilCheckPoint(gg_rct_chap2_PoR2, chap2_uPoR2)
+
+
+    aquaSpike.destr()
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_plotRect2, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    let tiles = createTilesBLP()
+    tiles.setTerrainType(gg_rct_chap2_plotKid1.getCenter(), Tiles.northrend_Snow, 0)
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ffKid|r")
+    makeDialog(uKid, "Hi. It was easy, wasn't it?")
+    makeDialog(uKid, "Don't underestimate.")
+    makeDialog(uKid, "Because. . . there are |cfff3b328challenges|r!")
+    makeDialog(uKid, "Dangerous. . . Serious. . . Risky. . . destructive. . . deaths. . . deaths. . . deaths. . . |cfff3b328death|r.")
+    makeDialog(uKid, ". . .")
+    makeDialog(uKid, "Kehehehe.")
+    makeDialog(uKid, "What |cfff3b328challenges|r are in reality. . . that's secret, you know?")
+    makeDialog(uKid, "But, it's not matter for now. This place. . .")
+    makeDialog(uKid, "is the |cfff3b328portal center|r. You've saw it last time, haven't you?")
+    makeDialog(uKid, "That \"Kylie\" said about it last time. . . Well.")
+    makeDialog(uKid, "The center can produce |cfff3b328portals|r that can lead you to these. . . tempting, wonderful challenges.")
+    makeDialog(uKid, "So. . . go to a-a-all of them and have fun.")
+    makeDialog(uKid, "Go. Die. Revive. And survive.")
+    endDialogMode()
+
+
+    flashEffect2(Abilities.soulBurnbuff, gg_rct_chap2_plotKid1.getCenter())
+    tiles.destr()
+    uKid.destr()
+
+
+    effectTp1 = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_teleport1.getCenter())
+    effectTp2 = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_teleport2.getCenter())
+    effectTp3 = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_teleport3.getCenter())
+    effectTp4 = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_teleport4.getCenter())
+
+    let callTriggerTp1 = createTriggerRectOnLevel(CreateTrigger(), gg_rct_chap2_teleport1)
+    ..addAction(() ->
+    begin
+        trigger thisTrigger = GetTriggeringTrigger()
+        TriggerRect trigRect = (thisTrigger.getData() castTo TriggerRect)
+
+        setChallenge(4, false, false)
+        waitUntilChallengeIsCompeted()
+        if not GameState.IS_GAME_IN_SKIP_MODE
+            tp1 = createTeleportOnLevel(gg_rct_chap2_challenge4_end, gg_rct_chap2_PoR2.getCenter(),
+                                Abilities.massTeleportTarget)
+            effectTp1.destr()
+
+            effectTp1Exit = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_challenge4_end.getCenter())
+            waitUntilCheckPoint(gg_rct_chap2_PoR2, chap2_uPoR2)
+            if not GameState.IS_GAME_IN_SKIP_MODE
+                trigRect.makeDone()
+    end)
+
+    let callTriggerTp2 = createTriggerRectOnLevel(CreateTrigger(), gg_rct_chap2_teleport2)
+    ..addAction(() ->
+    begin
+        trigger thisTrigger = GetTriggeringTrigger()
+        TriggerRect trigRect = (thisTrigger.getData() castTo TriggerRect)
+
+        setChallenge(5, false, false)
+        waitUntilChallengeIsCompeted()
+        if not GameState.IS_GAME_IN_SKIP_MODE
+            tp2 = createTeleportOnLevel(gg_rct_chap2_challenge5_end, gg_rct_chap2_PoR2.getCenter(),
+                                Abilities.massTeleportTarget)
+            effectTp2.destr()
+
+            effectTp2Exit = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_challenge5_end.getCenter())
+            waitUntilCheckPoint(gg_rct_chap2_PoR2, chap2_uPoR2)
+            if not GameState.IS_GAME_IN_SKIP_MODE
+                trigRect.makeDone()
+    end)
+
+    let callTriggerTp3 = createTriggerRectOnLevel(CreateTrigger(), gg_rct_chap2_teleport3)
+    ..addAction(() ->
+    begin
+        trigger thisTrigger = GetTriggeringTrigger()
+        TriggerRect trigRect = (thisTrigger.getData() castTo TriggerRect)
+
+        setChallenge(6, false, false)
+        waitUntilChallengeIsCompeted()
+        if not GameState.IS_GAME_IN_SKIP_MODE
+            tp3 = createTeleportOnLevel(gg_rct_chap2_challenge6_end, gg_rct_chap2_PoR2.getCenter(),
+                                Abilities.massTeleportTarget)
+            effectTp3.destr()
+
+            effectTp3Exit = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_challenge6_end.getCenter())
+            waitUntilCheckPoint(gg_rct_chap2_PoR2, chap2_uPoR2)
+            if not GameState.IS_GAME_IN_SKIP_MODE
+                trigRect.makeDone()
+    end)
+
+    let callTriggerTp4 = createTriggerRectOnLevel(CreateTrigger(), gg_rct_chap2_teleport4)
+    ..addAction(() ->
+    begin
+        trigger thisTrigger = GetTriggeringTrigger()
+        TriggerRect trigRect = (thisTrigger.getData() castTo TriggerRect)
+
+        setChallenge(7, false, false)
+        waitUntilChallengeIsCompeted()
+        if not GameState.IS_GAME_IN_SKIP_MODE
+            tp4 = createTeleportOnLevel(gg_rct_chap2_challenge7_end, gg_rct_chap2_PoR2.getCenter(),
+                                Abilities.massTeleportTarget)
+            effectTp4.destr()
+
+            effectTp4Exit = addEffect2(Abilities.massTeleportTo, gg_rct_chap2_challenge7_end.getCenter())
+            waitUntilCheckPoint(gg_rct_chap2_PoR2, chap2_uPoR2)
+            if not GameState.IS_GAME_IN_SKIP_MODE
+                trigRect.makeDone()
+    end)
+
+    let callTrigers = new LinkedList<TriggerRect>..add(callTriggerTp1, callTriggerTp2, callTriggerTp3, callTriggerTp4)
+    executeWhenJoinRectAndWaitUntilEveryTriggersCompleted(callTrigers, MainHero.MAIN_HEROES_GROUP)
+
+    waitUntilEveryoneInRect(gg_rct_chap2_exit, MainHero.MAIN_HEROES_GROUP)
+    callTriggerTp1.destr()
+    callTriggerTp2.destr()
+    callTriggerTp3.destr()
+    callTriggerTp4.destr()
+    effectTp1.destr()
+    effectTp2.destr()
+    effectTp3.destr()
+    effectTp4.destr()
+    effectTp1Exit.destr()
+    effectTp2Exit.destr()
+    effectTp3Exit.destr()
+    effectTp4Exit.destr()
+    destroy callTrigers
+    tp1.destr()
+    tp2.destr()
+    tp3.destr()
+    tp4.destr()
+    gates4.destr()
+
+
+    endChapter()
+
+public function startChallenge4()
+    chap2_challenge4_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge4_PoR.getCenter(), angle(0.))
+    setChallengeRectVisibility(gg_rct_chap2_challenge4_visiblity)
+    setCheckPoint(chap2_challenge4_uPoR)
+    setNextChallengeEnd(function challenge4)
+
+function challenge4()
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap2_challenge4_spawn1.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 400.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn2.getCenter(), angle(PI))
+    ..issuePolarPosOrder("patrol", 750.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap2_challenge4_spawn3.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 650.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap2_challenge4_spawn4.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 1280.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap2_challenge4_spawn5.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 700.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn6.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 650.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn7.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 550.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn8.getCenter(), angle(PI/2))
+    ..issuePolarPosOrder("patrol", 512.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn9.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 1150.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge4_spawn10.getCenter(), angle(PI))
+    ..issuePolarPosOrder("patrol", 1150.)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_challenge4_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()
+
+public function startChallenge5()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap2_challenge5_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge5_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap2_challenge5_uPoR)
+    setChallengeRectVisibility(gg_rct_chap2_challenge5_visiblity)
+    setNextChallengeEnd(function challenge5)
+
+function challenge5()
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge5_spawn1.getCenter(), angle(0))
+    ..issuePolarPosOrder("patrol", 400.)
+
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn2.getCenter(), 5.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge5_spawn3.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 300.)
+
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn4.getCenter(), 5.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn5.getCenter(), 4.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn6.getCenter(), 3.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn7.getCenter(), 8.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn8.getCenter(), 5.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge5_spawn9.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 650.)
+
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge5_spawn10.getCenter(), 5.)
+
+    let gates1 = createGatesOnLevel(gg_rct_chap2_challenge5_gates1)
+    ..makeEffect(Doodads.iceCrownGate, angle(PI/2), 0.5)
+    ..setVertexColor(PLAYER_COLOR_YELLOW.toColor())
+    let gates2 = createGatesOnLevel(gg_rct_chap2_challenge5_gates2)
+    ..makeEffect(Doodads.iceGate, angle(PI/2), 0.5)
+
+    let key = createKeyOnLevel(gg_rct_chap2_challenge5_spawnKey1, PATH_SUN_KEY, 1.0)
+    let lever = addEffect2(Doodads.dungeonLever, gg_rct_chap2_challenge5_spawnLever.getCenter())
+    ..setScale(1.3)
+    
+    waitUntilUnitJoinsRectWithKey(gg_rct_chap2_challenge5_plot1, MainHero.MAIN_HEROES_GROUP, key)
+    GATE_OPEN_SOUND.play()
+    gates1.destr()
+    key.destr()
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_challenge5_spawnLever, MainHero.MAIN_HEROES_GROUP)
+    lever.destr()
+    gates2.destr()
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_challenge5_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()
+
+public function startChallenge6()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap2_challenge6_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge6_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap2_challenge6_uPoR)
+    setChallengeRectVisibility(gg_rct_chap2_challenge6_visiblity)
+    setNextChallengeEnd(function challenge6)
+
+function challenge6()
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge6_spawn1_1.getCenter(), 4., 0.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge6_spawn1_2.getCenter(), 4., 1.)
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge6_spawn1_3.getCenter(), 4., 2.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap2_challenge6_spawn2.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 1300.)
+
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge6_spawn3.getCenter(), 5.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap2_challenge6_spawn4.getCenter(), angle(PI))
+    ..issuePolarPosOrder("patrol", 1300.)
+
+    createAquaSpikeOnLevel(gg_rct_chap2_challenge6_spawn5.getCenter(), 5.)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_challenge6_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()
+
+public function startChallenge7()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap2_challenge7_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap2_challenge7_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap2_challenge7_uPoR)
+    setChallengeRectVisibility(gg_rct_chap2_challenge7_visiblity)
+    setNextChallengeEnd(function challenge7)
+
+function challenge7()
+    waitUntilAnyoneJoinsRect(gg_rct_chap2_challenge7_end, MainHero.MAIN_HEROES_GROUP)
+    endChallenge()

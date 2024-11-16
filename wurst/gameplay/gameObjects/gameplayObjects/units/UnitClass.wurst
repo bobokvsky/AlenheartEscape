@@ -1,0 +1,269 @@
+package UnitClass
+
+import GameObject
+import initlater MovementSystem
+import AssetsConstants
+import Constants
+import HashMap
+// import AttacherBLP
+import initlater UsefulFunctions
+import initlater TileImage
+import Textures
+
+public function unit.getUnit() returns Unit
+    return Unit.unitToUnit.get(this)
+
+public function unit.hide2()
+    this.getUnit().hide()
+    
+public function unit.show2()
+    this.getUnit().show()
+
+public function unit.destr()
+    this.getUnit().destr()
+
+public function unit.getPosVec3() returns vec3
+    return this.getPos().withZ(this.getHeight())
+
+public function unit.setPos2(vec2 pos)
+    this.getUnit().setPos(pos)
+
+public function unit.setPos2(vec3 pos)
+    this.getUnit().setPos(pos)
+
+public function unit.getHeight() returns real
+    return this.getUnit().getHeight()
+
+public function unit.setHeight(real h)
+    this.getUnit().setHeight(h)
+
+public function unit.getCurrentTiles() returns TilesBLP
+    return this.getUnit().getCurrentTiles()
+
+public function unit.getMovementClass() returns Movement
+    return this.getUnit().getMovementClass()
+
+public function unit.setVelocity(vec3 velocity)
+    this.getMovementClass().setVelocity(velocity)
+
+public function unit.setAcceleration(vec3 acceleration)
+    this.getMovementClass().setAcceleration(acceleration)
+
+public function unit.plusVelocity(vec3 velocity)
+    this.getMovementClass().plusVelocity(velocity)
+
+public function unit.plusAcceleration(vec3 acceleration)
+    this.getMovementClass().plusAcceleration(acceleration)
+
+public function unit.getVelocity() returns vec3
+    return this.getMovementClass().getVelocity()
+
+public function unit.getAcceleration() returns vec3
+    return this.getMovementClass().getAcceleration()
+
+public function unit.setColor2(playercolor color)
+    // this.setColor2(color, localPlayer)
+    this.setColor2(color, Player(0))
+
+public function unit.setColor2(playercolor color, player p)
+    this.getUnit().setColor(color, p)
+
+public function unit.setVertexColor2(colorA col)
+    this.getUnit().setVertexColorA(col)
+
+public function unit.setVertexColor2(color col)
+    this.getUnit().setVertexColor(col)
+
+public function unit.getVertexColor2() returns color
+    return this.getUnit().getVertexColor()
+
+public function unit.getVertexColorA2() returns colorA
+    return this.getUnit().getVertexColorA()
+
+public function createUnit(player p, UnitDataBase db, vec2 pos, angle facing) returns unit
+    return new Unit(p, db, pos, facing).getUnit()
+
+public function createUnit(player p, UnitDataBase db, vec3 pos, angle facing) returns unit
+    unit u = CreateUnit(p, db.unitID, pos.x, pos.y, facing.degrees())
+    new Unit(p, db, pos.toVec2(), facing)
+    return u
+
+public function createUnitOnLevel(player p, UnitDataBase db, vec2 pos, angle facing) returns unit
+    unit u = createUnit(p, db, pos, facing)
+    u.getUnit().addObjectToGroups()
+    return u
+
+public function createUnitOnLevel(bool changeColor, UnitDataBase db, vec2 pos, angle facing) returns unit
+    unit u = createUnitOnLevel(players[ID_PLAYER], db, pos, facing)
+    if changeColor
+        u.setColor2(players[25].getColor())
+    return u
+
+public function createUnitOnLevel(UnitDataBase db, vec2 pos, angle facing) returns unit
+    return createUnitOnLevel(true, db, pos, facing)
+
+
+//**************
+
+
+public class Unit extends GameObject
+    static HashMap<unit, Unit> unitToUnit = new HashMap<unit, Unit>()
+
+    unit mainUnit
+    Movement movementClass
+    UnitDataBase db
+    TilesBLP currentTiles
+    //AttacherBLP attacherShadow
+    GravitySystem gravitySystem
+
+    playercolor array[COUNT_PLAYERS] playerColor
+
+
+    effect attacherShadow
+    // timer selectionAndShadowHideAndShow
+
+    bool isHidden
+
+    construct(player p, UnitDataBase db, vec2 pos, angle facing)
+        super()
+        this.mainUnit = CreateUnit(p, db.unitID, pos.x, pos.y, facing.degrees())
+        this.db = db
+        if this.db.isPhysical
+            this.movementClass = new Movement(this.mainUnit)
+            if not this.db.isFlying
+                this.gravitySystem = new GravitySystem(this.mainUnit)
+        this.currentTiles = null
+        this.mainUnit.makeFlying()
+        // this.attacherShadow = new AttacherBLP(this.mainUnit, Textures.shadow, (1/8)*db.shadowCenterPos, db.shadowSize.x, db.shadowSize.y)
+        // ..setLayerImg(ImageLayer.L3)
+        this.attacherShadow = addEffect2(Textures.shadow, this.mainUnit, "origin")
+        unitToUnit.put(this.mainUnit, this)
+
+        this.typeClass = "Unit"
+
+    //     this.selectionAndShadowHideAndShow = getTimer()
+    //     ..setData(this castTo int)
+    //     ..startPeriodic(MAIN_TIMER_EVENT, function callUpdateShowHide)
+
+    // static function callUpdateShowHide()
+    //     (GetExpiredTimer().getData() castTo Unit).updateShowHide()
+
+    // function updateShowHide()
+        // if this.mainUnit.isAlive() and not isHidden
+        //     attacherShadow.showImg()
+        // else
+        //     attacherShadow.hideImg()
+
+    function getUnit() returns unit
+        return this.mainUnit
+
+    function shadowHide()
+        isHidden = true
+        // attacherShadow.hideImg()
+
+    function shadowShow()
+        isHidden = false
+        // attacherShadow.showImg()
+
+    function getCurrentTiles() returns TilesBLP
+        return currentTiles
+
+    function setCurrentTiles(TilesBLP newTiles)
+        this.currentTiles = newTiles
+        this.setHeight(newTiles.getCorrectHeight(), false)
+        this.mainUnit.plusVelocity(vec3(0, 0, -this.mainUnit.getVelocity().z))
+
+        
+    function setHeight(real h, bool doChangeTiles)
+        real before_h = getHeight()
+        real after_h = h
+        super.setHeight(after_h)
+        this.mainUnit.makeFlying()
+        this.mainUnit.setFlyHeight(after_h, 0)
+        // attachersUpdateHeight(after_h)
+
+        if doChangeTiles
+            TilesBLP old_tiles = this.currentTiles
+            TilesBLP tiles = getTilesBLPByHeight(before_h, after_h)
+            if (tiles != null and tiles.getTerrainTypeBLP(this.mainUnit.getPos()) != -1
+                and before_h > after_h) or after_h <= 0.
+                this.setCurrentTiles(tiles)
+            if tiles != null or after_h <= 0.
+                updateObjectsVisibility(old_tiles, tiles)
+
+    function updateObjectsVisibility(TilesBLP _old_tiles, TilesBLP _tiles)
+        skip
+
+    // function attachersUpdateHeight(real h)
+        // attacherShadow.setHeight(h)
+
+    override function setHeight(real h)
+        this.setHeight(h, true)
+
+    function hide()
+        this.mainUnit.hide()
+        this.shadowHide()
+
+    function show()
+        this.mainUnit.show()
+        this.shadowShow()
+
+    function setPos(vec2 pos)
+        this.mainUnit.setPos(pos)
+        // this.attacherShadow.updateImgPos()
+
+    function setPos(vec3 pos)
+        this.mainUnit.setPos(pos.toVec2())
+        this.setHeight(pos.z)
+        // this.attacherShadow.updateImgPos()
+
+    function getMovementClass() returns Movement
+        return this.movementClass
+
+    // function getIllusionPos() returns vec2
+    //     // x = x_0 + lambda*(x_cam - x_0)
+    //     // y = y_0 + lambda*(y_cam - y_0)
+
+    //     let currentPointOrder = this.mainUnit.getPos()
+    //     let cameraPos = getCameraEyePosition3()
+    //     let lambda = height / cameraPos.z
+
+    //     let illusionPos = currentPointOrder + lambda * (cameraPos.toVec2() - currentPointOrder)
+
+    //     return illusionPos
+
+    function setColor(playercolor col)
+        for i = 0 to COUNT_PLAYERS-1
+            this.playerColor[i] = col
+        this.updateColor()
+
+    function setColor(playercolor col, player p)
+        let id = p.getId()
+        this.playerColor[id] = col
+        // if localPlayer == p
+        this.updateColor()
+
+    function getColor() returns playercolor
+        // return this.getColor(localPlayer)
+        return this.getColor(Player(0))
+
+    function getColor(player p) returns playercolor
+        return this.playerColor[p.getId()]
+
+    function updateColor()
+        this.mainUnit.setColor(this.getColor())
+    
+    
+
+    override function updateVertexColorA()
+        this.mainUnit.setVertexColor(this.getVertexColorA())
+        
+    ondestroy
+        if this.db.isPhysical
+            destroy this.movementClass
+            if not this.db.isFlying
+                destroy this.gravitySystem
+        // this.selectionAndShadowHideAndShow.release()
+        this.attacherShadow.destr()
+        unitToUnit.remove(this.mainUnit)
+        this.mainUnit.remove()

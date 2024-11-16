@@ -1,0 +1,75 @@
+package DeadlyInRangeMonsters
+
+import UnitClass
+import AssetsConstants
+import Constants
+import GameObject
+import Heroes
+import HashMap
+import initlater UsefulFunctions
+import TriggerUtils
+
+
+
+public function createDeadlyInRangeMonster(player p, UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie) returns unit
+    return new DeadlyInRangeMonsters(p, db, pos, facing, whichGroupShouldDie).getUnit()
+
+public function createDeadlyInRangeMonsterOnLevel(player p, UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie) returns unit
+    unit u = createDeadlyInRangeMonster(p, db, pos, facing, whichGroupShouldDie)
+    u.getUnit().addObjectToGroups()
+    return u
+
+public function createDeadlyInRangeMonsterOnLevel(bool changeColor, UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie) returns unit
+    unit u = createDeadlyInRangeMonsterOnLevel(players[ID_PLAYER], db, pos, facing, whichGroupShouldDie)
+    if changeColor
+        int random = GetRandomInt(0, 24)
+        u.setColor2(players[random].getColor())
+    return u
+
+public function createDeadlyInRangeMonsterOnLevel(UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie) returns unit
+    return createDeadlyInRangeMonsterOnLevel(true, db, pos, facing, whichGroupShouldDie)
+
+public function createDeadlyInRangeMonsterOnLevel(UnitDataBase db, vec2 pos, angle facing) returns unit
+    return createDeadlyInRangeMonsterOnLevel(db, pos, facing, MainHero.MAIN_HEROES_GROUP)
+
+public class DeadlyInRangeMonsters extends Unit
+    static group DEADLY_RADIUS_GROUP = CreateGroup()
+    static HashMap<unit, DeadlyInRangeMonsters> unitToDIRM = new HashMap<unit, DeadlyInRangeMonsters>()
+    
+    group whichGroupShouldDie
+    trigger triggerMakeAction
+
+    construct(player p, UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie)
+        super(p, db, pos, facing)
+        DEADLY_RADIUS_GROUP.addUnit(this.mainUnit)
+        unitToDIRM.put(this.mainUnit, this)
+        this.whichGroupShouldDie = whichGroupShouldDie
+        this.triggerMakeAction = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerUnitInRange(this.mainUnit, this.getDeadlyRadius(), null)
+        ..addAction(function callCheck)
+
+        this.typeClass = "DeadlyInRangeMonsters"
+
+    static function callCheck()
+        (GetTriggeringTrigger().getData() castTo DeadlyInRangeMonsters).checkAndKill(GetTriggerUnit())
+
+    function checkAndKill(unit triggerUnit)
+        if whichGroupShouldDie.contains(triggerUnit) 
+            and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), getDeadlyRadius())
+            
+            triggerUnit.kill()
+
+    function getDeadlyRadius() returns real
+        int utype = this.mainUnit.getTypeId()
+        if utype == UnitDataBase.polarTroll.unitID
+            return 70.
+        if utype == UnitDataBase.polarBear.unitID
+            return 90.
+        if utype == UnitDataBase.frostRevenant.unitID
+            return 70.
+        return 0.
+
+    ondestroy
+        unitToDIRM.remove(this.mainUnit)
+        this.triggerMakeAction.release()

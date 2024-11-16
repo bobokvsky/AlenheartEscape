@@ -1,0 +1,229 @@
+package UnitModelData
+import HashMap
+import UnitObjEditing
+import ObjEditingNatives
+
+let DEFAULT_TARGETS_MELEE = "ground,structure,debris,item,ward"
+let DEFAULT_TARGETS_RANGE = "ground,structure,debris,air,item,ward"
+let DEFAULT_TARGETS_ANTIAIR = "air"
+let DEFAULT_TARGETS_CHOPPA = "tree"
+let DEFAULT_TARGETS_SIEGE = "ground,debris,tree,wall,item,ward"
+let DEFAULT_TARGETS_SPLASH_SIEGE = "ground,structure,debris,tree,wall"
+let DEFAULT_TARGETS_SPLASH_MAGIC = "ground,structure,debris,air,enemy" // Most other non-siege units use these
+let DEFAULT_TARGETS_SPLASH_INFERNO = "ground,structure,debris,air" // Doom guard's air attack + Demon Hunter Form
+let DEFAULT_TARGETS_SPLASH_DRAKE = "ground,structure,debris" // used by several types of dragons
+
+public function UnitOrBuildingOrHeroDefinition.applyModelWithScale(int id, real scale)
+	let data = UnitModelData.get(id)
+	if data == null
+		return
+	let rs = scale / data.modelScale
+	this
+	..setTurnRate(data.turnRate) // umvr
+	..setSpeedBase((data.spd * rs).ceil()) // umvs
+	..setArtSpecial(data.specialart) // uspa
+	..setShadowTextureBuilding(data.buildingShadow) // ushb
+	..setShadowImageWidth(data.shadowW * rs) // ushw
+	..setShadowImageUnit(data.unitShadow) // ushu
+	..setShadowImageHeight(data.shadowH * rs) // ushh
+	..setShadowImageCenterY(data.shadowY * rs) // ushy
+	..setShadowImageCenterX(data.shadowX * rs) // ushx
+	..setSelectionScale(data.scale * rs) // ussc
+	..setSelectionCircleOnWater(data.selCircOnWater) // usew
+	..setSelectionCircleHeight(data.selZ * rs) // uslz
+	..setScalingValue(scale) // usca
+	..setRequiredBoneNames(data.boneprops) // ubpr
+	..setRequiredAnimationNamesAttachments(data.attachmentanimprops) // uaap
+	..setRequiredAnimationNames(data.attachmentlinkprops) // uani
+	..setPropulsionWindowdegrees(data.propWin) // uprw
+	..setProjectileLaunchZSwimming(data.launchSwimZ * rs) // ulsz
+	..setProjectileLaunchZ(data.launchZ * rs) // ulpz
+	..setProjectileLaunchY(data.launchY * rs) // ulpy
+	..setProjectileLaunchX(data.launchX * rs) // ulpx
+	..setProjectileImpactZ(data.impactZ * rs) // uimz
+	..setOrientationInterpolation(data.orientInterp) // uori
+	..setModelFile(data.file) // umdl
+	..setMaximumRollAngledegrees(data.maxRoll) // umxr
+	..setMaximumPitchAngledegrees(data.maxPitch) // umxp
+	..setMovementHeightMinimum(data.moveFloor * rs) // umvf
+	..setMovementHeight(data.moveHeight * rs) // umvh
+	..setHasWaterShadow(data.shadowOnWater) // ushr
+	..setElevationSampleRadius(data.elevRad) // uerd
+	..setElevationSamplePoints(data.elevPts) // uept
+	..setDeathType(data.deathType) // udea
+	..setDeathTimeseconds(data.death) // udtm
+	..setAttack1AnimationDamagePoint(data.dmgpt1) // udp1
+	..setAttack1AnimationBackswingPoint(data.backSw1) // ubs1
+	..setAnimationWalkSpeed(data.walk * rs) // uwal
+	..setAnimationRunSpeed(data.run * rs) // urun
+	..setAnimationCastPoint(data.castpt) // ucpt
+	..setAnimationCastBackswing(data.castbsw) // ucbs
+	..setAnimationBlendTimeseconds(data.blend) // uble
+	..setMovementType(data.movetp) // umvt
+	..setArmorSoundType(data.armor) // uarm
+	..setCollisionSize(data.collision * rs)
+
+	if this instanceof UnitOrHeroDefinition
+		let o = this castTo UnitOrHeroDefinition
+		if data.movetp == MovementType.Float
+			o..setGroupSeparationEnabled(true)
+			..setGroupSeparationGroupNumber(1)
+			..setGroupSeparationParameter(data.shadowW >= 300 ? 2 : 1)
+		if data.movetp == MovementType.Fly
+			o..setGroupSeparationEnabled(true)
+			..setGroupSeparationGroupNumber(0)
+			..setGroupSeparationParameter(data.shadowW >= 190 ? 1 : 0)
+
+public function UnitOrBuildingOrHeroDefinition.applyModel(int id)
+	this.applyModelWithScale(id, 1)
+
+public function copyUnitModelData(W3UDefinition def, int id)
+	let data = UnitModelData.get(id)
+	if data == null
+		//return
+	def.def
+	..setString("uaap", data.attachmentanimprops)
+	..setString("ualp", data.attachmentlinkprops)
+	..setString("ubpr", data.boneprops)
+	..setInt("uori", data.orientInterp)
+	..setReal("udtm", data.death)
+	..setReal("uprw", data.propWin)
+	..setBoolean("usew", data.selCircOnWater)
+	..setBoolean("ushr", data.shadowOnWater)
+	..setInt("uept", data.elevPts)
+	..setReal("uble", data.blend)
+	..setReal("uerd", data.elevRad)
+	..setReal("umxp", data.maxPitch)
+	..setReal("umxr", data.maxRoll)
+	..setReal("usca", data.modelScale)
+	..setReal("urun", data.run)
+	..setReal("ussc", data.scale)
+	..setReal("uslz", data.selZ)
+	..setReal("ushh", data.shadowH)
+	..setReal("ushw", data.shadowW)
+	..setReal("ushx", data.shadowX)
+	..setReal("ushy", data.shadowY)
+	..setReal("uwal", data.walk)
+	..setString("umdl", data.file)
+	..setString("ushu", data.unitShadow)
+	..setString("ushb", data.buildingShadow)
+	..setReal("ucbs", data.castbsw)
+	..setReal("ucpt", data.castpt)
+	..setReal("uimz", data.impactZ)
+	..setReal("ulsz", data.launchSwimZ)
+	..setReal("ulpx", data.launchX)
+	..setReal("ulpy", data.launchY)
+	..setReal("ulpz", data.launchZ)
+	..setInt("udea", data.deathType)
+	..setString("uarm", data.armor.toString())
+	..setReal("ubs1", data.backSw1)
+	..setReal("udp1", data.dmgpt1)
+	..setString("ucs1", data.weapType1.toString())
+	..setInt("umvs", data.spd)
+	..setReal("umvf", data.moveFloor)
+	..setReal("umvh", data.moveHeight)
+	..setReal("umvr", data.turnRate)
+	..setString("umvt", data.movetp.toObjectString())
+	..setString("usnd", data.unitSound)
+
+public class UnitModelData
+	static var reg =	new HashMap<int, thistype>
+
+	static function get(int id) returns thistype
+		return reg.get(id)
+	int id
+	int unitID
+	real backSw1
+	real dmgpt1
+	WeaponSound weapType1
+	ArmorSoundType armor
+	int deathType
+	real blend
+	real castbsw
+	real run
+	real walk
+	real castpt
+	real death
+	real selZ
+	bool selCircOnWater
+	real maxPitch
+	real maxRoll
+	real modelScale
+	real elevRad
+	int elevPts
+	string attachmentanimprops
+	string specialart
+	string unitShadow
+	real shadowH
+	real shadowX
+	real shadowY
+	real shadowW
+	real impactZ
+	int orientInterp
+	real propWin
+	string attachmentlinkprops
+	string buildingShadow
+	bool shadowOnWater
+	real launchX
+	real launchY
+	real launchZ
+	real launchSwimZ
+	string boneprops
+	string file
+	real scale
+	int spd
+	real moveHeight
+	real moveFloor
+	real turnRate
+	MovementType movetp
+	string unitSound
+	int collision
+
+	construct(int unitID_, real backSw1_, real dmgpt1_, WeaponSound weapType1_, ArmorSoundType armor_, int deathType_, real blend_, real castbsw_, real run_, real walk_, real castpt_, real death_, real selZ_, int selCircOnWater_, real maxPitch_, real maxRoll_, real modelScale_, real elevRad_, int elevPts_, string attachmentanimprops_, string specialart_, string unitShadow_, real shadowH_, real shadowX_, real shadowY_, real shadowW_, real impactZ_, int orientInterp_, real propWin_, string attachmentlinkprops_, string buildingShadow_, int shadowOnWater_, real launchX_, real launchY_, real launchZ_, real launchSwimZ_, string boneprops_, string file_, real scale_, int spd_, real moveHeight_, real moveFloor_, real turnRate_, MovementType movetp_, string unitSound_, int collision_)
+		reg.put(id, this)
+		id = unitID_
+		backSw1 = backSw1_
+		dmgpt1 = dmgpt1_
+		weapType1 = weapType1_
+		armor = armor_
+		deathType = deathType_
+		blend = blend_
+		castbsw = castbsw_
+		run = run_
+		walk = walk_
+		castpt = castpt_
+		death = death_
+		selZ = selZ_
+		selCircOnWater = selCircOnWater_ > 0
+		maxPitch = maxPitch_
+		maxRoll = maxRoll_
+		modelScale = modelScale_
+		elevRad = elevRad_
+		elevPts = elevPts_
+		attachmentanimprops = attachmentanimprops_
+		specialart = specialart_
+		unitShadow = unitShadow_
+		shadowH = shadowH_
+		shadowX = shadowX_
+		shadowY = shadowY_
+		shadowW = shadowW_
+		impactZ = impactZ_
+		orientInterp = orientInterp_
+		propWin = propWin_
+		attachmentlinkprops = attachmentlinkprops_
+		buildingShadow = buildingShadow_
+		shadowOnWater = shadowOnWater_ > 0
+		launchX = launchX_
+		launchY = launchY_
+		launchZ = launchZ_
+		launchSwimZ = launchSwimZ_
+		boneprops = boneprops_
+		file = file_
+		scale = scale_
+		spd = spd_
+		moveHeight = moveHeight_
+		moveFloor = moveFloor_
+		turnRate = turnRate_
+		movetp = movetp_
+		unitSound = unitSound_
+		collision = collision_

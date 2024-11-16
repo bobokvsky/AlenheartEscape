@@ -1,0 +1,168 @@
+package GameObject
+
+import initlater GameState
+import HashList
+import initlater TileImage
+import Constants
+
+
+public function GameObject.destr()
+    if this != null and not this.isDestroyed
+        destroy this
+
+public function GameObject.addObjectToGroups()
+    if GameState.IS_GAME_IN_CHAPTER_MODE_NOW or GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+        GameState.ALL_OBJECTS_IN_CHAPTER.add(this)
+    if GameState.IS_GAME_IN_CHALLENGE_MODE_NOW or GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW
+        GameState.ALL_OBJECTS_IN_CHALLENGE.add(this)
+
+//***************
+
+public class GameObject
+    static HashList<GameObject> OBJECTS = new HashList<GameObject>()
+    colorA array[COUNT_PLAYERS] col
+    int transparent_col = TRANSPARENT_TILES
+    real height = 0.
+    string typeClass = "GameObject"
+    bool isDestroyed
+
+    construct()
+        this.isDestroyed = false
+        OBJECTS.add(this)
+        for i = 0 to COUNT_PLAYERS-1
+            col[i] = colorA(255, 255, 255, 255)
+
+    ondestroy
+        this.isDestroyed = true
+        OBJECTS.remove(this)
+
+    function setVertexColor(color col)
+        for i = 0 to COUNT_PLAYERS-1
+            this.col[i] = col.withAlpha(this.col[i].alpha)
+        this.updateVertexColorA()
+
+    function setVertexColorA(colorA col)
+        for i = 0 to COUNT_PLAYERS-1
+            this.col[i] = col
+        this.updateVertexColorA()
+
+    function setVertexColor(color col, player p)
+        let id = p.getId()
+        this.setVertexColorA(col.withAlpha(this.col[id].alpha), p)
+
+    function setVertexColorA(colorA col, player p)
+        let id = p.getId()
+        this.col[id] = col
+        // if localPlayer == p
+        this.updateVertexColorA()
+
+    function updateVertexColorA()
+        skip
+
+    function getVertexColor() returns color
+        // return this.getVertexColor(localPlayer)
+        return this.getVertexColor(Player(0))
+
+    function getVertexColorA() returns colorA
+        // return this.getVertexColorA(localPlayer)
+        return this.getVertexColorA(Player(0))
+
+    function getVertexColor(player p) returns color
+        return this.col[p.getId()].withoutAlpha()
+
+    function getVertexColorA(player p) returns colorA
+        return this.col[p.getId()]
+
+
+    function setHeight(real h)
+        this.height = h
+
+    function getHeight() returns real
+        return height
+
+    function getTransparentCol() returns int
+        return transparent_col
+
+//**********
+
+//***********************
+// public class Destructable extends Object
+//     static HashMap<destructable, Destructable> destrToDestr = new HashMap<destructable, Destructable>()
+
+//     destructable d
+
+//     int destrID
+//     vec3 pos
+//     angle face
+//     real scale
+//     int variation
+
+//     construct(int destrID, vec3 pos, angl face, real scale, int variation)
+//         super()
+//         this.destrID = destrID
+//         this.pos = pos
+//         this.face = face
+//         this.scale = scale
+//         this.variation = variation
+//         this.typeClass = "Destr"
+
+//         this.d = CreateDestructableZ(destrID, pos.x, pos.y, pos.z, face.degrees(), scale, variation)
+//         destrToDestr.put(this.d, this)
+
+//     override function setHeight(real height)
+//         super.setHeight(height)
+//         destrToDestr.remove(this.d)
+//         d.remove()
+//         this.d = createDestructableZ(destrID, pos, face, scale, variation)
+//         destrToDestr.put(this.d, this)
+
+//     function getDestructable() returns destructable
+//         return this.d
+
+//     override function destr()
+//         destroy this
+
+//     ondestroy
+//         destrToDestr.remove(d)
+//         d.remove()
+
+//***********************
+
+
+
+//***********************
+
+
+
+
+//***********************
+
+
+//************************
+
+//***********************
+
+//****************
+
+//***********************
+
+//**********************
+
+//***********************
+
+
+//***********************
+
+//***********************
+
+//***********************
+
+// public function destructable.getDestr() returns Destructable
+//     return Destructable.destrToDestr.get(this)
+
+// public function destructable.destr()
+//     this.getDestr().destr()
+
+
+// public function createDestructableZ(int id, vec3 pos, angle face, real scale, int variation) returns destructable
+//     return new Destructable(id, pos, face, scale, variation).getDestructable()

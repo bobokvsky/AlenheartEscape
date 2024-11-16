@@ -1,0 +1,77 @@
+package AttacherBLP
+
+import GameObject
+import TimerUtils
+import Constants
+
+constant real ATTACHERBLP_PERIODIC = 0.01
+
+public class AttacherBLP extends GameObject
+    unit originUnit
+    vec2 originPos
+    player playerWhoCanSee
+    real sizeX
+    real sizeY
+
+    ImageLayer layer
+
+    image img
+    string path
+    real scale
+    timer t
+
+    construct(unit originUnit, string path, vec2 originPos, real sizeX, real sizeY)
+        super()
+        this.originUnit = originUnit
+        this.originPos = originPos
+        this.path = path
+        this.scale = scale
+        this.sizeX = sizeX
+        this.sizeY = sizeY
+        this.height = 0
+        this.layer = ImageLayer.L1
+
+        this.img = createImage(path, originUnit.getPos() + originPos, sizeX, sizeY)
+        ..show()
+
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(ATTACHERBLP_PERIODIC, function callUpdateImgPos)
+
+        this.typeClass = "AttacherBLP"
+
+    static function callUpdateImgPos()
+        (GetExpiredTimer().getData() castTo AttacherBLP).updateImgPos()
+
+    function updateImgPos()
+        img.setPos(originUnit.getPos() + originPos)
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        img.setHeight(minZ + h)
+
+    function hideImg()
+        img.hide()
+
+    function showImg()
+        img.show()
+
+    function removeImg()
+        img.remove()
+
+    function setLayerImg(ImageLayer layer)
+        this.layer = layer
+        img.setLevel(layer)
+
+    function resetImg()
+        this.img = createImage(path, originUnit.getPos() + originPos, sizeX, sizeY)
+
+    override function setVertexColorA(colorA col)
+        super.setVertexColorA(col)
+        img.setColor(col)
+
+    ondestroy
+        t.release()
+        img.remove()
+        t = null
+        img = null

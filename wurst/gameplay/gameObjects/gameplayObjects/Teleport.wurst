@@ -1,0 +1,60 @@
+package Teleport
+
+import GameObject
+import TriggerUtils
+import EventHelper
+import UnitClass
+import initlater UsefulFunctions
+import Constants
+
+public function createTeleport(rect trRect, vec2 tpPos, string pathEff) returns Teleport
+    return new Teleport(trRect, 0, tpPos.withZ(0), pathEff)
+
+public function createTeleport(rect trRect, real height, vec3 tpPos, string pathEff) returns Teleport
+    return new Teleport(trRect, height, tpPos, pathEff)
+
+public function createTeleportOnLevel(rect trRect, vec2 tpPos, string pathEff) returns Teleport
+    return createTeleport(trRect, 0, tpPos.withZ(0), pathEff)
+                ..addObjectToGroups()
+
+public function createTeleportOnLevel(rect trRect, real height, vec3 tpPos, string pathEff) returns Teleport
+    return createTeleport(trRect, height, tpPos, pathEff)
+                ..addObjectToGroups()
+
+public class Teleport extends GameObject
+    rect trRect
+    vec3 tpPos
+    trigger teleportTrigger
+    string pathEff
+
+    construct(rect trRect, real height, vec3 tpPos, string pathEff)
+        super()
+        super.setHeight(height)
+        this.trRect = trRect
+        this.tpPos = tpPos
+        this.pathEff = pathEff
+        this.teleportTrigger = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerRectEnterEventSource(this.trRect)
+        ..addAction(function callTeleport)
+
+        this.typeClass = "Teleport"
+
+    static function callTeleport()
+        (GetTriggeringTrigger().getData() castTo Teleport).teleport()
+    
+    function teleport()
+        unit u = GetTriggerUnit()
+        if u.getHeight().isAtNeighbourhood(height, TILES_BLP_NEIGHBOURHOOD)
+            if pathEff != null
+                flashEffect2(this.pathEff, u.getPosVec3(), this.getVertexColorA())
+            u.setXY(this.tpPos)
+            if pathEff != null
+                flashEffect2(this.pathEff, u.getPosVec3(), this.getVertexColorA())
+            u.getOwner().setCameraPosition(this.tpPos.toVec2())
+            u.issueImmediateOrder("stop")
+
+    ondestroy
+        teleportTrigger.unregisterRectEvent()
+        teleportTrigger.release()
+        teleportTrigger = null

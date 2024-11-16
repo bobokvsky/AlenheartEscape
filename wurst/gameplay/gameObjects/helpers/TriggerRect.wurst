@@ -1,0 +1,72 @@
+package TriggerRect
+
+import GameObject
+import LinkedList
+import initlater GameState
+import initlater UsefulFunctions
+import TriggerUtils
+
+public function createTriggerRect(trigger trig, rect trigRect) returns TriggerRect
+    return new TriggerRect(trig, trigRect)
+
+public function createTriggerRectOnLevel(trigger trig, rect trigRect) returns TriggerRect
+    return createTriggerRect(trig, trigRect)
+                ..addObjectToGroups()
+
+
+public function isEveryTrigRectDone(LinkedList<TriggerRect> callTriggers) returns bool
+    for trigRect in callTriggers
+        if not trigRect.isDone()
+            return false
+    return true
+
+public function executeWhenJoinRectAndWaitUntilEveryTriggersCompleted(LinkedList<TriggerRect> callTriggers, group whichGroup)
+    while checkConditionOnLost() and not isEveryTrigRectDone(callTriggers)
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+        for trigRect in callTriggers
+            if not trigRect.isDone() and isAnyoneInRect(trigRect.getRect(), whichGroup)
+                trigRect.execute()
+                while not trigRect.isDone()
+                    TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+//*******************
+
+
+interface CallbackFunc
+    function run()
+
+public class TriggerRect extends GameObject
+    trigger trig
+    rect rect_
+    bool isDone
+
+    construct(trigger trig, rect trigRect)
+        super()
+        this.trig = trig
+        this.rect_ = trigRect
+        this.isDone = false
+        
+        this.typeClass = "TriggerRect"
+
+    function getTrigger() returns trigger
+        return trig
+
+    function getRect() returns rect
+        return rect_
+
+    function isDone() returns bool
+        return isDone
+
+    function makeDone()
+        isDone = true
+
+    function execute()
+        trig.setData(this castTo int)
+        trig.execute()
+
+    function addAction(code actionFunc)
+        trig.addAction(actionFunc)
+
+    ondestroy
+        trig.release()
+        trig = null

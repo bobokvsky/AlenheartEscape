@@ -1,0 +1,123 @@
+package Key
+
+import GameObject
+import Heroes
+import CircularEffect2D
+import EventHelper
+import TriggerUtils
+import UnitClass
+import SomeMaths
+import HashList
+import initlater UsefulFunctions
+
+public function createKey(rect keyRect, string path, real scale,
+                            group whichGroupCanTake) returns Key
+    return new Key(keyRect, path, scale, whichGroupCanTake)
+
+
+public function isAnyoneInRectWithKey(rect whichRegion, group whichGroup, Key key) returns bool
+    for u in whichGroup
+        if RectContainsUnit(whichRegion, u) and key.currentOwner.getHandleId() == u.getHandleId()
+            return true
+    return false
+
+public function createKeyOnLevel(rect keyRect, string path, real scale,
+                            group whichGroupCanTake) returns Key
+    return createKey(keyRect, path, scale, whichGroupCanTake)
+                ..addObjectToGroups()
+
+public function createKeyOnLevel(rect keyRect, string path, real scale) returns Key
+    return createKeyOnLevel(keyRect, path, scale, MainHero.MAIN_HEROES_GROUP)
+
+
+//****************
+
+real KEY_CIREFFECT_RADIUS = 50.
+real KEY_CIREFFECT_DURATION = 15.
+
+public class Key extends GameObject
+    rect keyRect
+    effect keyEff
+    string path
+    real scale
+    group whichGroupCanTake
+    trigger takeKey
+    trigger returnKey
+    unit currentOwner
+    CircularEffect2D cirEff
+
+    construct(rect keyRect, string path, real scale, group whichGroupCanTake)
+        super()
+        this.keyRect = keyRect
+        this.path = path
+        this.scale = scale
+        this.keyEff = addEffect2(path, this.keyRect.getCenter())
+        ..setScale(scale)
+        this.whichGroupCanTake = whichGroupCanTake
+        this.takeKey = CreateTrigger()
+        ..registerRectEnterEventSource(this.keyRect)
+        ..setData(this castTo int)
+        ..addAction(function callTakeKey)
+
+        this.typeClass = "Key"
+
+    static function callTakeKey()
+        (GetTriggeringTrigger().getData() castTo Key).takeKey(GetTriggerUnit())
+
+    function takeKey(unit triggerUnit)
+        if not whichGroupCanTake.contains(triggerUnit) or not triggerUnit.isAlive()
+            or not triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.keyRect.getMinRadius())
+            return
+        cirEff = createCircularEffect2D(triggerUnit, path, scale, triggerUnit.getHeight(), true,
+                                        KEY_CIREFFECT_DURATION, false,  0, 2*PI,
+                                        circle2D, 
+                                        new HashList<real>
+                                        ..add(triggerUnit.getX(), 
+                                            triggerUnit.getY(), 
+                                            KEY_CIREFFECT_RADIUS))
+        keyEff.destr()
+        takeKey.disable()
+        currentOwner = triggerUnit
+        returnKey = CreateTrigger()
+        ..registerUnitEvent(currentOwner, EVENT_UNIT_DEATH)
+        ..setData(this castTo int)
+        ..addAction(function callReturnKey)
+
+    static function callReturnKey()
+        (GetTriggeringTrigger().getData() castTo Key).returnKey()
+
+    function returnKey()
+        cirEff.destr()
+        keyEff = addEffect2(path, this.keyRect.getCenter())
+        ..setScale(scale)
+        ..setHeight(getHeight())
+        currentOwner = null
+        returnKey.disable()
+        takeKey.enable()
+
+    function getOwningUnit() returns unit
+        return currentOwner
+
+    override function updateVertexColorA()
+        if cirEff != null and not this.cirEff.isDestroyed
+            cirEff.setVertexColorA(this.getVertexColorA())
+        else
+            keyEff.setColor(this.getVertexColorA())
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        if cirEff == null
+            keyEff.setHeight(h)
+        else
+            cirEff.setHeight(h)
+            
+    ondestroy
+        cirEff.destr()
+        keyEff.destr()
+        takeKey.unregisterRectEvent()
+        takeKey.release()
+        returnKey.release()
+        cirEff = null
+        keyEff = null
+        takeKey = null
+        returnKey = null

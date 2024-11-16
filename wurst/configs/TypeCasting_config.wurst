@@ -1,0 +1,4 @@
+package TypeCasting_config
+
+@config constant R2I_PRECISION = 100000.
+

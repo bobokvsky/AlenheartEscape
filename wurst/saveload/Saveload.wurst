@@ -1,0 +1,24 @@
+package Saveload
+
+// import PreloadIO
+// import UsefulFunctions
+
+constant int PACKETSIZE = 1
+constant string PATH = "MyNewPolar\\"
+constant string FORMAT = ".pld"
+public constant string SAVELOAD_CURRENT_VERSION = "0"
+
+public class SaveLoad
+    static function save(player _p, string _writeStr)
+        // if p == localPlayer
+        //     string name = p.getNameWurst()
+        //     IOWriter.prepareWrite()
+        //     IOWriter.writePacket(writeStr)
+        //     IOWriter.flushFile(PATH + name + FORMAT)
+
+    static function loadVersion(player _p) returns string
+        // if p == localPlayer
+        //     string name = p.getNameWurst()
+        //     IOReader.load(PATH + name + FORMAT)
+        //     return IOReader.getPacket(0)
+        return ""

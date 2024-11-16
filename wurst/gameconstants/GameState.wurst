@@ -1,0 +1,154 @@
+package GameState
+
+import HashList
+import initlater StartZone
+import GameObjects
+
+import initlater Chapter1
+import initlater Chapter2
+import initlater Chapter3
+import initlater UsefulFunctions
+import AssetsConstants
+import LinkedList
+
+class GameState
+    static bool IS_GAME_IN_TEST_MODE = false
+    static constant levelCounts = 3
+    static constant challengeCounts = 10
+    static int currentLevel = -1
+    static int currentChallenge = -1
+
+    static HashList<int> array levelToChallenge
+    static int array challengeToLevel
+    static string array challengeName
+
+    static trigger array startChallenge
+    static trigger array startChapter
+
+    static LinkedList<player> playingPlayers = new LinkedList<player>()
+    static force allPlayersForce
+    static force playingPlayersForce
+    static player hostPlayer
+
+    static player neutral12
+    static player neutral13
+    static player neutralHostile
+    static player neutralPassive
+
+    static function initValues()
+        for i = 0 to bj_MAX_PLAYER_SLOTS-1
+            if players[i].isIngame()
+                playingPlayers.add(players[i])
+                playingPlayersForce.addPlayer(players[i])
+                allPlayersForce.addPlayer(players[i])
+                
+        neutral12 = players[24]
+        neutral13 = players[25]
+        neutralHostile = players[26]
+        neutralPassive = players[27]
+        GameState.findHost()
+
+        levelToChallenge[0] = new HashList<int>..add(-1)
+        levelToChallenge[1] = new HashList<int>..add(1, 2, 3)
+        levelToChallenge[2] = new HashList<int>..add(4, 5, 6, 7)
+        levelToChallenge[3] = new HashList<int>..add(8, 9, 10)
+
+        challengeToLevel[0] = -1
+        for i = 1 to levelCounts
+            for challenge in levelToChallenge[i]
+                challengeToLevel[challenge] = i
+            
+        challengeName[1] = "|cff3a68ff" + "Introducing: Non-turning ice." + "|r"
+        challengeName[2] =  "|cff00a2ff" + "Introducing: Turning ice." + "|r"
+        challengeName[3] =  "|cff00ffff" + "Introducing: Reverse turning ice." + "|r"
+        challengeName[4] =  "|cffff02ea" + "Slow sliding speed is your enemy." + "|r"
+        challengeName[5] =  "|c309dff00" + "Dungeon quest." + "|r"
+        challengeName[6] =  "|c84ffffff" + "Garmony." + "|r"
+        challengeName[7] =  "|cffe289bd" + "The easiest level in your life." + "|r"
+        challengeName[8] =  "|cff95c3ff" + "Introducing: Accelerating ice." + "|r"
+        challengeName[9] =  "|cff9db147" + "Jump! Jump! Jump!" + "|r"
+        challengeName[10] =  "|cffc04bb0" + "Flyings in the air." + "|r"
+
+        startChapter[0] = CreateTrigger()..addAction(function startMainZone)
+        startChapter[1] = CreateTrigger()..addAction(function startChapter1)
+        startChapter[2] = CreateTrigger()..addAction(function startChapter2)
+        startChapter[3] = CreateTrigger()..addAction(function startChapter3)
+
+        startChallenge[1] = CreateTrigger()..addAction(function startChallenge1)
+        startChallenge[2] = CreateTrigger()..addAction(function startChallenge2)
+        startChallenge[3] = CreateTrigger()..addAction(function startChallenge3)
+        startChallenge[4] = CreateTrigger()..addAction(function startChallenge4)
+        startChallenge[5] = CreateTrigger()..addAction(function startChallenge5)
+        startChallenge[6] = CreateTrigger()..addAction(function startChallenge6)
+        startChallenge[7] = CreateTrigger()..addAction(function startChallenge7)
+        startChallenge[8] = CreateTrigger()..addAction(function startChallenge8)
+        startChallenge[9] = CreateTrigger()..addAction(function startChallenge9)
+        startChallenge[10] = CreateTrigger()..addAction(function startChallenge10)
+
+    static bool IS_GAME_IS_CHANGING_LEVEL_NOW = true
+    static bool IS_GAME_IS_CHANGING_CHALLENGE_NOW = false
+    static bool IS_GAME_IN_DIALOUE_MODE_NOW = false
+    static bool IS_GAME_IN_FLASHBACK_MODE_NOW = false
+    static bool IS_GAME_IN_CHAPTER_MODE_NOW = false
+    static bool IS_GAME_IN_CHALLENGE_MODE_NOW = false
+    static bool IS_CURRENT_CHALLENGE_COMPLETE = false
+    static bool IS_GAME_IN_SKIP_MODE = false
+    static bool IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST = false
+
+    static constant HashList<GameObject> ALL_OBJECTS_IN_CHAPTER = new HashList<GameObject>()
+    static constant HashList<GameObject> ALL_OBJECTS_IN_CHALLENGE = new HashList<GameObject>()
+
+    static function setSkipMode(bool isSkipMode)
+        GameState.IS_GAME_IN_SKIP_MODE = isSkipMode
+
+    static function findHost()
+        for p in GameState.playingPlayers
+            GameState.hostPlayer = p
+            if p != players[0]
+                printTimed(GameState.hostPlayer.getNameColored() + " becomes the leading player.", 15.)
+            return
+
+
+public function challengeToLevel(int challenge) returns int
+    if 1 <= challenge and challenge <= GameState.challengeCounts
+        return GameState.challengeToLevel[challenge]
+    return -1
+
+public function levelToChallenges(int level) returns HashList<int>
+    if 1 <= level and level <= GameState.levelCounts
+        return GameState.levelToChallenge[level]
+    return null
+
+public function getChallengeName(int challenge) returns string
+    if 1 <= challenge and challenge <= GameState.challengeCounts
+        return GameState.challengeName[challenge]
+    return ""
+
+public function setIsChallengeComplete(bool isComplete)
+    GameState.IS_CURRENT_CHALLENGE_COMPLETE = isComplete
+
+public function conditionOnLost() returns bool
+    for hero in MainHero.MAIN_HEROES_GROUP
+        if hero.isAlive()
+            return false
+    return true
+
+public function checkConditionOnLost() returns bool
+    if not GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW 
+                    and not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW 
+                    and not GameState.IS_GAME_IN_SKIP_MODE 
+                    and conditionOnLost()
+                    and not GameState.IS_GAME_IN_TEST_MODE
+
+        polledWait2WithoutSkip(2.0)
+        printTimed("|cffff00aaYou have lost|r. Completely. Returning to the start zone...", 10.)
+        QUEST_FAILED.play()
+        fade(1.5, true, 0.)
+        polledWait2WithoutSkip(1.5)
+        GameState.IS_GAME_IN_SKIP_MODE = true
+        return false
+
+    if GameState.IS_GAME_IN_SKIP_MODE
+        return false
+    
+    return true

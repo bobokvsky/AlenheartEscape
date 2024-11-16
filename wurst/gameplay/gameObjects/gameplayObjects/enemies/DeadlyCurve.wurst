@@ -1,0 +1,137 @@
+package DeadlyCurve
+
+import GameObject
+import SomeMaths
+import HashList
+import Heroes
+import TimerUtils
+import initlater UsefulFunctions
+import ClosureForGroups
+import UnitClass
+import ClosureTimers
+
+public function createDeadlyCurve(group whichGroupShouldDie, MathFunc mathFunc, HashList<real> params, 
+                                string path, real scale, real radius,
+                                real tStart, real tDiff, 
+                                real timeStart, real timeDiff, real timeEnd, real timeWait) returns DeadlyCurve
+    return new DeadlyCurve(whichGroupShouldDie, mathFunc, params, 
+                        path, scale, radius,
+                        tStart, tDiff, timeStart, timeDiff, timeEnd, timeWait)
+
+public function createDeadlyCurveOnLevel(MathFunc mathFunc, HashList<real> params, 
+                                string path, real scale, real radius,
+                                real tStart, real tDiff, 
+                                real timeStart, real timeDiff, real timeEnd, real timeWait) returns DeadlyCurve
+    return createDeadlyCurve(MainHero.MAIN_HEROES_GROUP, mathFunc, params, 
+                            path, scale, radius,
+                            tStart, tDiff, 
+                            timeStart, timeDiff, timeEnd, timeWait)
+            ..addObjectToGroups()
+
+public class DeadlyCurve extends GameObject
+    group whichGroupShouldDie
+    timer t
+    string path
+    real scale
+    real radius
+    real tStart
+    real tDiff
+    real timeStart
+    real timeDiff
+    real timeEnd
+    real timeWait
+
+    real timeCurrent
+    real tCurrent
+
+    bool isDoRotate2D
+    vec2 originRotatePos
+    angle rotatePhi
+
+    MathFunc mathFunc
+    HashList<real> params
+
+    construct(group whichGroupShouldDie, MathFunc mathFunc, HashList<real> params, 
+                            string path, real scale, real radius,
+                            real tStart, real tDiff, 
+                            real timeStart, real timeDiff, real timeEnd, real timeWait)
+        super()
+        this.whichGroupShouldDie = whichGroupShouldDie
+        this.path = path
+        this.scale = scale
+        this.radius = radius
+        this.tStart = tStart
+        this.tDiff = tDiff
+        this.tCurrent = tStart
+        this.timeStart = timeStart
+        this.timeWait = timeWait
+        
+        this.timeCurrent = 0
+        this.timeDiff = timeDiff
+        this.timeEnd = timeEnd
+        this.mathFunc = mathFunc
+        this.params = params
+
+        this.isDoRotate2D = false
+        this.transparent_col = 5
+
+        this.t = getTimer()
+        ..setData(this castTo int)
+        ..start(timeStart, function callflashEffectAndKill)
+
+        this.typeClass = "DeadlyCurve"
+
+    static function callflashEffectAndKill()
+        (GetExpiredTimer().getData() castTo DeadlyCurve).flashEffectAndKill()
+
+    function flashEffectAndKill()
+        vec3 pos = mathFunc.run(params, this.tCurrent)
+        pos = vec3(pos.x, pos.y, this.height + pos.z)
+        this.tCurrent += this.tDiff
+        this.timeCurrent += this.timeDiff
+
+        if isDoRotate2D
+            let pos2 = originRotatePos + (vec2(pos.x, pos.y) - originRotatePos).rotate(this.rotatePhi)
+            pos = vec3(pos2.x, pos2.y, pos.z)
+
+        forUnitsInRange(pos.toVec2(), radius) u ->
+            if whichGroupShouldDie.contains(u) 
+                and u.getHeight().isAtNeighbourhood(getHeight(), this.radius)
+                
+                u.kill()
+        flashEffect2(path, pos, scale, this.getVertexColorA())
+
+        if this.timeCurrent > this.timeEnd
+            doAfter(timeWait) ->
+                if not this.isDestroyed
+                    this.tCurrent = this.tStart
+                    this.timeCurrent = 0
+                    this.t.start(this.timeDiff, function callflashEffectAndKill)
+        else
+            this.t.start(this.timeDiff, function callflashEffectAndKill)
+
+    function getFirstPos() returns vec3
+        vec3 pos = mathFunc.run(params, this.tCurrent)
+        return vec3(pos.x, pos.y, this.height + pos.z)
+
+    function getLastPos() returns vec3
+        vec3 pos = mathFunc.run(params, this.getEndT())
+        return vec3(pos.x, pos.y, this.height + pos.z)
+
+    function getStartT() returns real
+        return this.tStart
+
+    function getEndT() returns real
+        return this.tStart + (this.timeEnd / this.timeDiff) * this.tDiff
+
+    function doRotate(vec2 originRotatePos, angle rotatePhi)
+        this.originRotatePos = originRotatePos
+        this.rotatePhi = rotatePhi
+        this.isDoRotate2D = true
+
+    function stopRotate()
+        this.isDoRotate2D = false
+
+
+    ondestroy
+        this.t.release()

@@ -1,0 +1,78 @@
+package Gates
+
+import GameObject
+import LinkedList
+import initlater UsefulFunctions
+
+public function createGates(rect gatesRect) returns Gates
+    return new Gates(gatesRect, 0)
+
+public function createGates(rect gatesRect, real height) returns Gates
+    return new Gates(gatesRect, height)
+
+public function createGatesOnLevel(rect gatesRect) returns Gates
+    return createGates(gatesRect, 0)
+                ..addObjectToGroups()
+
+public function createGatesOnLevel(rect gatesRect, real height) returns Gates
+    return createGates(gatesRect, height)
+                ..addObjectToGroups()
+
+//*******************
+
+constant int SQUARE_SIZE = 64
+constant int SQUARE_BLOCKER_ID = 'YTpb'
+
+public class Gates extends GameObject
+    rect gatesRect
+    LinkedList<destructable> blockers
+    effect gatesEff
+
+    construct(rect gatesRect, real height)
+        super()
+        super.setHeight(height)
+        this.gatesRect = gatesRect
+        this.blockers = new LinkedList<destructable>
+        this.gatesEff = null
+        createBlockers()
+        this.typeClass = "Gates"
+
+    function makeEffect(string path, angle a, real scale)
+        this.gatesEff = addEffect2(path, this.gatesRect.getCenter())
+        ..setScale(scale)
+        ..setRoll(a)
+        ..setHeight(getHeight())
+        ..setColor(this.getVertexColorA())
+    
+    override function updateVertexColorA()
+        if this.gatesEff != null
+            this.gatesEff.setColor(this.getVertexColorA())
+    
+    function createBlockers()
+        real left = gatesRect.getMinX()
+        real right = gatesRect.getMaxX()
+        real bottom = gatesRect.getMinY()
+        real top = gatesRect.getMaxY()
+        int blockers_size_x = ((right - left) / SQUARE_SIZE).toInt()
+        int blockers_size_y = ((top - bottom) / SQUARE_SIZE).toInt()
+        for i = 0 to blockers_size_x
+            for j = 0 to blockers_size_y
+                real center_x = left + i * SQUARE_SIZE //+ SQUARE_SIZE / 2
+                real center_y = bottom + j * SQUARE_SIZE //+ SQUARE_SIZE / 2
+                destructable blocker = createDestructableZ(SQUARE_BLOCKER_ID, vec3(center_x, center_y, height), 
+                                                    angle(0), 1.0, 0)
+                blockers.add(blocker)
+    
+    override function setHeight(real h)
+        super.setHeight(h)
+        this.gatesEff.setHeight(h)
+        for d in blockers
+            d.remove()
+        createBlockers()
+        
+    ondestroy
+        for d in blockers
+            d.remove()
+        this.gatesEff.destr()
+        destroy this.blockers
+        this.gatesEff = null

@@ -1,0 +1,275 @@
+package SomeMaths
+
+import HashList
+import Table
+
+
+function sqrt(real x) returns real
+    return SquareRoot(x)
+
+function atan2(real y, real x) returns real
+    return Atan2(y, x)
+
+function cos(real x) returns real
+    return Cos(x)
+
+function sin(real x) returns real
+    return Sin(x)
+
+function acos(real x) returns real
+    return Acos(x)
+
+//*****
+
+public tuple polarVec2(real r, real phi)
+public tuple sphericalVec3(real r, real theta, real phi)
+public tuple cylindricalVec3(real rho, real phi, real z)
+
+public function polarVec2.toString() returns string
+    return "PolarVector2 [" + this.r.toString() + ", " + this.phi.toString() + "]"
+    
+public function sphericalVec3.toString() returns string
+    return "SphericalVector3 [" + this.r.toString() + ", " + this.theta.toString() + ", " + this.phi.toString() + "]"
+    
+public function cylindricalVec3.toString() returns string
+    return "CylindricalVector3 [" + this.rho.toString() + ", " + this.phi.toString() + ", " + this.z.toString() + "]"
+
+function print(vec2 pos)
+    print(pos.toString())
+
+function print(polarVec2 polarPos)
+    print(polarPos.toString())
+
+function print(sphericalVec3 sphPos)
+    print(sphPos.toString())
+
+function print(cylindricalVec3 cylPos)
+    print(cylPos.toString())
+
+function print(vec3 pos)
+    print(pos.toString())
+
+function vec2.getPolarVec2() returns polarVec2
+    real x = this.x
+    real y = this.y
+    real r = sqrt(x*x + y*y)
+    real phi = atan2(y, x)
+    return polarVec2(r, phi)
+
+function vec3.getSphericalVec3() returns sphericalVec3
+    real x = this.x
+    real y = this.y
+    real z = this.z
+    real r = sqrt(x*x + y*y + z*z)
+    real theta = atan2(sqrt(x*x + y*y), z)
+    real phi = atan2(y, x)
+    return sphericalVec3(r, theta, phi)
+
+function vec3.getCylindricalVec3() returns cylindricalVec3
+    real x = this.x
+    real y = this.y
+    real rho = sqrt(x*x + y*y)
+    real phi = atan2(y, x)
+    real z = this.z
+    return cylindricalVec3(rho, phi, z)
+
+function polarVec2.getVec2() returns vec2
+    real r = this.r
+    real phi = this.phi
+    real x = r*cos(phi)
+    real y = r*sin(phi)
+    return vec2(x, y)
+    
+function sphericalVec3.getVec3() returns vec3
+    real r = this.r
+    real theta = this.theta
+    real phi = this.phi
+    real x = r*sin(theta)*cos(phi)
+    real y = r*sin(theta)*sin(phi)
+    real z = r*cos(theta)
+    return vec3(x, y, z)
+
+function sphericalVec3.getCylindricalVec3() returns cylindricalVec3
+    real r = this.r
+    real theta = this.theta
+
+    real rho = r*sin(theta)
+    real phi = this.phi
+    real z = r*cos(theta)
+    return cylindricalVec3(rho, phi, z)
+
+function cylindricalVec3.getVec3() returns vec3
+    real rho = this.rho
+    real phi = this.phi
+    real x = rho*cos(phi)
+    real y = rho*sin(phi)
+    real z = this.z
+    return vec3(x, y, z)
+
+function cylindricalVec3.getSphericalVec3() returns sphericalVec3
+    real rho = this.rho
+    real z = this.z
+
+    real r = sqrt(rho * rho + z * z)
+    real theta = atan2(rho, z)
+    real phi = this.phi
+    return sphericalVec3(r, theta, phi)
+
+//******************** typecasting
+
+constant typeVec2data = new Table()
+constant typeVec3data = new Table()
+/** How many decimals to preserve for reals in vec2 and vec3 */
+@configurable constant VEC2_PRECISION = 1000.
+@configurable constant VEC3_PRECISION = 1000.
+
+function vec2ToIndex(vec2 pos) returns int
+    string s = (pos.x * VEC2_PRECISION).toInt().toString() + ";" + (pos.y * VEC2_PRECISION).toInt().toString()
+    let hash = s.getHash()
+    if not typeVec2data.hasString(hash)
+        typeVec2data.saveString(hash, s)
+    return hash
+
+public function vec2FromIndex(int index) returns vec2
+    let str = typeVec2data.loadString(index)
+    let x_i = str.indexOf(";")
+    let x = str.substring(0, x_i).toInt() / VEC2_PRECISION
+    let y = str.substring(x_i + 1).toInt() / VEC2_PRECISION
+    return vec2(x, y)
+
+function vec3ToIndex(vec3 pos) returns int
+    string s = (pos.x * VEC3_PRECISION).toInt().toString() + ";" + (pos.y * VEC3_PRECISION).toInt().toString()
+                + ";" + (pos.z * VEC3_PRECISION).toInt().toString()
+    let hash = s.getHash()
+    if not typeVec3data.hasString(hash)
+        typeVec3data.saveString(hash, s)
+    return hash
+
+public function vec3FromIndex(int index) returns vec3
+    let str = typeVec3data.loadString(index)
+    let x_i = str.indexOf(";")
+    let y_i = str.indexOf(";", x_i + 1)
+    let x = str.substring(0, x_i).toInt() / VEC3_PRECISION
+    let y = str.substring(x_i + 1, y_i).toInt() / VEC3_PRECISION
+    let z = str.substring(y_i + 1).toInt() / VEC3_PRECISION
+    return vec3(x, y, z)
+
+//***********************
+
+public function binomial_coeff(int n, int k) returns int
+    int array dp
+    
+    dp[0] = 1
+    for i = 1 to n + 1
+        var j = min(i, k)
+        while j > 0
+            dp[j] = dp[j] + dp[j-1]
+            j -= 1
+    
+    return dp[k]
+
+
+//***********************
+
+
+public interface MathFunc
+    function run(HashList<real> params, real t) returns vec3
+
+
+// params = [x, y, r, h]
+// ind_var = [t]
+public constant MathFunc trochoid = (HashList<real> params, real t) -> 
+begin
+    real x = params.get(0)
+    real y = params.get(1)
+    real r = params.get(2)
+    real h = params.get(3)
+
+    real new_x = x + r*t - h*sin(t)
+    real new_y = y + r - h*cos(t)
+    
+    return vec3(new_x, new_y, 0)
+end
+
+// params = [x, y, r]
+// ind_var = [phi]
+public constant MathFunc circle2D = (HashList<real> params, real t) -> 
+begin
+    real x = params.get(0)
+    real y = params.get(1)
+    real r = params.get(2)
+
+    real new_x = x + r*sin(t)
+    real new_y = y + r*cos(t)
+    
+    return vec3(new_x, new_y, 0)
+end
+
+// params = [x, y, a]
+// ind_var = [t]
+public constant MathFunc fermats_spiral = (HashList<real> params, real t) -> 
+begin
+    real x = params.get(0)
+    real y = params.get(1)
+    real a = params.get(2)
+    
+    real new_x
+    real new_y
+    if t >= 0
+        new_x = x + a * sqrt(t) * cos(t)
+        new_y = y + a * sqrt(t) * sin(t)
+    else
+        new_x = x - a * sqrt(-t) * cos(-t)
+        new_y = y - a * sqrt(-t) * sin(-t)
+    
+    return vec3(new_x, new_y, 0)
+end
+
+// params = [n, x0, y0, x1, x2, ..., x_n, y_n]
+// ind_var = [t]
+public constant MathFunc bezier_curve = (HashList<real> params, real t) -> 
+begin
+    int n = (params.get(0)).toInt()
+    real x = 0
+    real y = 0
+
+    for k = 0 to n+1
+        real x_k = params.get(2*k+1)
+        real y_k = params.get(2*k+2)
+        real b_kn = binomial_coeff(n, k) * t.pow(k.toReal()) * (1-t).pow((n-k).toReal())
+        x += x_k * b_kn
+        y += y_k * b_kn
+    
+    
+    return vec3(x, y, 0)
+end
+
+// params = [x0, y0, A, B, C]  // y = A*sin(Bx + C)
+// ind_var = [t]
+public constant MathFunc sinusoidal = (HashList<real> params, real t) -> 
+begin
+    real x0 = params.get(0)
+    real y0 = params.get(1)
+    real A = params.get(2)
+    real B = params.get(3)
+    real C = params.get(4)
+
+    real x = x0 + t
+    real y = y0 + A*sin(B*t+C)
+    return vec3(x, y, 0)
+end
+
+
+function doMath(int count, real t_begin, real diff, MathFunc func, HashList<real> params) returns HashList<vec3>
+    real t = t_begin
+
+    let results = new HashList<vec3>()
+
+    for i = 0 to count
+        vec3 res = func.run(params, t)
+        results.add(vec3(res.x, res.y, res.z))
+        t += diff
+
+    destroy params
+
+    return results

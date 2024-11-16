@@ -1,0 +1,125 @@
+package SetterLevelClasses
+
+import Constants
+import TimerUtils
+import TerrainUtils
+import UsefulFunctions
+
+constant real TIMER_DIFF_TERRAIN = 0.03
+constant real TIMER_DIFF_DESTR = 0.05
+constant int DIFF_LOOP = 10
+constant int MAX_SIZE = 150
+
+public class MakerTerrain
+    int loop_i = 0
+    int count_w = 0
+    int count_h = 0
+    timer t
+    static string array levelStringTerrain
+
+    int size
+    bool isDone = false
+
+    function setLevelTerrain()
+        // if isTEST
+        //     print("setting TERRAIN!")
+        t = getTimer()
+        ..setData(this castTo int)
+        ..start(TIMER_DIFF_TERRAIN, function callLoopSetLevelTerrain)
+
+    static function callLoopSetLevelTerrain()
+        (GetExpiredTimer().getData() castTo MakerTerrain).loopSetLevelTerrain()
+
+
+    function loopSetLevelTerrain()
+        //print("TERRAIN loop " + I2S(loop_i))
+        int sizeOfString = levelStringTerrain[loop_i].length()
+        int tiles = (sizeOfString / 10).toInt()  // 18 for BLP
+        for tile = 0 to tiles-1
+            int curr = 10*tile  // 18 for BLP
+            int i = levelStringTerrain[loop_i].substring(curr, curr + 2).toInt()
+            int j = levelStringTerrain[loop_i].substring(curr + 2, curr + 4).toInt()
+            int tileRaw = s2raw(levelStringTerrain[loop_i].substring(curr + 4, curr + 8))
+            int variation = levelStringTerrain[loop_i].substring(curr + 8, curr + 10).toInt()
+            // int up_left_var = levelStringTerrain[loop_i].substring(curr + 10, curr + 12).toInt()
+            // int up_right_var = levelStringTerrain[loop_i].substring(curr + 12, curr + 14).toInt()
+            // int down_left_var = levelStringTerrain[loop_i].substring(curr + 14, curr + 16).toInt()
+            // int down_right_var = levelStringTerrain[loop_i].substring(curr + 16, curr + 18).toInt()
+            // let square = tileImage.get(i, j)
+            // square.setTerrainType(tileRaw)
+            // square.setTerrainVariation(variation)
+            // square.setUpLeftVar(up_left_var)
+            // square.setUpRightVar(up_right_var)
+            // square.setDownLeftVar(down_left_var)
+            // square.setDownRightVar(down_right_var)
+            // square.resetImg()
+            // square.showImg()
+            real x = 128 * i - LENGTH * 128 / 2
+            real y = 128 * j - WIDTH * 128 / 2
+            vec2(x,y).setTerrainType(tileRaw, variation, 1, 1)
+            count_w += 1
+            if count_w == LENGTH + 1
+                count_h += 1
+                count_w = 0 
+
+        loop_i += 1
+        
+        if loop_i == size
+            // if isTEST
+            //     print("TERRAIN done!")
+            isDone = true
+            t.release()
+        else
+            t.start(TIMER_DIFF_TERRAIN, function callLoopSetLevelTerrain)
+
+    ondestroy
+        t.release()
+
+
+public class MakerDestructs
+    int loop_i = 0
+    timer t
+    static string array levelStringDestr
+
+    int size
+    bool isDone = false
+
+    function setLevelDestruct()
+        // if isTEST
+        //     print("setting DESTRUCT!")
+        t = getTimer()
+        ..setData(this castTo int)
+        ..start(TIMER_DIFF_DESTR, function callLoopSetLevelDestruct)
+
+    static function callLoopSetLevelDestruct()
+        (GetExpiredTimer().getData() castTo MakerDestructs).loopSetLevelDestruct()
+
+
+    function loopSetLevelDestruct()
+        //print("DESTRUCT loop " + I2S(loop_i))
+        int sizeOfString = levelStringDestr[loop_i].length()
+        int doos = (sizeOfString / 26).toInt()
+        for doo = 0 to doos-1
+            int curr = 26*doo
+            int destrRaw = s2raw(levelStringDestr[loop_i].substring(curr, curr + 4))
+            int variation = levelStringDestr[loop_i].substring(curr + 4, curr + 5).toInt()
+            real x = levelStringDestr[loop_i].substring(curr + 5, curr + 10).toInt() - 20000.
+            real y = levelStringDestr[loop_i].substring(curr + 10, curr + 15).toInt() - 20000.
+            real z = levelStringDestr[loop_i].substring(curr + 15, curr + 20).toInt() - 20000.
+            real face_rad = levelStringDestr[loop_i].substring(curr + 20, curr + 23).toInt() / 100.
+            real face = angle(face_rad).degrees()
+            real scale = levelStringDestr[loop_i].substring(curr + 23, curr + 26).toInt() / 100.
+            createDestructableZ(destrRaw, vec3(x, y, z), face.asAngleDegrees(), scale, variation)
+
+        loop_i += 1
+        
+        if loop_i == size
+            // if isTEST
+            //     print("DESTRUCTABLE done!")
+            isDone = true
+            t.release()
+        else
+            t.start(TIMER_DIFF_DESTR, function callLoopSetLevelDestruct)
+
+    ondestroy
+        t.release()

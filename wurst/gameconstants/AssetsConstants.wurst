@@ -1,0 +1,119 @@
+package AssetsConstants
+import Tiles
+import Sounds
+
+// terrain ids
+public constant int ICE_TURNING_TILE_ID = Tiles.northrend_Ice
+public constant int ICE_NONTURNING_TILE_ID = Tiles.icecrown_Glacier_Dark_Ice
+public constant int ICE_REVERSETURNING_TILE_ID = Tiles.underground_Lava
+public constant int ICE_ACCELERATING_TURNING_TILE_ID = Tiles.icecrown_Glacier_Ice
+
+public constant real SCENE_DURATION_CONSTANT = 50000. // dialogue.wurst
+public constant int NEXT_ARROW_ABILITY = 'A003'
+
+
+//models id
+//public constant Abilities.massTeleportTo = "Abilities\\Spells\\Human\\MassTeleport\\MassTeleportTo.mdl"
+//public constant Abilities.massTeleportTarget = "Abilities\\Spells\\Human\\MassTeleport\\MassTeleportTarget.mdl"
+//public constant Doodads.forcewall = "Doodads\\Dungeon\\Props\\Forcewall\\Forcewall.mdl"
+//public constant Abilities.soulBurnbuff = "Abilities\\Spells\\Other\\SoulBurn\\SoulBurnbuff.mdl"
+// public constant Doodads.iceCrownGate = "Doodads\\Icecrown\\Terrain\\IceCrownGate\\IceCrownGate.mdl"
+// public constant Doodads.iceGate = "Doodads\\Icecrown\\Terrain\\IceGate\\IceGate.mdl"
+// public constant Doodads.dungeonLever = "Doodads\\Cinematic\\DungeonLever\\DungeonLever.mdl"
+
+public constant PATH_DUMMY = "models\\units\\dummy.mdx"
+public constant PATH_GREAT_LIGHTING = "models\\effects\\GreatLightning.mdl"
+public constant PATH_SUN_KEY = "models\\items\\ItemSunKey.mdx"
+public constant PATH_BLOOD_KEY = "models\\items\\ItemBloodKey.mdx"
+public constant PATH_AQUA_SPIKE = "models\\effects\\AquaSpike2.mdx"
+public constant PATH_FLAME_STRIKE = "models\\effects\\FlameStrike.mdx"
+public constant PATH_BLOOD_ELF_PRIESTESS = "models\\units\\BloodElfPriestess.mdx"
+public constant PATH_BLOOD_ELF_KID = "models\\units\\BloodElfKid_ByEpsilon.mdl"
+
+// blp images
+public constant PATH_BLOOD_ELF_PRIESTESS_BLP = "ReplaceableTextures\\CommandButtons\\BTNBloodElfPriestess.blp"
+
+
+public class UnitDataBase
+	int unitID
+	vec2 shadowCenterPos
+	vec2 shadowSize
+	bool isFlying = true
+	bool isPhysical = false
+
+	angle prop_window = angle(0)
+
+	function setPropWindow(angle prop_window)
+		this.prop_window = prop_window
+
+	function setFlying(bool isFlying)
+		this.isFlying = isFlying
+
+	function setPhysical(bool isPhysical)
+		this.isPhysical = isPhysical
+
+	construct(int unitID, vec2 shadowCenterPos, vec2 shadowSize)
+		this.unitID = unitID
+		this.shadowCenterPos = shadowCenterPos
+		this.shadowSize = shadowSize
+		
+
+	static constant polarTroll = new UnitDataBase('u000', vec2(45, 45), vec2(100, 100))
+	static constant polarBear = new UnitDataBase('u001', vec2(50, 50), vec2(140, 140))
+	static constant frostRevenant = new UnitDataBase('u002', vec2(45, 45), vec2(140, 140))
+	static constant circleOfRes = new UnitDataBase('u003', vec2(0, 0), vec2(0, 0))
+	static constant smallCircleOfRes = new UnitDataBase('u004', vec2(0, 0), vec2(0, 0))
+										..setPhysical(true)
+
+	static constant plotKylieAI = new UnitDataBase('p000', vec2(70, 70), vec2(70, 70))
+									..setPhysical(true)
+	static constant plotKidAI = new UnitDataBase('p001', vec2(45, 45), vec2(100, 100))
+
+	static constant heroIllidan = new UnitDataBase('H000', vec2(60, 60), vec2(120, 120))
+										..setPropWindow(angle(PI/3))
+										..setFlying(false)
+										..setPhysical(true)
+
+	static constant dummyUnitEffect_0_3 = new UnitDataBase('ud00', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_0_4 = new UnitDataBase('ud01', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_0_5 = new UnitDataBase('ud02', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_0_6 = new UnitDataBase('ud03', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_1 = new UnitDataBase('ud04', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_1_5 = new UnitDataBase('ud05', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_2 = new UnitDataBase('ud06', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_2_5 = new UnitDataBase('ud07', vec2(0, 0), vec2(0, 0))
+	static constant dummyUnitEffect_3 = new UnitDataBase('ud08', vec2(0, 0), vec2(0, 0))
+	static constant dummiesUnitEffects = [dummyUnitEffect_1, 
+											dummyUnitEffect_0_3, dummyUnitEffect_0_4,
+											dummyUnitEffect_0_5, dummyUnitEffect_0_6,
+											dummyUnitEffect_1_5,
+											dummyUnitEffect_2, dummyUnitEffect_2_5,
+											dummyUnitEffect_3]
+	static function getDummyScaleId(real scale) returns int
+		int scale_id = 0
+		if scale == 0.3
+			scale_id = 1
+		if scale == 0.4
+			scale_id = 2
+		if scale == 0.5
+			scale_id = 3
+		if scale == 0.6
+			scale_id = 4
+		if scale == 1.5
+			scale_id = 5
+		if scale == 2.
+			scale_id = 6
+		if scale == 2.5
+			scale_id = 7
+		if scale == 3.
+			scale_id = 8
+		return scale_id
+
+//spells id
+public constant int WAVE_OF_SPEED_ID = 'A000'
+
+//sounds
+public constant sound HINT_SOUND = CreateSound(Sounds.hint, false, false, false, 10, 10, "DefaultEAXON")
+public constant sound GOOD_JOB_SOUND = CreateSound(Sounds.goodJob, false, false, false, 10, 10, "DefaultEAXON")
+public constant sound GATE_OPEN_SOUND = CreateSound(Sounds.gateOpen, false, false, false, 10, 10, "DefaultEAXON")
+public constant sound QUEST_FAILED = CreateSound(Sounds.questFailed, false, false, false, 10, 10, "DefaultEAXON")

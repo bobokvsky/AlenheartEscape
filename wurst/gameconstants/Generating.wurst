@@ -1,0 +1,280 @@
+package Generating
+
+import UnitObjEditing
+import AbilityIds
+import UsefulFunctions
+import Icons
+import Units
+import Buildings
+import AssetsConstants
+
+constant int HERO_COPY = 'Hjai'
+constant int UNIT_COPY = 'hfoo'
+
+@compiletime function HeroDefinition.setDefaultHero()
+    this
+    ..setHeroAbilities("")
+    ..hideHeroDeathMsg(true)
+    //..hideHeroInterfaceIcon(true)
+    //..hideHeroMinimapDisplay(true)
+    ..setTooltipAwaken("")
+    ..setTooltipRevive("")
+    ..setStrengthPerLevel(0)
+    ..setAgilityPerLevel(0)
+    ..setIntelligencePerLevel(0)
+    ..setPrimaryAttribute("STR")
+    ..setStartingStrength(0)
+    ..setStartingAgility(0)
+    ..setStartingIntelligence(0)
+
+@compiletime function UnitOrHeroDefinition.setDefaultUnit()
+    this
+    ..setNormalAbilities(AbilityIds.locust)
+    ..setAllowCustomTeamColor(false)
+    ..setIconScoreScreen("")
+    ..setArtSpecial("")
+    ..setAttacksEnabled(0)
+    ..setTooltipBasic("")
+    ..setTooltipExtended("")
+    ..setSelectionScale(0.)
+    ..setCollisionSize(0.)
+    ..setGoldCost(0)
+    ..setFoodCost(0)
+    ..setRepairGoldCost(0)
+    ..setRepairLumberCost(0)
+    ..setRepairTime(0)
+    ..setLumberCost(0)
+    ..setHitPointsMaximumBase(100)
+    ..setHitPointsRegenerationRate(0)
+    ..setManaInitialAmount(100)
+    ..setLevel(1)
+    ..setStockMaximum(0)
+    ..setStockReplenishInterval(0)
+    ..setTransportedSize(0)
+    ..setSleeps(false)
+    ..setFormationRank(0)
+    ..setMovementType(MovementType.Foot)
+    ..setUnitClassification("")
+    ..setHasWaterShadow(false)
+    ..setElevationSamplePoints(0)
+    ..setElevationSampleRadius(0)
+    ..setTargetedAs("")
+    ..setHotkey("")
+    ..setDescription("")
+    ..setShadowImageUnit("")
+    ..setShadowImageCenterX(0.)
+    ..setShadowImageCenterY(0.)
+    ..setShadowImageHeight(0.)
+    ..setShadowImageWidth(0.)
+    ..setSightRadiusDay(0)
+    ..setSightRadiusNight(0)
+    ..setNameEditorSuffix("")
+    ..setCategorizationCampaign(false)
+
+@compiletime function UnitOrHeroDefinition.setDummy()
+    this
+    ..setAnimationRunSpeed(200)
+    ..setAnimationWalkSpeed(200)
+    ..setCategorizationCampaign(false)
+    ..setShadowImageUnit("")
+    ..setNormalAbilities(AbilityIds.locust, AbilityIds.stormCrowForm)
+    ..setMovementType(MovementType.None)
+    ..setHideMinimapDisplay(false)
+    ..setSightRadiusDay(0)
+    ..setSightRadiusNight(0)
+    ..setTurnRate(3.)
+    ..setMaximumPitchAngledegrees(0)
+    ..setMaximumRollAngledegrees(0)
+    ..setSpeedBase(1)
+    ..setModelFile(PATH_DUMMY)
+    ..setScalingValue(1.0)
+    ..setName("Dummy")
+
+
+@compiletime function genUnits()
+    // "kylie"
+    new HeroDefinition(UnitDataBase.plotKylieAI.unitID, HERO_COPY)
+    ..setDefaultUnit()
+    ..setDefaultHero()
+
+    ..setAnimationRunSpeed(250)
+    ..setAnimationWalkSpeed(250)
+    ..setCategorizationCampaign(true)
+    ..setSpeedBase(250)
+    ..setTeamColor(2)  // teal
+    ..setIconGameInterface(PATH_BLOOD_ELF_PRIESTESS_BLP)
+    ..setModelFile(PATH_BLOOD_ELF_PRIESTESS)
+    ..setScalingValue(1.0)
+    ..setName("\"Kylie\"")
+    ..setNameEditorSuffix("(\"Kylie\")")
+    ..setProperNames("AI")
+
+    // kid
+    new HeroDefinition(UnitDataBase.plotKidAI.unitID, HERO_COPY)
+    ..setDefaultUnit()
+    ..setDefaultHero()
+
+    ..setAnimationRunSpeed(300)
+    ..setAnimationWalkSpeed(300)
+    ..setCategorizationCampaign(true)
+    ..setSpeedBase(300)
+    ..setTeamColor(15)  // violet
+    ..setIconGameInterface(Icons.bTNVillagerKid2)
+    ..setModelFile(PATH_BLOOD_ELF_KID)
+    ..setScalingValue(1.0)
+    ..setName("Kid")
+    ..setNameEditorSuffix("(Kid)")
+    ..setProperNames("Main AI")
+
+    // starter hero
+    new HeroDefinition(UnitDataBase.heroIllidan.unitID, HERO_COPY)
+    ..setDefaultUnit()
+    ..setDefaultHero()
+
+    ..setAnimationRunSpeed(300)
+    ..setAnimationWalkSpeed(300)
+    ..setOrientationInterpolation(0)
+    ..setTurnRate(0.6)
+    ..setUnitSoundSet("Illidan")
+    ..setNormalAbilities(WAVE_OF_SPEED_ID)
+    ..setSpeedBase(270)
+    ..setIconGameInterface(Icons.bTNHeroDemonHunter)
+    ..setModelFile(Units.heroDemonHunter1)
+    ..setScalingValue(0.7)
+    ..setName("Unknown")
+    ..setProperNames("Unnamed")
+    ..setSightRadiusDay(2500)
+    ..setSightRadiusNight(2500)
+
+    // ice troll
+    new UnitDefinition(UnitDataBase.polarTroll.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+
+    ..setAnimationRunSpeed(270)
+    ..setAnimationWalkSpeed(270)
+    ..setSpeedBase(270)
+    ..setIconGameInterface(Icons.bTNIceTroll)
+    ..setModelFile(Units.iceTroll1)
+    ..setScalingValue(1.3)
+    ..setName("Ice Troll")
+
+    // polar bear
+    new UnitDefinition(UnitDataBase.polarBear.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+
+    ..setAnimationRunSpeed(320)
+    ..setAnimationWalkSpeed(320)
+    ..setSpeedBase(320)
+    ..setIconGameInterface(Icons.bTNFrostBear)
+    ..setModelFile(Units.polarBear1)
+    ..setScalingValue(0.75)
+    ..setName("Polar Bear")
+
+    // frost revenant
+    new UnitDefinition(UnitDataBase.frostRevenant.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+
+    ..setAnimationRunSpeed(180)
+    ..setAnimationWalkSpeed(180)
+    ..setSpeedBase(180)
+    ..setIconGameInterface(Icons.bTNRevenant)
+    ..setModelFile(Units.revenant1)
+    ..setScalingValue(1.0)
+    ..setName("Frost Revenant")
+
+    // UnitDataBase.circleOfRes
+    new UnitDefinition(UnitDataBase.circleOfRes.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+
+    ..setAnimationRunSpeed(0)
+    ..setAnimationWalkSpeed(0)
+    ..setShadowImageUnit("")
+    ..setSpeedBase(0)
+    ..setIconGameInterface(Icons.bTNCOP)
+    ..setModelFile(Buildings.circleOfPower1)
+    ..setScalingValue(2.0)
+    ..setName("Circle of Resurrection")
+
+    // UnitDataBase.smallCircleOfRes
+    new UnitDefinition(UnitDataBase.smallCircleOfRes.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+
+    ..setAnimationRunSpeed(300)
+    ..setAnimationWalkSpeed(300)
+    ..setShadowImageUnit("")
+    ..setSpeedBase(300)
+    ..setIconGameInterface(Icons.bTNCOP)
+    ..setModelFile(Buildings.circleOfPower1)
+    ..setScalingValue(1.0)
+    ..setName("Circle of Resurrection (small)")
+
+    // dummies
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_0_3.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.3)")
+    ..setScalingValue(0.3)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_0_4.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.4)")
+    ..setScalingValue(0.4)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_0_5.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.5)")
+    ..setScalingValue(0.5)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_0_6.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.6)")
+    ..setScalingValue(0.6)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_1.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 1.0)")
+    ..setScalingValue(1.0)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_1_5.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.3)")
+    ..setScalingValue(1.5)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_2.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.3)")
+    ..setScalingValue(2.0)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_2_5.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.3)")
+    ..setScalingValue(2.5)
+
+    new UnitDefinition(UnitDataBase.dummyUnitEffect_3.unitID, UNIT_COPY)
+    ..setDefaultUnit()
+    ..setDummy()
+    ..setIconGameInterface(Icons.pASBTNMagicalSentry)
+    ..setNameEditorSuffix("(Dummy unit Effect 0.3)")
+    ..setScalingValue(3.0)
+
+
+
+
+
+// @compiletime function genAbilities()
+//     new AbilityDefinitionIllidanChannel()

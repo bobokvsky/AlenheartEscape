@@ -1,0 +1,129 @@
+package Challengers
+
+import ClosureTimers
+import CircleOfResurrection
+import GameObjects
+import GameState
+
+import initlater UsefulFunctions
+import initlater ChangerLevel
+import initlater Chapters
+import AssetsConstants
+import Constants
+
+rect challenge_rectVisibility
+bool doChanging
+bool updateVisibility
+bool doImmediately = false
+
+public function setChallenge(int challenge, bool _doChanging, bool _updateVisibility, bool _doImmediately)
+    if not checkConditionOnLost()
+        return
+    
+    doChanging = _doChanging
+    updateVisibility = _updateVisibility
+    setIsChallengeComplete(false)
+    doImmediately = _doImmediately
+    GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW = true
+
+    if not GameState.IS_GAME_IN_SKIP_MODE and not doImmediately
+        fade(1.5, true, 0.)
+
+    if not doImmediately
+        for u in MainHero.MAIN_HEROES_GROUP
+            u.hide2()
+
+    // changing level
+    if doChanging
+        GameState.IS_GAME_IS_CHANGING_LEVEL_NOW = true
+    
+        let changer = new ChangerLevel()
+        changer.run(challengeToLevel(challenge))
+        doPeriodically(LOADING_TIMER) cb -> 
+            if changer.isDone
+                destroy changer
+                destroy cb
+                GameState.currentLevel = challengeToLevel(challenge)
+                GameState.IS_GAME_IS_CHANGING_LEVEL_NOW = false
+    // changing level
+    real doAfterTime = 3.0
+    if doImmediately
+        doAfterTime = 0.
+    doAfter(doAfterTime) ->
+        doPeriodically(LOADING_TIMER) cb -> 
+            if not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+                destroy cb
+                GameState.currentChallenge = challenge
+                GameState.startChallenge[challenge].execute()
+
+public function setChallenge(int challenge, bool _doChanging, bool _updateVisibility)
+    setChallenge(challenge, _doChanging, _updateVisibility, false)
+
+public function setChallengeRectVisibility(rect _rectVisibility)
+    challenge_rectVisibility = _rectVisibility
+
+public function setNextChallengeEnd(code cb)
+    let uPoR_pos = getCheckPointUnit().getPos()
+
+    for p in GameState.playingPlayers
+        if updateVisibility
+            CreateFogModifierRect(p, FOG_OF_WAR_MASKED, GetEntireMapRect(), true, false)
+            ..destr()
+        if challenge_rectVisibility != null
+            CreateFogModifierRect(p, FOG_OF_WAR_VISIBLE, challenge_rectVisibility, true, false)
+            ..start()
+            ..destr()
+    for u in MainHero.MAIN_HEROES_GROUP
+        if not u.isAlive()
+            u.revive(uPoR_pos, false)
+        u.setHeight(getCheckPointUnit().getHeight())
+        if not doImmediately
+            u.setPos2(uPoR_pos)
+            u.show2()
+            u.getOwner().setCameraPosition(uPoR_pos)
+
+    if not doImmediately
+        fade(1.5, false, 0.)
+
+    GameState.IS_GAME_IN_CHALLENGE_MODE_NOW = true
+    GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW = false
+
+    printTimed("Challenge #|cfff3b328" + GameState.currentChallenge.toString() + "|r: " + getChallengeName(GameState.currentChallenge), 15.)
+    
+    // assumed that all units are in the right place
+    cb.execTriggerly()
+
+public function endChallenge(bool doMsg)
+    for obj in GameState.ALL_OBJECTS_IN_CHALLENGE
+        obj.destr()
+    GameState.ALL_OBJECTS_IN_CHALLENGE.clear()
+
+    challenge_rectVisibility = null
+    if doMsg
+        GOOD_JOB_SOUND.play()
+        printTimed("Challenge #|cfff3b328" + GameState.currentChallenge.toString() + "|r is completed!", 15.)
+    
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW and not GameState.IS_GAME_IN_SKIP_MODE
+        GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST = true
+    GameState.IS_GAME_IN_CHALLENGE_MODE_NOW = false
+    setIsChallengeComplete(true)
+    
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW and GameState.IS_GAME_IN_SKIP_MODE
+        setChapter(0)
+
+public function endChallenge()
+    endChallenge(not GameState.IS_GAME_IN_SKIP_MODE)
+
+public function waitUntilChallengeIsLoaded()
+    if not checkConditionOnLost()
+        return
+    while GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+public function waitUntilChallengeIsCompeted()
+    if not checkConditionOnLost()
+        return
+    while GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+    while not GameState.IS_CURRENT_CHALLENGE_COMPLETE
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)

@@ -1,0 +1,245 @@
+package Heroes
+
+import GameObject
+import TriggerUtils
+import EventHelper
+import Orders
+import UI
+import HashMap
+import AssetsConstants
+import Constants
+import CameraSystem
+import UnitClass
+// import Attacher
+// import AttacherBLP
+import initlater UsefulFunctions
+import initlater CircleOfResurrection
+import initlater MovementSystem
+import initlater TileImage
+import initlater GameState
+
+
+constant HEIGHT_CLICK_LENGHTWIDTH_COEFF = 128.
+constant HEIGHT_CLICK_HEIGHT_COEFF = 256.
+
+class MainHero extends Unit
+    static group MAIN_HEROES_GROUP = CreateGroup()
+    static HashMap<unit, MainHero> unitToMainHero = new HashMap<unit, MainHero>()
+
+    IceClass iceClass
+    SnowClass snowClass
+    ResCircle resCircleClass
+    
+    // Attacher attacherSelection
+    // AttacherBLP attacherShadow
+    effect attacherSelection
+
+    trigger clickMove
+    trigger selectionAnimationOn
+    trigger selectionAnimationOff
+
+    construct(player p, UnitDataBase db, vec2 pos, angle facing)
+        super(p, db, pos, facing)
+        MainHero.MAIN_HEROES_GROUP.addUnit(this.mainUnit)
+        unitToMainHero.put(this.mainUnit, this)
+
+        this.iceClass = new IceClass(this.mainUnit, true)
+        this.snowClass = new SnowClass(this.mainUnit)
+        this.resCircleClass = new ResCircle(this.mainUnit)
+        this.attacherSelection = addEffect2(UI.selectionCircleHero, this.mainUnit, "origin")
+        ..setScale(1.3)
+        this.typeClass = "MainHero"
+
+        this.clickMove = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerPlayerUnitEvent(this.mainUnit.getOwner(), 
+                                    EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null)
+        ..addCondition(Condition(() -> GetTriggerUnit().isMainHero() and 
+                                            GetTriggerUnit().getMainHero().getHeight() > 0))
+        ..addAction(function callClickMove)
+
+        this.selectionAnimationOn = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerPlayerUnitEvent(this.mainUnit.getOwner(), EVENT_PLAYER_UNIT_SELECTED, null)
+        ..addCondition(Condition(() -> GetTriggerUnit().isMainHero()))
+        ..addAction(function callSelectionShow)
+
+        this.selectionAnimationOff = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerPlayerUnitEvent(this.mainUnit.getOwner(), EVENT_PLAYER_UNIT_DESELECTED, null)
+        ..addCondition(Condition(() -> GetTriggerUnit().isMainHero()))
+        ..addAction(function callSelectionHide)
+
+    static function callClickMove()
+        GetTriggeringTrigger().disable()
+        
+        (GetTriggeringTrigger().getData() castTo MainHero).clickMove()
+
+    function clickMove()
+        // x = x_0 + lambda*(x_cam - x_0)
+        // y = y_0 + lambda*(y_cam - y_0)
+
+        let currentPointOrder = EventData.getOrderPos()
+        let cameraPos = getCameraEyePosition3()
+        var lambda = height / cameraPos.z
+
+        // if this.currentTiles != null and this.currentTiles.getTerrainTypeBLP(currentPointOrder) == -1
+        //     int i = this.currentTiles.getPreviousTilesIndex()
+        //     bool doWhile = true
+        //     if i != -1
+        //         while (i <= TilesBLP.tilesBLP.size()-1 and doWhile)  // from maximum to minimum
+        //             let tiles = TilesBLP.tilesBLP.get(i)
+        //             if tiles.getTerrainTypeBLP(currentPointOrder) != -1
+        //                 lambda = tiles.getHeight() / cameraPos.z
+        //                 doWhile = false
+        //             i += 1
+        //     if doWhile
+        //         lambda = 0
+
+        let newPos = currentPointOrder + lambda * (cameraPos.toVec2() - currentPointOrder)
+        // print("cur cam pos: " + cameraPos.toString())
+        // print("cur point order: " + newPos.toString())
+        this.mainUnit.issuePointOrderById(Orders.smart, newPos)
+
+        GetTriggeringTrigger().enable()
+
+    static function callSelectionShow()
+        (GetTriggeringTrigger().getData() castTo MainHero).selectionShow()
+
+    function selectionShow()
+        attacherSelection.showForPlayer(this.mainUnit.getOwner())
+
+    static function callSelectionHide()
+        (GetTriggeringTrigger().getData() castTo MainHero).selectionHide()
+
+    function selectionHide()
+        attacherSelection.hideForPlayer(this.mainUnit.getOwner())
+
+    function getIceClass() returns IceClass
+        return iceClass
+
+    function getSnowClass() returns SnowClass
+        return snowClass
+        
+    function getResCircle() returns ResCircle
+        return resCircleClass
+
+    function setIceClass(IceClass iceClass)
+        this.iceClass = iceClass
+
+    function setSnowClass(SnowClass snowClass)
+        this.snowClass = snowClass
+
+    function setResCircleClass(ResCircle resCircleClass)
+        this.resCircleClass = resCircleClass
+
+    override function updateObjectsVisibility(TilesBLP old_tiles, TilesBLP tiles)
+        if old_tiles != null and not old_tiles.isDestroyed
+            if this.getHeight() < max(0, old_tiles.getCorrectHeight() - TILES_BLP_VISIBLITY_HEIGHT_DIFF)
+                for d in old_tiles.getNearestDestructables()
+                    d.show(true)
+            else
+                for d in old_tiles.getNearestDestructables()
+                    d.show(false)
+        if old_tiles != tiles and tiles != null and not tiles.isDestroyed
+            if this.getHeight() < tiles.getCorrectHeight() //max(0, tiles.getCorrectHeight() - TILES_BLP_VISIBLITY_NEIGHBOURHOOD)
+                for d in tiles.getNearestDestructables()
+                    d.show(true)
+            else
+                for d in tiles.getNearestDestructables()
+                    d.show(false)
+        
+        //if localPlayer == this.mainUnit.getOwner()
+        for tile in TilesBLP.tilesBLP  // from maximum to minimum
+            if tile != null and tile.getHeight() > tiles.getCorrectHeight()
+                tile.setVertexColorA(tile.getVertexColor().withAlpha(TRANSPARENT_TILES))
+            else
+                tile.setVertexColorA(tile.getVertexColor().withAlpha(255))
+        
+        if tiles != null
+            tiles.setVertexColorA(tiles.getVertexColor().withAlpha(255))
+
+        for obj in GameObject.OBJECTS
+            if not obj.isDestroyed
+                if not obj.typeClass == "MainHero" and not obj.typeClass == "TilesBLP"
+                    if obj.getHeight().isAtNeighbourhood(height, TILES_BLP_VISIBLITY_NEIGHBOURHOOD_OBJ)
+                        obj.setVertexColorA(obj.getVertexColor().withAlpha(255))
+                    else
+                        obj.setVertexColorA(obj.getVertexColor().withAlpha(obj.getTransparentCol()))
+
+    function updateObjectsVisibilityForPlayer()
+        this.updateObjectsVisibility(null, null)
+
+    override function setHeight(real h)
+        real before_h = getHeight()
+        super.setHeight(h)
+        if this.mainUnit.getOwner().isCameraAttachedToMainHero()
+            this.mainUnit.getOwner().plusCameraFieldDistance(h-before_h)
+    
+    // override function attachersUpdateHeight(real h)
+    //     super.attachersUpdateHeight(h)
+    //     attacherSelection.setHeight(h)
+
+    override function hide()
+        super.hide()
+        this.selectionHide()
+
+    override function show()
+        super.show()
+        this.selectionShow()
+
+    // override function setPos(vec2 pos)
+    //     super.setPos(pos)
+        //this.attacherSelection.updatePos()
+
+    ondestroy
+        unitToMainHero.remove(this.mainUnit)
+
+        clickMove.release()
+        selectionAnimationOn.release()
+        selectionAnimationOff.release()
+
+        this.attacherSelection.destr()
+        destroy iceClass
+        destroy snowClass
+        destroy resCircleClass
+
+
+public function createHero(player p, UnitDataBase db, vec2 pos, angle facing) returns unit
+    return new MainHero(p, db, pos, facing).getUnit()
+
+public function loadHeroes()
+    for p in GameState.playingPlayers
+        // string vers = SaveLoad.loadVersion(players[i])
+        // if vers == SAVELOAD_CURRENT_VERSION
+        //     printTimed(players[i].getNameColored() + " successfully loaded hero.", 10.)
+        // else
+        printTimed(p.getNameColored() + " gets a new hero.", 10.)
+        createHero(p, UnitDataBase.heroIllidan, vec2(0, 0), angle(-PI/2))
+
+
+public function unit.isMainHero() returns bool
+    return MainHero.MAIN_HEROES_GROUP.contains(this)
+
+public function unit.getMainHero() returns MainHero
+    return (this.getUnit() castTo MainHero)
+
+
+public function unit.reviveAtCheckPoint()
+    if MainHero.MAIN_HEROES_GROUP.contains(this)
+        (this.getMainHero()).getResCircle().resHappens()
+
+public function resDeadAtCheckPoint()
+    for u in MainHero.MAIN_HEROES_GROUP
+        if not u.isAlive()
+            (u.getMainHero()).getResCircle().resHappens()
+
+public function player.getMainHero() returns unit
+    for u in MainHero.MAIN_HEROES_GROUP
+        if this == u.getOwner()
+            return u
+    return null
+
+public function updateVisibilityForMainHeroes()
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.getMainHero().updateObjectsVisibilityForPlayer()

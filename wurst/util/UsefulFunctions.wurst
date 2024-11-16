@@ -1,0 +1,281 @@
+package UsefulFunctions
+
+import TimerUtils
+import ClosureTimers
+import GameObjects
+import ObjectIds
+import UnitObjEditing
+import ObjEditingNatives
+import AbilityIds
+import ErrorHandling
+import StringUtils
+import TerrainUtils
+import GameState
+import Constants
+
+public function string.reversed() returns string
+    string reversed = ""
+    for i = this.length() downto 0
+        reversed += this.charAt(i)
+    return reversed
+
+public function string.isDigital() returns boolean
+    for char in this
+        if not(char == "0" or char == "1" or char == "2"
+            or char == "3" or char == "4" or char == "5"
+            or char == "6" or char == "7" or char == "8" 
+            or char == "9")
+            
+            return false
+    return true
+
+public function s2raw(string str) returns integer
+    if str.length() != 4
+        error("Wrong argument: string isn't of 4 chars")
+    
+    int A = char(str.charAt(0)).toInt()
+    int B = char(str.charAt(1)).toInt()
+    int C = char(str.charAt(2)).toInt()
+    int D = char(str.charAt(3)).toInt()
+    return A * 16777216 + B * 65536 + C * 256 + D
+
+public function execute(code func)
+    ForForce(bj_FORCE_PLAYER[0], func)
+
+public function polledWait2WithoutSkip(real duration)
+    if duration > 0
+        timer t = getTimer()
+        ..start(duration, null)
+        while t.getRemaining() > bj_POLLED_WAIT_INTERVAL-0.01
+            real timeRemaining = t.getRemaining()
+            if (timeRemaining > bj_POLLED_WAIT_SKIP_THRESHOLD)
+                TriggerSleepAction(0.1 * timeRemaining)
+            else
+                TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+        t.release()
+
+public function polledWait2(real duration)
+    if duration > 0
+        timer t = getTimer()
+        ..start(duration, null)
+        while checkConditionOnLost() and t.getRemaining() > bj_POLLED_WAIT_INTERVAL-0.01
+            real timeRemaining = t.getRemaining()
+            if (timeRemaining > bj_POLLED_WAIT_SKIP_THRESHOLD)
+                TriggerSleepAction(0.1 * timeRemaining)
+            else
+                TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+        t.release()
+
+public function fade(real duration, bool isOut, real trans)
+    if GameState.IS_GAME_IN_TEST_MODE
+        return
+    if isOut
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, duration, 
+                        "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, trans)
+    else
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, duration, 
+                        "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, trans)
+
+
+public function whiteFade(real duration, bool isOut, real trans)
+    if GameState.IS_GAME_IN_TEST_MODE
+        return
+    if isOut
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, duration, 
+                        "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, trans)
+    else
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, duration, 
+                        "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, trans)
+
+
+let PLAYER1FORCE = CreateForce()
+..addPlayers(players[0])
+
+public function code.exec()
+    ForForce(PLAYER1FORCE, this)
+
+public function code.execTriggerly()
+    CreateTrigger()
+    ..addAction(this)
+    ..execute()
+ 
+public function isAnyoneInRect(rect whichRegion, group whichGroup) returns bool
+    for u in whichGroup
+        if RectContainsUnit(whichRegion, u)
+            return true
+    return false
+
+public function isEveryoneInRect(rect whichRegion, group whichGroup) returns bool
+    for u in whichGroup
+        if u.isAlive() and not RectContainsUnit(whichRegion, u)
+            return false
+    return true
+
+public function waitUntilAnyoneJoinsRect(rect plotRegion, group whichGroup)
+    while checkConditionOnLost() and not isAnyoneInRect(plotRegion, whichGroup)
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+public function waitUntilEveryoneInRect(rect plotRegion, group whichGroup)
+    while checkConditionOnLost() and not isEveryoneInRect(plotRegion, whichGroup)
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+public function waitUntilAnyoneJoinsOneOf2Rect(rect plotRegion1, rect plotRegion2, 
+                                                group whichGroup) returns rect
+    while checkConditionOnLost()
+        if isAnyoneInRect(plotRegion1, whichGroup)
+            return plotRegion1
+        if isAnyoneInRect(plotRegion2, whichGroup)
+            return plotRegion2
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+    return null
+
+public function waitUntilAnyoneJoinsOneOf3Rect(rect plotRegion1, rect plotRegion2, rect plotRegion3,
+                                                 group whichGroup) returns rect
+    while checkConditionOnLost()
+        if isAnyoneInRect(plotRegion1, whichGroup)
+            return plotRegion1
+        if isAnyoneInRect(plotRegion2, whichGroup)
+            return plotRegion2
+        if isAnyoneInRect(plotRegion3, whichGroup)
+            return plotRegion3
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+    return null
+
+public function waitUntilUnitJoinsRect(rect plotRegion, unit whichUnit)
+    while checkConditionOnLost() and not RectContainsUnit(plotRegion, whichUnit)
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)
+
+public function unit.makeSpinRound(real duration, 
+                                    bool isCounterClockWise) returns SpinnerObject
+    return new SpinnerObject(this, this.getFacingAngle(), duration, isCounterClockWise)
+
+public function effect.makeSpinRound(real duration, angle currentAngle, 
+                                     bool isClockWise) returns SpinnerObject
+    return new SpinnerObject(this, currentAngle, duration, isClockWise)
+    
+public function unit.getPolarPos(real dist) returns vec2
+    let unitAngle = this.getFacingAngle()
+    let new_x = this.getX() + dist * unitAngle.cos()
+    let new_y = this.getY() + dist * unitAngle.sin()
+    return vec2(new_x, new_y)
+
+public function unit.issuePolarPosOrder(string order, real dist)
+    this.issuePointOrder(order, this.getPolarPos(dist))
+
+
+public function unit.playColors(playercolor initColor)
+    int _i = 0
+    doPeriodically(LOADING_TIMER) cb -> 
+        if _i < 25
+            this.setColor2(players[_i].getColor())
+            _i += 1
+        else
+            this.setColor2(initColor)
+            destroy cb
+    
+public function flashEffect2(string path, vec3 pos)
+    flashEffect2(path, pos, 1.0)
+
+public function flashEffect2(string path, vec2 pos)
+    flashEffect2(path, pos, 1.0, GetRandomReal(0, 359).fromDeg())
+
+public function flashEffect2(string path, vec2 pos, real scale)
+    flashEffect2(path, pos, scale, GetRandomReal(0, 359).fromDeg())
+
+public function flashEffect2(string path, vec3 pos, real scale)
+    flashEffect2(path, pos, scale, GetRandomReal(0, 359).fromDeg())
+
+public function flashEffect2(string path, vec2 pos, real scale, angle roll)
+    addEffect2(path, pos)..setScale(scale)..setRoll(roll)..destr()
+
+public function flashEffect2(string path, vec3 pos, real scale, angle roll)
+    addEffect2(path, pos)..setScale(scale)..setRoll(roll)..destr()
+
+public function flashEffect2(string path, vec2 pos, colorA col)
+    addEffect2(path, pos)
+    ..setColor(col)
+    ..destr()
+
+public function flashEffect2(string path, vec3 pos, colorA col)
+    addEffect2(path, pos)
+    ..setColor(col)
+    ..destr()
+
+public function flashEffect2(string path, vec2 pos, real scale, colorA col)
+    addEffect2(path, pos)
+    ..setScale(scale)
+    ..setColor(col)
+    ..destr()
+
+public function flashEffect2(string path, vec3 pos, real scale, colorA col)
+    addEffect2(path, pos)
+    ..setScale(scale)
+    ..setColor(col)
+    ..destr()
+
+public function addEffect2(string path, vec2 pos) returns effect
+    return AddSpecialEffect(path, pos.x, pos.y)..setPos2(pos)
+
+public function addEffect2(string path, vec3 pos) returns effect
+    return AddSpecialEffect(path, pos.x, pos.y)..setPos2(pos)
+
+public function addEffect2(string path, widget target, string attachPointName) returns effect
+    return AddSpecialEffectTarget(path, target, attachPointName)
+
+public function effect.setPos2(vec2 pos)
+    this.setPos2(pos.withZ(0))
+
+public function effect.setPos2(vec3 pos)
+    this.setPos(vec3(pos.x, pos.y, minZ + pos.z))
+
+public function unit.makeFlying()
+    this.addAbility(AbilityIds.crowForm)
+    this.removeAbility(AbilityIds.crowForm)
+
+public function effect.showForPlayer(player _p)
+    // if localPlayer == p
+    this.setAlpha(255)
+
+public function effect.hideForPlayer(player _p)
+    // if localPlayer == p
+    this.setAlpha(0)
+
+public function UnitOrBuildingOrHeroDefinition.setNormalAbilities(vararg int raws)
+    string data = ""
+    for raw in raws
+        data = data + raw.toRawCode() + ","
+    data = data.substring(0, data.length()-1)
+    this.def.setString("uabi", data)
+
+public function createDestructableZ(int id, vec3 pos, angle face, real scale, int variation) returns destructable
+    return CreateDestructableZ(id, pos.x, pos.y, pos.z, face.degrees(), scale, variation)
+
+public function isPointAtNeighbourhoodOf(real x, real origin, real radius) returns bool
+    return x >= origin - radius and x <= origin + radius
+
+public function real.isAtNeighbourhood(real origin, real radius) returns bool
+    return isPointAtNeighbourhoodOf(this, origin, radius)
+
+public function player.getNameWurst() returns string
+    return GetPlayerName(this)
+
+
+public function rect.setTerrainType(int ttype, int variation)
+    real left = this.getMinX() + 64
+    real right = this.getMaxX() - 64
+    real bottom = this.getMinY() + 64
+    real top = this.getMaxY() - 64
+    int blockers_size_x = ((right - left) / 128).toInt()
+    int blockers_size_y = ((top - bottom) / 128).toInt()
+    for i = 0 to blockers_size_x
+        for j = 0 to blockers_size_y
+            real center_x = left + i * 128 //+ SQUARE_SIZE / 2
+            real center_y = bottom + j * 128 //+ SQUARE_SIZE / 2
+            vec2(center_x, center_y).setTerrainType(ttype, variation, 1, 1)
+
+public function rect.getMinRadius() returns real
+    real left = this.getMinX()
+    real right = this.getMaxX()
+    real bottom = this.getMinY()
+    real top = this.getMaxY()
+    return min(right-left, top-bottom)/2.

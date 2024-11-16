@@ -1,0 +1,61 @@
+package Chapters
+
+import ChangerLevel
+import ClosureTimers
+import UsefulFunctions
+import CircleOfResurrection
+import GameObjects
+import GameState
+import Constants
+
+
+public function setChapter(int chapter)
+    GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST = false
+    GameState.IS_GAME_IS_CHANGING_LEVEL_NOW = true
+
+    if not GameState.IS_GAME_IN_SKIP_MODE
+        fade(1.5, true, 0.)
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.hide2()
+
+    let changer = new ChangerLevel()
+    changer.run(chapter)
+    doPeriodically(LOADING_TIMER) cb -> 
+        if changer.isDone
+            destroy changer
+            destroy cb
+            GameState.currentLevel = chapter
+            GameState.startChapter[chapter].execute()
+
+public function setNextChapterEnd(code cb)
+    let uPoR_pos = getCheckPointUnit().getPos()
+    for p in GameState.playingPlayers
+        p.setCameraPosition(uPoR_pos)
+        CreateFogModifierRectBJ(false, p, FOG_OF_WAR_MASKED, GetEntireMapRect())
+        ..stop()
+        ..destr()
+
+    for u in MainHero.MAIN_HEROES_GROUP
+        if u.isAlive()
+            u.setPos2(uPoR_pos)
+        else
+            u.revive(uPoR_pos, false)
+        u.setHeight(getCheckPointUnit().getHeight())
+        u.show2()
+
+    fade(1.5, false, 0.)
+
+    GameState.IS_GAME_IN_CHAPTER_MODE_NOW = true
+    GameState.IS_GAME_IS_CHANGING_LEVEL_NOW = false
+
+    cb.execTriggerly()
+
+public function endChapter(bool doMsg)
+    GameState.IS_GAME_IN_CHAPTER_MODE_NOW = false
+    if doMsg
+        printTimed("Chapter #|cfff3b328" + GameState.currentLevel.toString() + "|r is completed.", 25.)
+    
+    setChapter(0)
+
+public function endChapter()
+    endChapter(not GameState.IS_GAME_IN_SKIP_MODE)

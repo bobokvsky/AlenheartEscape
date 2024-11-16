@@ -1,0 +1,909 @@
+package TileImage
+
+import Constants
+import LinkedList
+import HashMap
+import GameObjects
+import Tiles
+import TerrainUtils
+import AssetsConstants
+import ClosureForGroups
+import HashSet
+import ClosureTimers
+import GameState
+
+
+public function createTilesBLP() returns TilesBLP
+    return new TilesBLP()
+
+public function createTilesBLPOnLevel() returns TilesBLP
+    return createTilesBLP()..addObjectToGroups()
+
+public function unit.getTerrainType() returns int
+    if this.getCurrentTiles() != null and not this.getCurrentTiles().isDestroyed
+        return this.getCurrentTiles().getTerrainTypeBLP(this.getPos())
+    else if this.getHeight() > 0.
+        return -1
+    else
+        return this.getPos().getTerrainType()
+
+public function getTilesBLPByHeight(real before_h, real after_h) returns TilesBLP
+    if after_h <= 0
+        return null
+    for tiles in TilesBLP.tilesBLP  // sorted from max to min
+        real height = tiles.getHeight()
+        if (before_h < height and height <= after_h) or (after_h < height and height <= before_h)
+            return tiles
+        // if tiles.getHeight().isAtNeighbourhood(h, TILES_BLP_NEIGHBOURHOOD)
+        //     return tiles
+    return null
+
+public function TilesBLP.getCorrectHeight() returns real
+    if this != null and not this.isDestroyed
+        return this.getHeight()
+    return 0
+
+public function TilesBLP.getPreviousTilesIndex() returns int
+    int i = TilesBLP.tilesBLP.indexOf(this)
+    if i == TilesBLP.tilesBLP.size() - 1
+        return -1
+    else
+        return i+1
+
+//*******************
+
+public constant TRANSPARENT_TILES = 50
+
+// look explain.png for understanding
+constant int DIAG_UP_LEFT = 2
+constant int DIAG_UP_RIGHT = 3
+constant int DIAG_DOWN_LEFT = 5
+constant int DIAG_DOWN_RIGHT = 9
+
+constant int UP = 4
+constant int LEFT = 6
+constant int RIGHT = 11
+constant int DOWN = 13
+
+constant int DIAG_UP = 7
+constant int DIAG_DOWN = 10
+
+constant int BOUND_UP_LEFT = 8
+constant int BOUND_DOWN_LEFT = 14
+constant int BOUND_UP_RIGHT = 12
+constant int BOUND_DOWN_RIGHT = 15
+
+constant int CENTER_VAR0 = 17
+constant int CENTER_VAR1 = 18
+constant int CENTER_VAR2 = 19
+constant int CENTER_VAR3 = 20
+constant int CENTER_VAR4 = 21
+constant int CENTER_VAR5 = 22
+constant int CENTER_VAR6 = 23
+constant int CENTER_VAR7 = 24
+constant int CENTER_VAR8 = 25
+constant int CENTER_VAR9 = 26
+constant int CENTER_VAR10 = 27
+constant int CENTER_VAR11 = 28
+constant int CENTER_VAR12 = 29
+constant int CENTER_VAR13 = 30
+constant int CENTER_VAR14 = 31
+constant int CENTER_VAR15 = 32
+constant int CENTER_VAR16 = 16
+constant int CENTER_VAR17 = 1
+
+constant real TILE_SIZE = 133
+constant string DALARAN_BLACK_MARBLE = "Dalaran_BlackMarble"
+constant string DALARAN_GRASS_TRIM = "Dalaran_GrassTrim"
+constant string DALARAN_WHITE_MARBLE = "Dalaran_WhiteMarble"
+constant string OUTLAND_ABYSS = "Outland_Abyss"
+constant string NORTH_SNOW = "North_Snow"
+constant string NORTH_ICE = "North_ice"
+constant string NORTH_SNOWROCK = "North_SnowRock"
+constant string ICE_ICE = "Ice_Ice"
+constant string ICE_DARKICE = "Ice_DarkIce"
+constant string GLAVA = "GLava"
+constant string EMPTY = "Empty"
+constant string NORTH_ROCKS = "North_rock"
+constant string TILED_BRICKS = "Ice_TiledBricks"
+constant string ICE_SNOW = "Ice_Snow"
+
+Square emptySquare = new Square(-512, -512)
+constant int TILE_SQUARE_SIZE = 128
+
+public function isTerrain32BLP(int terrainType) returns bool
+    if terrainType == Tiles.outland_Abyss_Cliff
+        return false
+    if terrainType == Tiles.northrend_Snow
+        return true
+    if terrainType == Tiles.northrend_Rocky_Snow
+        return false
+    if terrainType == ICE_TURNING_TILE_ID
+        return true
+    if terrainType == ICE_NONTURNING_TILE_ID
+        return false
+    if terrainType == ICE_REVERSETURNING_TILE_ID
+        return false
+    if terrainType == ICE_ACCELERATING_TURNING_TILE_ID
+        return true
+    if terrainType == Tiles.dalaran_Black_Marble
+        return false
+    if terrainType == Tiles.dalaran_Trim_Grass
+        return false
+    if terrainType == Tiles.dalaran_White_Marble
+        return false
+    if terrainType == Tiles.northrend_Rock
+        return true
+    if terrainType == Tiles.icecrown_Glacier_Tiled_Bricks
+        return false
+    if terrainType == Tiles.icecrown_Glacier_Snow or terrainType == Tiles.icecrown_Glacier_Snow_Cliff
+        return true
+    return false
+
+let variations = [CENTER_VAR0, CENTER_VAR1, CENTER_VAR2, CENTER_VAR3, CENTER_VAR4,
+                    CENTER_VAR5, CENTER_VAR6, CENTER_VAR7, CENTER_VAR8, CENTER_VAR9,
+                    CENTER_VAR10, CENTER_VAR11, CENTER_VAR12, CENTER_VAR13,
+                    CENTER_VAR14, CENTER_VAR15, CENTER_VAR16, CENTER_VAR17]
+
+public function getTileVariation(int terrainType, int variation) returns int
+    if not isTerrain32BLP(terrainType)
+        if variation == 0
+            return CENTER_VAR17
+        else
+            return CENTER_VAR16
+    return variations[variation mod 18]
+
+public function getTerrainPath(int terrainType) returns string
+    if terrainType == Tiles.outland_Abyss_Cliff
+        return OUTLAND_ABYSS
+    if terrainType == Tiles.northrend_Snow or terrainType == Tiles.northrend_Snow_Cliff
+        return NORTH_SNOW
+    if terrainType == Tiles.northrend_Rocky_Snow
+        return NORTH_SNOWROCK
+    if terrainType == ICE_TURNING_TILE_ID
+        return NORTH_ICE
+    if terrainType == ICE_NONTURNING_TILE_ID
+        return ICE_DARKICE
+    if terrainType == ICE_REVERSETURNING_TILE_ID
+        return GLAVA
+    if terrainType == ICE_ACCELERATING_TURNING_TILE_ID
+        return ICE_ICE
+    if terrainType == Tiles.dalaran_Black_Marble
+        return DALARAN_BLACK_MARBLE
+    if terrainType == Tiles.dalaran_Trim_Grass
+        return DALARAN_GRASS_TRIM
+    if terrainType == Tiles.dalaran_White_Marble
+        return DALARAN_WHITE_MARBLE
+    if terrainType == Tiles.northrend_Rock
+        return NORTH_ROCKS
+    if terrainType == Tiles.icecrown_Glacier_Tiled_Bricks
+        return TILED_BRICKS
+    if terrainType == Tiles.icecrown_Glacier_Snow or terrainType == Tiles.icecrown_Glacier_Snow_Cliff
+        return ICE_SNOW
+    if terrainType == -1
+        return EMPTY
+    return ""
+
+
+
+// level1 < level 2 <-> picture of level2 overlaps picture of level1
+public function getTerrainTypeLevel(int terrainType) returns int
+    if terrainType == -1
+        return -1
+    if terrainType == Tiles.outland_Abyss_Cliff
+        return 0
+    if terrainType == Tiles.icecrown_Glacier_Tiled_Bricks
+        return 1
+    if terrainType == Tiles.northrend_Rock
+        return 2
+    if terrainType == Tiles.icecrown_Glacier_Rune_Bricks or terrainType == Tiles.icecrown_Glacier_Rune_Bricks_Cliff
+        return 3
+    if terrainType == Tiles.icecrown_Glacier_Dirt
+        return 4
+    if terrainType == Tiles.northrend_Dirt or terrainType == Tiles.northrend_Dirt_Cliff
+        return 5
+    if terrainType == ICE_TURNING_TILE_ID
+        return 6
+    if terrainType == ICE_NONTURNING_TILE_ID
+        return 7
+    if terrainType == ICE_REVERSETURNING_TILE_ID
+        return 8
+    if terrainType == Tiles.dalaran_Black_Marble
+        return 9
+    if terrainType == Tiles.northrend_Snow or terrainType == Tiles.northrend_Snow_Cliff
+        return 10
+    if terrainType == Tiles.icecrown_Glacier_Snow_Cliff or terrainType == Tiles.icecrown_Glacier_Snow
+        return 11
+    if terrainType == Tiles.northrend_Rocky_Snow
+        return 12
+    if terrainType == Tiles.dalaran_White_Marble
+        return 13
+    if terrainType == Tiles.dalaran_Trim_Grass
+        return 14
+    if terrainType == ICE_ACCELERATING_TURNING_TILE_ID
+        return 15
+    return 100
+
+
+public function createImageBLP(string path, vec2 pos, int variation) returns image
+    if variation < 0
+        return null
+    string varStr = variation.toString()
+    if variation.toString().length() == 1
+        varStr = "0" + varStr
+    
+    if path == EMPTY
+        varStr = "01"
+
+    string pathBLP = "tiles\\" + path + "_" + varStr + ".blp"
+    return createImage(pathBLP, pos, TILE_SIZE, TILE_SIZE)
+    
+public function createImageBLP(string path, vec2 pos, int variation, ImageLayer layer) returns image
+    if variation < 0
+        return null
+    string varStr = variation.toString()
+    if variation.toString().length() == 1
+        varStr = "0" + varStr
+
+    if path == EMPTY
+        varStr = "01"
+
+    string pathBLP = "war3mapImported\\" + path + "_" + varStr + ".blp"
+    return createImage(pathBLP, pos, TILE_SIZE, TILE_SIZE, layer)
+
+
+//*************
+
+public constant Comparator<Square> squareComparator = (sq1, sq2) -> getTerrainTypeLevel(sq1.getTerrainType()) -
+                                                            getTerrainTypeLevel(sq2.getTerrainType())
+
+
+public function getMinimumLevelSquare(vararg Square squares) returns Square
+    int minNumber = INT_MAX
+    Square minSquare = emptySquare
+    for square in squares
+        if getTerrainTypeLevel(square.getTerrainType()) < minNumber
+            minSquare = square
+            minNumber = getTerrainTypeLevel(square.getTerrainType())
+    return minSquare
+                                                            
+public class Square
+    image up_left
+    image up_right
+    image down_left
+    image down_right
+
+    int up_left_var = 1
+    bool is_changed_up_left_var = false
+    int up_right_var = 1
+    bool is_changed_up_right_var = false
+    int down_left_var = 1
+    bool is_changed_down_left_var = false
+    int down_right_var = 1
+    bool is_changed_down_right_var = false
+    int variation = 0
+    int terrainType = -1
+
+    bool isEmpty = false
+    int lenght
+    int width
+    real height = minZ
+
+    colorA col = colorA(255, 255, 255, 255)
+
+    construct(int lenght, int width)
+        this.lenght = lenght
+        this.width = width
+
+    construct(int lenght, int width, real height)
+        this.lenght = lenght
+        this.width = width
+        this.height = height
+
+    construct(int lenght, int width, real height, colorA col)
+        this.lenght = lenght
+        this.width = width
+        this.height = height
+        this.col = col
+
+    ondestroy
+        removeImg()
+
+    function setUpLeftVar(int a)
+        up_left_var = a
+        is_changed_up_left_var = true
+
+    function setUpRightVar(int a)
+        up_right_var = a
+        is_changed_up_right_var = true
+
+    function setDownLeftVar(int a)
+        down_left_var = a
+        is_changed_down_left_var = true
+
+    function setDownRightVar(int a)
+        down_right_var = a
+        is_changed_down_right_var = true
+
+    function setHeight(real h)
+        height = h
+        if up_left != null
+            up_left.setHeight(minZ + height)
+        if up_right != null
+            up_right.setHeight(minZ + height)
+        if down_left != null
+            down_left.setHeight(minZ + height)
+        if down_right != null
+            down_right.setHeight(minZ + height)
+    
+    function getHeight() returns real
+        return height
+
+    function setColorA(colorA col)
+        this.col = col
+        if up_left != null
+            up_left.setColor(col)
+        if up_right != null
+            up_right.setColor(col)
+        if down_left != null
+            down_left.setColor(col)
+        if down_right != null
+            down_right.setColor(col)
+
+    function getColorA() returns colorA
+        return col
+    
+    function set(string str, int a)
+        if str == "UpLeft"
+            setUpLeftVar(a)
+        if str == "UpRight"
+            setUpRightVar(a)
+        if str == "DownLeft"
+            setDownLeftVar(a)
+        if str == "DownRight"
+            setDownRightVar(a)
+
+    function setTerrainType(int ttype)
+        terrainType = ttype
+
+    function getTerrainType() returns int
+        return terrainType
+
+    function setTerrainVariation(int a)
+        variation = a
+
+    function getTerrainVariation() returns int
+        return variation
+
+    function removeImg()
+        if up_left != null
+            up_left.remove()
+            up_left = null
+
+        if up_right != null
+            up_right.remove()
+            up_right = null
+
+        if down_left != null
+            down_left.remove()
+            down_left = null
+
+        if down_right != null
+            down_right.remove()
+            down_right = null
+    
+    function resetImg()
+        real x = 128 * lenght - LENGTH * 128 / 2
+        real y = 128 * width - WIDTH * 128 / 2
+        string terrainPath = getTerrainPath(terrainType)
+        if is_changed_up_left_var
+            up_left = createImageBLP(terrainPath, vec2(x - 64, y + 64), up_left_var)..setLevel(ImageLayer.L4)
+            is_changed_up_left_var = false
+        if is_changed_up_right_var
+            up_right = createImageBLP(terrainPath, vec2(x + 64, y + 64), up_right_var)..setLevel(ImageLayer.L4)
+            is_changed_up_right_var = false
+        if is_changed_down_left_var
+            down_left = createImageBLP(terrainPath, vec2(x - 64, y - 64), down_left_var)..setLevel(ImageLayer.L4)
+            is_changed_down_left_var = false
+        if is_changed_down_right_var
+            down_right = createImageBLP(terrainPath, vec2(x + 64, y - 64), down_right_var)..setLevel(ImageLayer.L4)
+            is_changed_down_right_var = false
+        setHeight(height)
+        setColorA(col)
+
+
+    function showImg()
+        if up_left != null
+            up_left.show()
+        if up_right != null
+            up_right.show()
+        if down_left != null
+            down_left.show()
+        if down_right != null
+            down_right.show()
+
+    function hideImg()
+        if up_left != null
+            up_left.hide()
+        if up_right != null
+            up_right.hide()
+        if down_left != null
+            down_left.hide()
+        if down_right != null
+            down_right.hide()
+
+constant Comparator<TilesBLP> tilesBLPComparator = (t1, t2) -> (t2.getCorrectHeight() - t1.getCorrectHeight()).toInt()
+
+public class TilesBLP extends GameObject
+    static LinkedList<TilesBLP> tilesBLP = new LinkedList<TilesBLP>()
+    IterableMap<int, Square> tileSquares
+    HashSet<destructable> nearestDestructables
+
+    construct()
+        super()
+        tileSquares = new IterableMap<int, Square>()
+        nearestDestructables = new HashSet<destructable>()
+        tilesBLP.add(this)
+        tilesBLP.sortWith(tilesBLPComparator)
+        this.setVertexColorA(colorA(255, 255, 255, TRANSPARENT_TILES))
+        this.typeClass = "TilesBLP"
+
+    construct(real h)
+        super()
+        setHeight(h)
+        tileSquares = new IterableMap<int, Square>()
+        tilesBLP.add(this)
+        tilesBLP.sortWith(tilesBLPComparator)
+
+        this.typeClass = "tilesBLP"
+
+
+    function getSquaresSize() returns int
+        return tileSquares.size()
+
+    function get(int i, int j) returns Square
+        let key = i*LENGTH+j
+        if tileSquares.has(key)
+            return tileSquares.get(key)
+
+        let square = new Square(i, j, height)
+        tileSquares.put(key, square)
+        return square
+
+    ondestroy
+        for key in tileSquares
+            destroy tileSquares.get(key)
+        destroy tileSquares
+        destroy nearestDestructables
+        tilesBLP.remove(this)
+        tilesBLP.sortWith(tilesBLPComparator)
+
+    function hideImgs()
+        for key in tileSquares
+            tileSquares.get(key).hideImg()
+
+    function removeImgs()
+        for key in tileSquares
+            tileSquares.get(key).removeImg()
+
+    function resetImgs()
+        let squares = new LinkedList<Square>
+        for key in tileSquares
+            squares.add(tileSquares.get(key))
+        squares.sortWith(squareComparator)
+        for sq in squares
+            sq.resetImg()
+        destroy squares
+
+    function showImgs()
+        for key in tileSquares
+            tileSquares.get(key).showImg()
+
+    override function setHeight(real h)
+        real new_height = h
+        if h > GRAVITY_CONSTANT_Z
+            new_height -= GRAVITY_CONSTANT_Z
+        super.setHeight(new_height)
+        for key in tileSquares
+            tileSquares.get(key).setHeight(new_height)
+        this.setVertexColorA(colorA(255, 255, 255, TRANSPARENT_TILES))
+        tilesBLP.sortWith(tilesBLPComparator)
+
+    override function updateVertexColorA()
+        for key in tileSquares
+            tileSquares.get(key).setColorA(this.getVertexColorA())
+
+    function getTerrainTypeBLP(vec2 pos) returns int
+        int i = ((pos.x + LENGTH * 128 / 2) / 128).round()
+        int j = ((pos.y + WIDTH * 128 / 2) / 128).round()
+        return this.get(i, j).getTerrainType()
+
+    function setTerrainType(vec2 pos, int terrainType, int variation, bool doUpdateImages)
+        int i = ((pos.x + LENGTH * 128 / 2) / 128).round()
+        int j = ((pos.y + WIDTH * 128 / 2) / 128).round()
+
+        let square = this.get(i, j)
+        let square_up = this.get(i, j+1)
+        let square_left = this.get(i-1, j)
+        let square_down = this.get(i, j-1)
+        let square_right = this.get(i+1, j)
+        let square_upLeft = this.get(i-1, j+1)
+        let square_upRight = this.get(i+1, j+1)
+        let square_downLeft = this.get(i-1, j-1)
+        let square_downRight = this.get(i+1, j-1)
+        let squares = new LinkedList<Square>
+        ..add(square, square_up, square_left, square_down, square_right, 
+                    square_upLeft, square_upRight, square_downLeft, square_downRight)
+
+        square.setTerrainType(terrainType)
+        square.setTerrainVariation(variation)
+
+        // *********************
+        // *********************
+        // TILE
+
+        // public function changeTerrain(Square square, string sqSet, Square sqUpOrDown, string sqUpOrDownSet, 
+        //                     Square sqBetWeen, string sqBetWeenSet, Square sqLeftOrRight, string sqLeftOrRightSet, 
+        //                     Square sqVariation, int varLeftOrRight, int varDiagUpOrDown, int varUpOrDown, 
+        //                     int varBoundLeftOrRight, int varBoundUpOrDown, int varBoundBetWeen, int varDiagBoundBetween,
+        //                     int varDiag, int varThreeBound, int varTwoUpOrDown, int varTwoLeftOrRight, 
+        //                     int varTwoDiagUpOrDown, int varTwoDiagUpOrDownBound, int varTwoDiagLeftOrRightBound)
+        // *********************
+
+        // UP + UPRIGHT + RIGHT
+        changeTerrain(square, "UpRight", square_up, "DownRight", square_upRight, "DownLeft", square_right, "UpLeft", square,
+                        RIGHT, DIAG_UP, UP, BOUND_DOWN_RIGHT, BOUND_UP_LEFT, BOUND_UP_RIGHT, DIAG_DOWN_LEFT,
+                        DIAG_UP_RIGHT, BOUND_DOWN_LEFT, DOWN, LEFT, DIAG_DOWN, 
+                        DIAG_DOWN_RIGHT, DIAG_UP_LEFT)
+
+        // UP + UPLEFT + LEFT
+        changeTerrain(square, "UpLeft", square_up, "DownLeft", square_upLeft, "DownRight", square_left, "UpRight", square_left,
+                        LEFT, DIAG_DOWN, UP, BOUND_DOWN_LEFT, BOUND_UP_RIGHT, BOUND_UP_LEFT, DIAG_DOWN_RIGHT,
+                        DIAG_UP_LEFT, BOUND_DOWN_RIGHT, DOWN, RIGHT, DIAG_UP,
+                        DIAG_DOWN_LEFT, DIAG_UP_RIGHT) 
+        // DOWN + DOWNLEFT + LEFT
+        changeTerrain(square, "DownLeft", square_down, "UpLeft", square_downLeft, "UpRight", square_left, "DownRight", square_downLeft,
+                        LEFT, DIAG_UP, DOWN, BOUND_UP_LEFT, BOUND_DOWN_RIGHT, BOUND_DOWN_LEFT, DIAG_UP_RIGHT,
+                        DIAG_DOWN_LEFT, BOUND_UP_RIGHT, UP, RIGHT, DIAG_DOWN,
+                        DIAG_UP_LEFT, DIAG_DOWN_RIGHT)  
+        // DOWN + DOWNRIGHT + RIGHT
+        changeTerrain(square, "DownRight", square_down, "UpRight", square_downRight, "UpLeft", square_right, "DownLeft", square_down,
+                        RIGHT, DIAG_DOWN, DOWN, BOUND_UP_RIGHT, BOUND_DOWN_LEFT, BOUND_DOWN_RIGHT, DIAG_UP_LEFT,
+                        DIAG_DOWN_RIGHT, BOUND_UP_LEFT, UP, LEFT, DIAG_UP,
+                        DIAG_UP_RIGHT, DIAG_DOWN_LEFT)     
+
+
+        // print("...")
+        // for sq in squares
+        //     print(sq.width.toString() + " " + sq.height.toString())
+        //     print(sq.up_left_var)
+        //     print(sq.down_left_var)
+        //     print(sq.down_right_var)
+        //     print(sq.up_right_var)
+
+        if doUpdateImages
+            squares.sortWith(squareComparator)
+            for sq in squares
+                sq.removeImg()
+                
+            for sq in squares
+                sq.resetImg()
+                sq.showImg()
+
+        destroy squares
+
+
+    // MAIN FUNCTION OF CHANGING TERRAIN
+    private static function changeTerrain(Square square, string sqSet, Square sqUpOrDown, string sqUpOrDownSet, 
+                            Square sqBetWeen, string sqBetWeenSet, Square sqLeftOrRight, string sqLeftOrRightSet, 
+                            Square sqVariation, int varLeftOrRight, int varDiagUpOrDown, int varUpOrDown, 
+                            int varBoundLeftOrRight, int varBoundUpOrDown, int varBoundBetWeen, int varDiagBoundBetween,
+                            int varDiag, int varThreeBound, int varTwoUpOrDown, int varTwoLeftOrRight, 
+                            int varTwoDiagUpOrDown, int varTwoDiagUpOrDownBound, int varTwoDiagLeftOrRightBound)
+        
+        let terrainType = square.getTerrainType()
+        let mainVariation = sqVariation.getTerrainVariation()
+        let sqUpOrDownTerrainType = sqUpOrDown.getTerrainType()
+        let sqBetWeenTerrainType = sqBetWeen.getTerrainType()
+        let sqLeftOrRightTerrainType = sqLeftOrRight.getTerrainType()
+
+        if      terrainType == sqUpOrDownTerrainType and 
+                terrainType != sqBetWeenTerrainType and 
+                terrainType != sqLeftOrRightTerrainType
+            let square_min = getMinimumLevelSquare(square, sqBetWeen, sqLeftOrRight)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqUpOrDown.set(sqUpOrDownSet, getTileVariation(terrainType, mainVariation))
+            else
+                square.set(sqSet, varLeftOrRight)
+                sqUpOrDown.set(sqUpOrDownSet, varLeftOrRight)
+                if sqBetWeenTerrainType == sqLeftOrRightTerrainType
+                    sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+                    sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+                else if square_min == sqLeftOrRight
+                    sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+                else
+                    sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+        
+        else if terrainType != sqUpOrDownTerrainType and 
+                terrainType == sqBetWeenTerrainType and 
+                terrainType != sqLeftOrRightTerrainType
+            
+            let square_min = getMinimumLevelSquare(square, sqUpOrDown, sqLeftOrRight)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqBetWeen.set(sqBetWeenSet, getTileVariation(terrainType, mainVariation))
+                if sqUpOrDownTerrainType == sqLeftOrRightTerrainType
+                    sqUpOrDown.set(sqUpOrDownSet, varTwoDiagUpOrDown)
+                    sqLeftOrRight.set(sqLeftOrRightSet, varTwoDiagUpOrDown)
+            else
+                square.set(sqSet, varDiagUpOrDown)
+                sqBetWeen.set(sqBetWeenSet, varDiagUpOrDown)
+
+                if sqUpOrDownTerrainType == sqLeftOrRightTerrainType
+                    sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+                else
+                    let square_min2 = getMinimumLevelSquare(sqUpOrDown, sqLeftOrRight)
+                    if square_min2 == sqUpOrDown
+                        sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    else
+                        sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+
+
+        
+        else if terrainType != sqUpOrDownTerrainType and 
+                terrainType != sqBetWeenTerrainType and 
+                terrainType == sqLeftOrRightTerrainType
+            let square_min = getMinimumLevelSquare(square, sqBetWeen, sqUpOrDown)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(terrainType, mainVariation))
+            else
+                square.set(sqSet, varUpOrDown)
+                sqLeftOrRight.set(sqLeftOrRightSet, varUpOrDown)
+                if sqUpOrDownTerrainType == sqBetWeenTerrainType
+                    sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+                else if square_min == sqUpOrDown
+                    sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                else
+                    sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+        else if terrainType == sqUpOrDownTerrainType and 
+                terrainType == sqBetWeenTerrainType and 
+                terrainType != sqLeftOrRightTerrainType
+            let square_min = getMinimumLevelSquare(square, sqLeftOrRight)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqUpOrDown.set(sqUpOrDownSet, getTileVariation(terrainType, mainVariation))
+                sqBetWeen.set(sqBetWeenSet, getTileVariation(terrainType, mainVariation))
+            else
+                square.set(sqSet, varBoundLeftOrRight)
+                sqUpOrDown.set(sqUpOrDownSet, varBoundLeftOrRight)
+                sqBetWeen.set(sqBetWeenSet, varBoundLeftOrRight)
+                sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+        else if terrainType != sqUpOrDownTerrainType and 
+                terrainType == sqBetWeenTerrainType and 
+                terrainType == sqLeftOrRightTerrainType
+            
+            let square_min = getMinimumLevelSquare(square, sqUpOrDown)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqBetWeen.set(sqBetWeenSet, getTileVariation(terrainType, mainVariation))
+                sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(terrainType, mainVariation))
+            else
+                square.set(sqSet, varBoundUpOrDown)
+                sqBetWeen.set(sqBetWeenSet, varBoundUpOrDown)
+                sqLeftOrRight.set(sqLeftOrRightSet, varBoundUpOrDown)
+                sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                
+        else if terrainType == sqUpOrDownTerrainType and 
+                terrainType != sqBetWeenTerrainType and 
+                terrainType == sqLeftOrRightTerrainType
+
+            let square_min = getMinimumLevelSquare(square, sqBetWeen)
+            if square_min == square
+                square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                sqUpOrDown.set(sqUpOrDownSet, getTileVariation(terrainType, mainVariation))
+                sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(terrainType, mainVariation))
+                sqBetWeen.set(sqBetWeenSet, varDiagBoundBetween)
+            else
+                square.set(sqSet, varBoundBetWeen)
+                sqUpOrDown.set(sqUpOrDownSet, varBoundBetWeen)
+                sqLeftOrRight.set(sqLeftOrRightSet, varBoundBetWeen)
+                sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+
+        else if terrainType == sqUpOrDownTerrainType and 
+                terrainType == sqBetWeenTerrainType and 
+                terrainType == sqLeftOrRightTerrainType
+
+            square.set(sqSet, getTileVariation(terrainType, mainVariation))
+            sqUpOrDown.set(sqUpOrDownSet, getTileVariation(terrainType, mainVariation))
+            sqBetWeen.set(sqBetWeenSet, getTileVariation(terrainType, mainVariation))
+            sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(terrainType, mainVariation))
+
+        else if terrainType != sqUpOrDownTerrainType and 
+                terrainType != sqBetWeenTerrainType and 
+                terrainType != sqLeftOrRightTerrainType
+
+            let square_min = getMinimumLevelSquare(square, sqUpOrDown, sqBetWeen, sqLeftOrRight)
+            if square_min == square
+                if sqUpOrDownTerrainType == sqBetWeenTerrainType and 
+                    sqBetWeenTerrainType == sqLeftOrRightTerrainType
+
+                    square.set(sqSet, getTileVariation(terrainType, mainVariation))
+                    sqUpOrDown.set(sqUpOrDownSet, varThreeBound)
+                    sqBetWeen.set(sqBetWeenSet, varThreeBound)
+                    sqLeftOrRight.set(sqLeftOrRightSet, varThreeBound)
+                else
+                    square.set(sqSet, varDiag)
+            else
+                square.set(sqSet, varDiag)
+                
+                if sqUpOrDownTerrainType == sqBetWeenTerrainType and 
+                    sqBetWeenTerrainType == sqLeftOrRightTerrainType
+
+                    sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    sqBetWeen.set(sqBetWeenSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    
+                else if sqUpOrDownTerrainType == sqBetWeenTerrainType
+
+                    if square_min == sqUpOrDown or square_min == sqBetWeen
+                        sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                        sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+                        sqLeftOrRight.set(sqLeftOrRightSet, varTwoDiagLeftOrRightBound)
+                    else
+                        sqUpOrDown.set(sqUpOrDownSet, varTwoUpOrDown)
+                        sqBetWeen.set(sqBetWeenSet, varTwoUpOrDown)
+
+                else if sqBetWeenTerrainType == sqLeftOrRightTerrainType
+
+                    if square_min == sqBetWeen or square_min == sqLeftOrRight
+                        sqUpOrDown.set(sqUpOrDownSet, varTwoDiagUpOrDownBound)
+                        sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+                        sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+                    else
+                        sqBetWeen.set(sqBetWeenSet, varTwoLeftOrRight)
+                        sqLeftOrRight.set(sqLeftOrRightSet, varTwoLeftOrRight)
+                
+                else if sqUpOrDownTerrainType == sqLeftOrRightTerrainType
+                
+                    if square_min == sqUpOrDown or square_min == sqLeftOrRight
+                        sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                        sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+                    else
+                        sqUpOrDown.set(sqUpOrDownSet, varTwoDiagUpOrDown)
+                        sqLeftOrRight.set(sqLeftOrRightSet, varTwoDiagUpOrDown)
+                else
+                    if square_min == sqUpOrDown
+                        sqUpOrDown.set(sqUpOrDownSet, getTileVariation(sqUpOrDownTerrainType, mainVariation))
+                    else if square_min == sqBetWeen
+                        sqBetWeen.set(sqBetWeenSet, getTileVariation(sqBetWeenTerrainType, mainVariation))
+                    else
+                        sqLeftOrRight.set(sqLeftOrRightSet, getTileVariation(sqLeftOrRightTerrainType, mainVariation))
+
+    function setTerrainType(vec2 pos, int terrainType, int variation)
+        setTerrainType(pos, terrainType, variation, false)
+    
+    function getNearestDestructables() returns HashSet<destructable>
+        return this.nearestDestructables
+    
+
+
+//******************************************
+
+class SetTerrainTypeQueue
+    TilesBLP tilesBLP
+    rect tileRect
+    int terrainType
+    int variation
+    
+    int randomBound
+
+    static bool isLoading = false
+    static bool isReady = true
+
+    static LinkedList<SetTerrainTypeQueue> queue = new LinkedList<SetTerrainTypeQueue>()
+
+    static function isLoading() returns bool
+        return isLoading
+
+    construct(TilesBLP tilesBLP, rect tileRect, int terrainType, int variation)
+        this.tilesBLP = tilesBLP
+        this.tileRect = tileRect
+        this.terrainType = terrainType
+        this.variation = variation
+
+        if this.variation == -1
+            this.randomBound = 1 
+            if isTerrain32BLP(terrainType)
+                this.randomBound = 17
+
+        queue.push(this)
+        if not isLoading()
+            runs()
+
+    static function runs()
+        isLoading = true
+
+        doPeriodically(LOADING_TIMER) t ->
+            if isReady
+                if queue.size() == 0
+                    isLoading = false
+                    destroy t
+                else
+                    let next = queue.pop()
+                    // print("TASK: " + next_queue.toString())
+                    isReady = false
+                    next.run()
+
+    real left
+    real right
+    real bottom 
+    real top 
+    int tiles_size_x
+    int tiles_size_y
+
+    int loop_j
+    int loop_i
+    constant static int LOOP_SIZE = 5
+    bool is_looping
+
+    function run()
+        let nearest_rect = Rect(tileRect.getMinX()-TILES_BLP_VISIBLITY_NEIGHBOURHOOD_RECT, tileRect.getMinY()-TILES_BLP_VISIBLITY_NEIGHBOURHOOD_RECT,
+                    tileRect.getMaxX()+TILES_BLP_VISIBLITY_NEIGHBOURHOOD_RECT, tileRect.getMaxY()+2.5*TILES_BLP_VISIBLITY_NEIGHBOURHOOD_RECT)
+        forDestructablesInRect(nearest_rect) d ->
+            this.tilesBLP.nearestDestructables.add(d)
+        nearest_rect.remove()
+    
+        this.left = tileRect.getMinX() + 64
+        this.right = tileRect.getMaxX() - 64
+        this.bottom = tileRect.getMinY() + 64
+        this.top = tileRect.getMaxY() - 64
+        this.tiles_size_x = ((right - left) / TILE_SQUARE_SIZE).toInt()
+        this.tiles_size_y = ((top - bottom) / TILE_SQUARE_SIZE).toInt()
+
+        this.loop_j = 0
+        this.loop_i = 0
+        this.is_looping = true
+        loopNext()
+
+    function loopNext()
+        for j = this.loop_j to min(this.tiles_size_y, this.loop_j + LOOP_SIZE)
+            for i = this.loop_i to min(this.tiles_size_x, this.loop_i + LOOP_SIZE)
+                real center_x = left + i * TILE_SQUARE_SIZE
+                real center_y = bottom + j * TILE_SQUARE_SIZE
+                int variat = this.variation
+                if this.variation == -1
+                    variat = GetRandomInt(0, this.randomBound)
+                this.tilesBLP.setTerrainType(vec2(center_x, center_y), terrainType, variat, false)
+                
+        if this.loop_i == this.tiles_size_x
+            if this.loop_j == this.tiles_size_y
+                this.is_looping = false
+            else
+                this.loop_j = min(this.tiles_size_y, this.loop_j + LOOP_SIZE)
+                this.loop_i = 0
+        else
+            this.loop_i = min(this.tiles_size_x, this.loop_i + LOOP_SIZE)
+                
+        doAfter(LOADING_TIMER_LOOPING) ->
+            if this.is_looping
+                this.loopNext()
+            else
+                isReady = true
+                destroy this
+
+public function TilesBLP.setTerrainType(rect tileRect, int terrainType, int variation)
+    if checkConditionOnLost() or GameState.IS_GAME_IN_TEST_MODE
+        new SetTerrainTypeQueue(this, tileRect, terrainType, variation)
+
+public function TilesBLP.setTerrainType(rect tileRect, int terrainType)
+    if checkConditionOnLost() or GameState.IS_GAME_IN_TEST_MODE
+        new SetTerrainTypeQueue(this, tileRect, terrainType, -1)
+
+public function waitUntilSetTerrainTypeIsDone()
+    //print("ISLOADING???: " + SetTerrainTypeQueue.isLoading().toString())
+    while SetTerrainTypeQueue.isLoading()
+        TriggerSleepAction(bj_POLLED_WAIT_INTERVAL)

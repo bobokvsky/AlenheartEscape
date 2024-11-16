@@ -1,0 +1,22 @@
+package TriggerUtils
+
+import Table
+
+constant triggerData = new Table()
+
+/** Attach Data to this trigger */
+public function trigger.setData(int data)
+    triggerData.saveInt(this.getHandleId(), data)
+
+/** Retrieve the data attached to this trigger */
+public function trigger.getData() returns int
+    return triggerData.loadInt(this.getHandleId())
+
+/** Remove the data attached to this trigger */
+public function trigger.removeData()
+    triggerData.removeInt(this.getHandleId())
+
+public function trigger.release()
+    this.removeData()
+    this.destr()
+    triggerToIndex(this)

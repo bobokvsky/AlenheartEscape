@@ -1,0 +1,27 @@
+package StartZone
+
+import CircleOfResurrection
+import initlater Chapters
+import GameState
+import AssetsConstants
+import GameObjects
+
+unit startZone_uPoR
+
+public function startMainZone()
+    startZone_uPoR = createUnitOnLevel(true, UnitDataBase.circleOfRes, vec2(0., 0.), angle(0.))                                   
+
+    setCheckPoint(startZone_uPoR, false, false)
+    setNextChapterEnd(function mainZone)
+
+public function mainZone()
+    printTimed("Write \"|cfff3b328-chapter 1|r\", \"|cfff3b328-challenge 2|r\" and etc to start the game.", 10.)
+    
+    GameState.IS_NOW_CAN_BE_SET_NEXT_LEVEL_BY_HOST = true
+    GameState.IS_GAME_IN_CHAPTER_MODE_NOW = false
+    GameState.IS_GAME_IN_SKIP_MODE = false
+
+    for p in GameState.playingPlayers
+        CreateFogModifierRect(p, FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, false)
+        ..start()
+        ..destr()

@@ -1,0 +1,88 @@
+package Testing
+
+import initlater TileImage
+import TerrainUtils
+import Tiles
+import GameState
+import GameObjects
+import initlater Chapters
+
+trigger array tests
+init
+    for i = 0 to 5
+        tests[i] = CreateTrigger()
+        ..addCondition(Condition(() -> GameState.IS_GAME_IN_TEST_MODE))
+        for j = 0 to bj_MAX_PLAYER_SLOTS-1
+            tests[i].registerPlayerChatEvent(players[j], "-test" + (i+1).toString(), true)
+
+    tests[0].addAction(function test1)
+    tests[1].addAction(function test2)
+    tests[2].addAction(function test3)
+    tests[3].addAction(function test4)
+    tests[4].addAction(function test5)
+
+TilesBLP tiles
+
+public function testMode()
+    for p in GameState.playingPlayers
+        CreateFogModifierRect(p, FOG_OF_WAR_VISIBLE, GetEntireMapRect(), true, false)
+        ..start()
+        ..destr()
+    vec2(0,0).setTerrainType(Tiles.sunken_Ruins_Large_Bricks, 14, 1024, 1)
+    loadHeroes()
+    GameState.IS_GAME_IS_CHANGING_LEVEL_NOW = false
+    testAfter()
+
+public function testAfter()
+    // vec2(0, 0).setTerrainType(ICE_TURNING_TILE_ID, 0, 40, 0)
+    // vec2(-512, 0).setTerrainType(ICE_NONTURNING_TILE_ID, 0, 5, 1)
+    // vec2(-512, 0).setTerrainType(Tiles.sunken_Ruins_Large_Bricks, 0, 2, 1)
+    // vec2(0, 0).setTerrainType(ICE_REVERSETURNING_TILE_ID, 0, 5, 1)
+    //test1()
+    //GameState.IS_GAME_IN_SKIP_MODE = true
+    //setChallenge(9, true, true, false)
+    setChapter(3)
+    skip
+
+public function test1()
+    print("test1!")
+    terrainTest()
+    createBouncerOnLevel(vec2(180, 180), 800.)
+    createBouncerOnLevel(vec2(-180, -180), 800.)
+
+public function test2()
+    print("test2!")
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.getMainHero().setHeight(1500.)
+
+
+public function test3()
+    print("test3!")
+
+
+public function test4()
+    print("test4!")
+
+public function test5()
+    print("test5!")
+    setChapter(0)
+
+
+
+public function terrainTest()
+    rect r1 = Rect(-256, -256, 256, 256)
+    rect r2 = Rect(-128, 320, 128, 1440)
+    rect r3 = Rect(-128, -1440, 128, -320)
+
+    let _tiles1 = new TilesBLP()
+    ..setHeight(200)
+    ..setTerrainType(r1, 'Xblm', 0)
+    ..setTerrainType(r2, 'Xblm', 0)
+
+    let _tiles2 = new TilesBLP()
+    ..setHeight(500)
+    ..setTerrainType(r3, 'Xblm', 0)
+
+    waitUntilSetTerrainTypeIsDone()
+    _tiles1..resetImgs()..showImgs()
+    _tiles2..resetImgs()..showImgs()

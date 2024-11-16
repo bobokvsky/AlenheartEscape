@@ -1,0 +1,77 @@
+package Attacher
+
+import GameObject
+import UnitClass
+import TimerUtils
+import initlater UsefulFunctions
+
+constant real ATTACHER_PERIODIC = 0.01
+
+public class Attacher extends GameObject
+    unit originUnit
+    player playerWhoCanSee
+
+    effect eff
+    string path
+    real scale
+    timer t
+
+    construct(unit originUnit, string path, real scale)
+        super()
+        this.originUnit = originUnit
+        this.path = path
+        this.scale = scale
+
+        this.eff = addEffect2(path, originUnit.getPosVec3())
+        ..setScale(scale)   
+
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(ATTACHER_PERIODIC, function callUpdatePos)
+
+        this.typeClass = "Attacher"
+
+    construct(unit originUnit, string path, real scale, player playerWhoCanSee, bool state)
+        this.originUnit = originUnit
+        this.path = path
+        this.scale = scale
+
+        this.eff = addEffect2(path, originUnit.getPosVec3())
+        ..setScale(scale)
+
+        for i = 0 to bj_MAX_PLAYER_SLOTS-1
+            if not state or players[i] != playerWhoCanSee
+                this.hideForPlayer(players[i])
+            
+
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(ATTACHER_PERIODIC, function callUpdatePos)
+
+    static function callUpdatePos()
+        (GetExpiredTimer().getData() castTo Attacher).updatePos()
+
+    function updatePos()
+        eff.setPos2(originUnit.getPosVec3())
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        eff.setHeight(h)
+
+    function showForPlayer(player p)
+        if localPlayer == p
+            eff.setAlpha(255)
+    
+    function hideForPlayer(player p)
+        if localPlayer == p
+            eff.setAlpha(0)
+
+    override function setVertexColorA(colorA col)
+        super.setVertexColorA(col)
+        eff.setColor(col)
+
+    ondestroy
+        eff.destr()
+        t.release()
+        eff = null
+        t = null

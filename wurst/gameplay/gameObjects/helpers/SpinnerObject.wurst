@@ -1,0 +1,68 @@
+package SpinnerObject
+
+import GameObject
+import TimerUtils
+
+constant real SPIN_ROUND_PERIODIC = 0.05
+
+public class SpinnerObject extends GameObject
+    unit u
+    effect eff
+    real duration
+    bool isCounterClockWise
+    timer t
+    angle currentAngle
+
+    construct(unit u, angle originAngle, real duration, bool isCounterClockWise)
+        super()
+        this.u = u
+        this.currentAngle = originAngle
+        this.duration = duration
+        this.isCounterClockWise = isCounterClockWise
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(SPIN_ROUND_PERIODIC, function callUnitSpinningRoung)
+        this.typeClass = "SpinnerObject"
+
+    construct(effect eff, angle originAngle, real duration, bool isCounterClockWise)
+        this.eff = eff
+        this.currentAngle = originAngle
+        this.duration = duration
+        this.isCounterClockWise = isCounterClockWise
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(SPIN_ROUND_PERIODIC, function callEffectSpinningRoung)
+
+    static function callUnitSpinningRoung()
+        (GetExpiredTimer().getData() castTo SpinnerObject).spinningUnit()
+
+    static function callEffectSpinningRoung()
+        (GetExpiredTimer().getData() castTo SpinnerObject).spinningEffect()
+
+    function spinningUnit()
+        if not u.isAlive()
+            destroy this
+        else 
+            if isCounterClockWise
+                currentAngle += angle(2*PI * SPIN_ROUND_PERIODIC / duration)
+            else
+                currentAngle -= angle(2*PI * SPIN_ROUND_PERIODIC / duration)
+            u.setFacing(currentAngle)
+
+    function spinningEffect()
+        if eff == null
+            destroy this
+        else 
+            if isCounterClockWise
+                currentAngle += angle(2*PI * SPIN_ROUND_PERIODIC / duration)
+            else
+                currentAngle -= angle(2*PI * SPIN_ROUND_PERIODIC / duration)
+            eff.setRoll(currentAngle)
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        eff.setHeight(h)
+
+    ondestroy
+        t.release()
+        t = null

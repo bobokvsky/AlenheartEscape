@@ -1,0 +1,55 @@
+package DummyUnitEffect
+import UnitClass
+import Constants
+import AssetsConstants
+import initlater UsefulFunctions
+import TriggerUtils
+
+public class DummyUnitEffect extends Unit
+    string path
+    real scale
+    effect mainEffect
+    real rangeTrigger
+    angle currentAngle
+
+    trigger triggerMakeAction
+
+    construct(vec2 pos, string path, real scale, real rangeTrigger, angle startAngle)
+        super(players[ID_PLAYER], UnitDataBase.dummiesUnitEffects[UnitDataBase.getDummyScaleId(scale)], 
+                    pos, startAngle)
+        this.path = path
+        this.scale = scale
+        this.currentAngle = startAngle
+        this.rangeTrigger = rangeTrigger
+        this.mainEffect = addEffect2(path, this.mainUnit, "origin")
+
+        this.triggerMakeAction = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerUnitInRange(this.mainUnit, this.rangeTrigger, null)
+        ..addAction(function callMakeAction)
+
+        this.typeClass = "DummyUnitEffect"
+
+    static function callMakeAction()
+        (GetTriggeringTrigger().getData() castTo DummyUnitEffect).makeAction(GetTriggerUnit())
+    
+    function makeAction(unit _triggerUnit)
+        skip
+
+    function setAngle(angle a)
+        this.currentAngle = a
+        this.mainUnit.setFacing(this.currentAngle)
+
+    function getAngle() returns angle
+        return this.currentAngle
+
+    override function updateVertexColorA()
+        this.mainEffect.setColor(this.getVertexColorA())
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        this.mainEffect.setHeight(h)
+
+    ondestroy
+        this.triggerMakeAction.release()
+        this.mainEffect.destr()

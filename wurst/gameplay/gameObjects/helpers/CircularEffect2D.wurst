@@ -1,0 +1,199 @@
+package CircularEffect2D
+
+import GameObject
+import SomeMaths
+import HashList
+import TimerUtils
+import initlater UsefulFunctions
+import UnitClass
+import Constants
+
+public function createCircularEffect2D(vec2 originPos, string path, real scale, real height,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return new CircularEffect2D(originPos, path, scale, height,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+
+public function createCircularEffect2D(vec2 originPos, string path, real scale,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return new CircularEffect2D(originPos, path, scale, 0.,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+
+
+public function createCircularEffect2D(unit originUnit, string path, real scale, real height, bool doChangeHeightForUnit,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return new CircularEffect2D(originUnit, path, scale, height, doChangeHeightForUnit,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+
+public function createCircularEffect2D(unit originUnit, string path, real scale,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return new CircularEffect2D(originUnit, path, scale, 0, true,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+
+public function createCircularEffect2DOnLevel(vec2 originPos, string path, real scale, real height,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return createCircularEffect2DOnLevel(originPos, path, scale, height,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+                ..addObjectToGroups()
+
+public function createCircularEffect2DOnLevel(vec2 originPos, string path, real scale,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return createCircularEffect2DOnLevel(originPos, path, scale, 0.,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+                ..addObjectToGroups()
+
+
+public function createCircularEffect2DOnLevel(unit originUnit, string path, real scale, real height, bool doChangeHeightForUnit,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return createCircularEffect2DOnLevel(originUnit, path, scale, height, doChangeHeightForUnit,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+                ..addObjectToGroups()
+
+public function createCircularEffect2DOnLevel(unit originUnit, string path, real scale,
+                            real duration, bool isIncreasing, real originTime, real period,
+                            MathFunc func, HashList<real> params) returns CircularEffect2D
+    return createCircularEffect2DOnLevel(originUnit, path, scale, 0, true,
+                                duration, isIncreasing, originTime, period,
+                                func, params)
+                ..addObjectToGroups()
+
+//************************
+
+public class CircularEffect2D extends GameObject
+    vec2 originPos
+    unit originUnit
+
+    effect eff
+    string path
+    real scale
+
+    real duration
+    real period
+    bool isIncreasing
+    bool doChangeHeightForUnit
+    real currentTime
+    timer t
+
+    MathFunc func
+    HashList<real> paramsForStaticEffect
+    HashList<real> paramsForUnits
+
+    construct(vec2 originPos, string path, real scale, real height, 
+                real duration, bool isIncreasing, real originTime, real period,
+                MathFunc func, HashList<real> params)
+        super()
+        this.originPos = originPos
+        this.path = path
+        this.scale = scale
+        super.setHeight(height)
+        this.duration = duration
+        this.period = period
+        this.isIncreasing = isIncreasing
+        this.currentTime = originTime
+        this.func = func
+        this.paramsForStaticEffect = params
+
+        vec2 new_pos = func.run(params, currentTime).toVec2()
+        this.eff = addEffect2(path, new_pos.withZ(height))
+        ..setScale(scale)
+        ..setHeight(height)
+
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callMakeEffectAtPos)
+
+        this.typeClass = "CircularEffect2D"
+
+    construct(unit originUnit, string path, real scale, real height, bool doChangeHeightForUnit,
+                real duration, bool isIncreasing, real originTime, real period,
+                MathFunc func, HashList<real> params)
+        this.originUnit = originUnit
+        this.path = path
+        this.scale = scale
+        super.setHeight(height)
+        this.doChangeHeightForUnit = doChangeHeightForUnit
+        this.period = period
+        this.duration = duration
+        this.isIncreasing = isIncreasing
+        this.currentTime = originTime
+        this.func = func
+        this.paramsForUnits = params
+
+        vec2 new_pos = func.run(params, originTime).toVec2()
+        this.eff = addEffect2(path, new_pos)
+        ..setScale(scale)
+        ..setHeight(height)
+
+        t = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callMakeEffectAtUnit)
+
+    static function callMakeEffectAtPos()
+        (GetExpiredTimer().getData() castTo CircularEffect2D).makeCircularEffectAtPos()
+
+    static function callMakeEffectAtUnit()
+        (GetExpiredTimer().getData() castTo CircularEffect2D).makeCircularEffectAtUnit()
+
+    function makeCircularEffectAtPos()
+        if isIncreasing
+            currentTime += period * MAIN_TIMER_EVENT / duration
+        else
+            currentTime -= period * MAIN_TIMER_EVENT / duration
+        if currentTime > period
+            currentTime -= period
+        if currentTime < -period
+            currentTime += period
+
+        vec2 new_pos = func.run(paramsForStaticEffect, currentTime).toVec2()
+        eff.setPos2(new_pos.withZ(getHeight()))
+
+    function makeCircularEffectAtUnit()
+        if isIncreasing
+            currentTime += period * MAIN_TIMER_EVENT / duration
+        else
+            currentTime -= period * MAIN_TIMER_EVENT / duration
+        if currentTime > period
+            currentTime -= period
+        if currentTime < -period
+            currentTime += period
+
+        this.paramsForUnits.set(0, originUnit.getX())
+        this.paramsForUnits.set(1, originUnit.getY())
+
+        vec2 new_pos = func.run(paramsForUnits, currentTime).toVec2()
+        if doChangeHeightForUnit
+            real h = originUnit.getHeight()
+            super.setHeight(h)
+            eff.setPos2(new_pos.withZ(h))
+        else
+            eff.setPos2(new_pos.withZ(height))
+
+    override function updateVertexColorA()
+        eff.setColor(this.getVertexColorA())
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        eff.setHeight(h)
+
+    ondestroy
+        t.release()
+        eff.destr()
+        if paramsForStaticEffect != null
+            destroy paramsForStaticEffect
+        if paramsForUnits != null
+            destroy paramsForUnits
+        t = null
+        eff = null

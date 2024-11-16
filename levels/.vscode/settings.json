@@ -1,0 +1,9 @@
+{
+    "wurst.wurstJar": "C:\\Users\\Alexander\\.wurst\\wurstscript.jar",
+    "wurst.javaOpts": ["-XX:+UseG1GC", "-XX:+UseStringDeduplication", "-XX:+AggressiveOpts", "-Xmx1G"],
+    "wurst.wc3path": "C:\\Warcraft III",
+	"files.associations": {
+        "wurst.build": "yaml"
+    },
+	"search.useIgnoreFiles": false
+}

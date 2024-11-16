@@ -1,0 +1,90 @@
+package CameraSystem
+
+import HashList
+import TimerUtils
+import Constants
+import initlater Heroes
+
+init
+    for i = 0 to bj_MAX_PLAYER_SLOTS-1
+        new CameraSystem(players[i])
+
+class CameraSystem
+    static HashList<CameraSystem> cameras
+    player mainPlayer
+    real currentDistance
+    real currentDistanceChosenByPlayer
+
+    timer updateTimer
+    bool isAttachedToMainHero
+
+    construct(player p)
+        if cameras == null
+            cameras = new HashList<CameraSystem>()
+        this.mainPlayer = p
+        this.currentDistance = CAMERA_DEFAULT_DISTANCE
+        this.currentDistanceChosenByPlayer = CAMERA_DEFAULT_DISTANCE
+        cameras.add(this)
+        this.isAttachedToMainHero = false
+        this.updateTimer = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callUpdate)
+    
+    static function callUpdate()
+        (GetExpiredTimer().getData() castTo CameraSystem).update()
+
+    function update()
+        this.mainPlayer.setCameraField(CAMERA_FIELD_TARGET_DISTANCE, this.currentDistance, 0.)
+
+    function setCameraFieldDistance(real dist)
+        this.currentDistance = max(CAMERA_MINIMUM_DISTANCE, min(CAMERA_MAXIMUM_DISTANCE, dist))
+        update()
+
+    function plusCameraFieldDistance(real dist)
+        setCameraFieldDistance(this.currentDistance + dist)
+        update()
+
+    function setCameraFieldDistanceChosenByPlayer(real dist)
+        this.currentDistanceChosenByPlayer = max(CAMERA_MINIMUM_DISTANCE, min(CAMERA_MAXIMUM_DISTANCE, dist))
+        setCameraFieldDistance(dist)
+
+    function getCameraFieldDistanceChosenByPlayer() returns real
+        return this.currentDistanceChosenByPlayer
+
+    function getCameraFieldDistance() returns real
+        return this.currentDistance
+
+    function setCameraAttachedToMainHero(bool doAttach)
+        if not this.isAttachedToMainHero and doAttach
+            plusCameraFieldDistance(this.mainPlayer.getMainHero().getFlyHeight()) 
+            this.mainPlayer.setCameraTargetControllerNoZ(this.mainPlayer.getMainHero(), vec2(0, 0), false)
+        else
+            this.mainPlayer.resetToGameCamera(0.)
+            setCameraFieldDistance(getCameraFieldDistanceChosenByPlayer())
+            update()
+        
+        this.isAttachedToMainHero = doAttach
+
+    function isCameraAttachedToMainHero() returns bool
+        return this.isAttachedToMainHero
+
+public function player.getCameraSystem() returns CameraSystem
+    return CameraSystem.cameras.get(this.getId())
+
+public function player.setCameraFieldDistance(real dist)
+    this.getCameraSystem().setCameraFieldDistance(dist)
+
+public function player.plusCameraFieldDistance(real dist)
+    this.getCameraSystem().plusCameraFieldDistance(dist)
+
+public function player.setChosenCameraFieldDistance(real dist)
+    this.getCameraSystem().setCameraFieldDistanceChosenByPlayer(dist)
+
+public function player.getChosenCameraFieldDistance() returns real
+    return this.getCameraSystem().getCameraFieldDistanceChosenByPlayer()
+
+public function player.setCameraAttachedToMainHero(bool doAttach)
+    this.getCameraSystem().setCameraAttachedToMainHero(doAttach)
+
+public function player.isCameraAttachedToMainHero() returns bool
+    return this.getCameraSystem().isCameraAttachedToMainHero()

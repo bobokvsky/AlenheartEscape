@@ -1,0 +1,87 @@
+package AquaSpike
+
+import GameObject
+import Heroes
+import AssetsConstants
+import ClosureTimers
+import TimerUtils
+import ClosureForGroups
+import initlater UsefulFunctions
+import UnitClass
+
+public constant AQUA_SPIKE_DEADLY_RADIUS = 130.
+
+public function createAquaSpike(group whichGroupShouldDie, vec3 originPos, 
+                                string path, real scale, real radius, 
+                                real timePeriodicExplode, real timeStart) returns AquaSpike
+    return new AquaSpike(whichGroupShouldDie, originPos, path, 
+                        scale, radius, timePeriodicExplode, timeStart)
+
+public function createAquaSpike(group whichGroupShouldDie, vec2 originPos, 
+                                string path, real scale, real radius, 
+                                real timePeriodicExplode, real timeStart) returns AquaSpike
+    return createAquaSpike(whichGroupShouldDie, originPos.withZ(0), path, 
+                        scale, radius, timePeriodicExplode, timeStart)
+
+public function createAquaSpikeOnLevel(vec2 pos, string path, real scale, real radius, 
+                                real timePeriodicExplode, real timeBegin) returns AquaSpike
+    return createAquaSpike(MainHero.MAIN_HEROES_GROUP, pos, path, scale, radius, timePeriodicExplode, timeBegin)
+            ..addObjectToGroups()
+
+public function createAquaSpikeOnLevel(vec2 pos, real timePeriodicExplode, real timeBegin) returns AquaSpike
+    return createAquaSpikeOnLevel(pos, PATH_AQUA_SPIKE, 1.0, 
+                            AQUA_SPIKE_DEADLY_RADIUS, timePeriodicExplode, timeBegin)
+
+public function createAquaSpikeOnLevel(vec2 pos, real timePeriodicExplode) returns AquaSpike
+    return createAquaSpikeOnLevel(pos, timePeriodicExplode, 0.)
+
+//******************
+
+public class AquaSpike extends GameObject
+    group whichGroupShouldDie
+    timer t
+    real timePeriodicExplode
+    string path
+    real scale
+    real radius
+    vec3 originPos
+
+    construct(group whichGroupShouldDie, vec3 originPos, string path, real scale, real radius,
+                             real timePeriodicExplode, real timeStart)
+        super()
+        this.whichGroupShouldDie = whichGroupShouldDie
+        this.originPos = originPos
+        this.path = path
+        this.scale = scale
+        this.radius = radius
+        this.timePeriodicExplode = timePeriodicExplode
+
+        this.transparent_col = 0
+
+        doAfter(timeStart) ->
+            if not this.isDestroyed
+                this.t = getTimer()
+                ..setData(this castTo int)
+                ..startPeriodic(timePeriodicExplode, function callflashEffectAndKill)
+
+        this.typeClass = "AquaSpike"
+
+    static function callflashEffectAndKill()
+        (GetExpiredTimer().getData() castTo AquaSpike).flashEffectAndKill()
+
+    function flashEffectAndKill()
+        forUnitsInRange(originPos.toVec2(), radius) u ->
+            if whichGroupShouldDie.contains(u) 
+                and u.getHeight().isAtNeighbourhood(getHeight(), this.radius)
+                
+                u.kill()
+        flashEffect2(path, originPos, scale, this.getVertexColorA())
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        originPos = vec3(originPos.x, originPos.y, h)
+
+    ondestroy
+        if this.t != null
+            this.t.release()
+            this.t = null

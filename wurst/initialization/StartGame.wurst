@@ -1,0 +1,40 @@
+package StartGame
+
+import Heroes
+import initlater Chapters
+import initlater UsefulFunctions
+import Testing
+import ClosureTimers
+import GameState
+
+init
+    GameState.initValues()
+    FogEnable(false)
+    EnableSelect(true, false)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GameState.allPlayersForce, bj_ALLIANCE_ALLIED)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GameState.allPlayersForce, bj_ALLIANCE_ALLIED_VISION)
+    SetForceAllianceStateBJ(GameState.allPlayersForce, GameState.playingPlayersForce, bj_ALLIANCE_ALLIED)
+    SetForceAllianceStateBJ(GameState.allPlayersForce, GameState.playingPlayersForce, bj_ALLIANCE_ALLIED_VISION)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GetForceOfPlayer(GameState.neutral12), bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GetForceOfPlayer(GameState.neutral13), bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GetForceOfPlayer(GameState.neutralHostile), bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GameState.playingPlayersForce, GetForceOfPlayer(GameState.neutralPassive), bj_ALLIANCE_NEUTRAL)
+    SetForceAllianceStateBJ(GetForceOfPlayer(GameState.neutral12), GameState.playingPlayersForce, bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GetForceOfPlayer(GameState.neutral13), GameState.playingPlayersForce, bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GetForceOfPlayer(GameState.neutralHostile), GameState.playingPlayersForce, bj_ALLIANCE_UNALLIED)
+    SetForceAllianceStateBJ(GetForceOfPlayer(GameState.neutralPassive), GameState.playingPlayersForce, bj_ALLIANCE_NEUTRAL)
+    SetFloatGameState(GAME_STATE_TIME_OF_DAY, 12.)
+    //SuspendTimeOfDay(true)
+    (function startGame).execTriggerly()
+
+function startGame()
+    if not GameState.IS_GAME_IN_TEST_MODE
+        polledWait2(2.0)
+        loadHeroes()
+        setChapter(0)
+    else
+        print("|cffff00aaTEST MODE|r is enabled.")
+        if GameState.IS_GAME_IN_SKIP_MODE
+            print("|cffff00aaSKIP|r is enabled.")
+        doAfter(2.0) ->
+            testMode()

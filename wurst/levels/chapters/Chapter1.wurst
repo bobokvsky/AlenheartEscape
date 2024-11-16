@@ -1,0 +1,867 @@
+package Chapter1
+
+import CircleOfResurrection
+import UsefulFunctions
+import Dialogues
+import MovementSystem
+import GameObjects
+import TerrainUtils
+
+import initlater Chapters
+import initlater Challengers
+import Doodads
+import Abilities
+import Tiles
+import GameState
+import AssetsConstants
+
+
+//********** RECTS
+rect gg_rct_chap1_PoR1 = Rect(-5056.0, -5440.0, -4928.0, -5312.0)
+rect gg_rct_chap1_PoR2 = Rect(-4352.0, 4032.0, -4224.0, 4160.0)
+rect gg_rct_chap1_challenge1_PoR = Rect(-3904.0, 1216.0, -3776.0, 1344.0)
+rect gg_rct_chap1_challenge2_PoR = Rect(-1024.0, 3968.0, -896.0, 4096.0)
+rect gg_rct_chap1_challenge3_PoR = Rect(-1152.0, 128.0, -1024.0, 256.0)
+rect gg_rct_chap1_plotKylie1_1 = Rect(-5056.0, -3456.0, -4928.0, -3328.0)
+rect gg_rct_chap1_plotKylie1_2 = Rect(-5184.0, -3200.0, -5056.0, -3072.0)
+rect gg_rct_chap1_plotKylie1_3 = Rect(-4992.0, -3200.0, -4864.0, -3072.0)
+rect gg_rct_chap1_plotKylie1_4 = Rect(-4800.0, -3040.0, -4672.0, -2912.0)
+rect gg_rct_chap1_plotRect1 = Rect(-5216.0, -3776.0, -4768.0, -3520.0)
+rect gg_rct_chap1_gates1 = Rect(-4640.0, -3232.0, -4512.0, -2656.0)
+rect gg_rct_chap1_plotKylie1_5 = Rect(-4192.0, -2912.0, -4064.0, -2784.0)
+rect gg_rct_chap1_plotKylie2_1 = Rect(-2688.0, -4032.0, -2560.0, -3904.0)
+rect gg_rct_chap1_plotKylie2_2 = Rect(-2400.0, -4352.0, -2272.0, -4224.0)
+rect gg_rct_chap1_gates2 = Rect(-2560.0, -4416.0, -2080.0, -4320.0)
+rect gg_rct_chap1_plotKylie2_3 = Rect(-2368.0, -4704.0, -2240.0, -4576.0)
+rect gg_rct_chap1_plotKylie2_4 = Rect(-2368.0, -5600.0, -2240.0, -5472.0)
+rect gg_rct_chap1_plotKylie2_5 = Rect(-1856.0, -5920.0, -832.0, -5088.0)
+rect gg_rct_chap1_plotKylie3_1 = Rect(-192.0, -4096.0, -64.0, -3968.0)
+rect gg_rct_chap1_plotKylie3_2 = Rect(-192.0, -3648.0, -64.0, -3520.0)
+rect gg_rct_chap1_gates3 = Rect(-2144.0, -5888.0, -2016.0, -5216.0)
+rect gg_rct_chap1_gates4 = Rect(-416.0, -4000.0, 160.0, -3872.0)
+rect gg_rct_chap1_gates5 = Rect(-3680.0, -2080.0, -3552.0, -1504.0)
+rect gg_rct_chap1_plotKylie4_1 = Rect(-3488.0, -1888.0, -3360.0, -1760.0)
+rect gg_rct_chap1_plotKylie4_2 = Rect(-3872.0, -1856.0, -3744.0, -1728.0)
+rect gg_rct_chap1_plotKylie4_3=Rect(- 4608.0, - 1376.0, - 4480.0, - 1248.0)
+rect gg_rct_chap1_plotRect2 = Rect(-3072.0, -4064.0, -2528.0, -3552.0)
+rect gg_rct_chap1_plotRect3 = Rect(-448.0, -4416.0, 96.0, -3904.0)
+rect gg_rct_chap1_plotRect4 = Rect(-3488.0, -2144.0, -3104.0, -1792.0)
+rect gg_rct_chap1_plotRect5 = Rect(-3360.0, 3328.0, -2976.0, 3680.0)
+rect gg_rct_chap1_plotKylie5_1 = Rect(-3232.0, 3456.0, -3104.0, 3584.0)
+rect gg_rct_chap1_plotKylie5_2 = Rect(-2880.0, 2752.0, -2752.0, 2880.0)
+rect gg_rct_chap1_plotKylie5_3 = Rect(-2880.0, 2496.0, -2752.0, 2624.0)
+rect gg_rct_chap1_teleport1 = Rect(-2880.0, 2240.0, -2752.0, 2368.0)
+rect gg_rct_chap1_teleport2 = Rect(-2368.0, 2624.0, -2240.0, 2752.0)
+rect gg_rct_chap1_teleport3 = Rect(-3392.0, 2624.0, -3264.0, 2752.0)
+rect gg_rct_chap1_challenge1_visiblity = Rect(-4576.0, -480.0, -1472.0, 1824.0)
+rect gg_rct_chap1_challenge2_visiblity = Rect(-1600.0, 1952.0, 1696.0, 4640.0)
+rect gg_rct_chap1_challenge3_visiblity = Rect(-1696.0, -1088.0, 3040.0, 2336.0)
+rect gg_rct_chap1_challenge1_end = Rect(-4096.0, 800.0, -3968.0, 928.0)
+rect gg_rct_chap1_challenge2_end = Rect(1088.0, 3936.0, 1216.0, 4064.0)
+rect gg_rct_chap1_challenge3_end = Rect(2112.0, 1760.0, 2240.0, 1888.0)
+rect gg_rct_chap1_challenge1_spawn1 = Rect(-3488.0, 1408.0, -3392.0, 1504.0)
+rect gg_rct_chap1_challenge1_spawn2 = Rect(-2144.0, 608.0, -2016.0, 736.0)
+rect gg_rct_chap1_challenge1_spawn3 = Rect(-3520.0, 448.0, -3424.0, 544.0)
+rect gg_rct_chap1_challenge2_spawn1 = Rect(640.0, 4224.0, 736.0, 4320.0)
+rect gg_rct_chap1_challenge2_spawn2 = Rect(160.0, 3584.0, 256.0, 3680.0)
+rect gg_rct_chap1_challenge2_spawn3 = Rect(-1248.0, 3584.0, -1152.0, 3680.0)
+rect gg_rct_chap1_challenge2_spawn4 = Rect(-832.0, 3008.0, -736.0, 3104.0)
+rect gg_rct_chap1_challenge2_spawn5 = Rect(768.0, 2976.0, 864.0, 3072.0)
+rect gg_rct_chap1_challenge3_spawn1 = Rect(-1152.0, 640.0, -1056.0, 736.0)
+rect gg_rct_chap1_challenge3_spawn2 = Rect(-672.0, 1280.0, -576.0, 1376.0)
+rect gg_rct_chap1_challenge3_spawn3 = Rect(800.0, 1536.0, 896.0, 1632.0)
+rect gg_rct_chap1_challenge3_spawn4 = Rect(-352.0, 480.0, -256.0, 576.0)
+rect gg_rct_chap1_challenge3_spawn5 = Rect(2240.0, 1056.0, 2336.0, 1152.0)
+rect gg_rct_chap1_teleport4 = Rect(-3328.0, 4096.0, -3200.0, 4224.0)
+rect gg_rct_chap1_teleport5 = Rect(1984.0, -2368.0, 2112.0, -2240.0)
+rect gg_rct_chap1_plotAI1_1 = Rect(1664.0, -2080.0, 1792.0, -1952.0)
+rect gg_rct_chap1_plotAI1_2 = Rect(2272.0, -2080.0, 2400.0, -1952.0)
+rect gg_rct_chap1_plotAI1_3 = Rect(1696.0, -2656.0, 1824.0, -2528.0)
+rect gg_rct_chap1_plotAI1_4 = Rect(2272.0, -2656.0, 2400.0, -2528.0)
+rect gg_rct_chap1_gates6 = Rect(-3744.0, 1088.0, -3616.0, 1504.0)
+rect gg_rct_chap1_gates7 = Rect(-800.0, 3776.0, -672.0, 4320.0)
+rect gg_rct_chap1_gates8 = Rect(-1408.0, 416.0, -736.0, 544.0)
+rect gg_rct_chap1_gates9 = Rect(-4640.0, 3744.0, -4544.0, 4160.0)
+rect gg_rct_chap1_gates10 = Rect(1792.0, -2784.0, 2304.0, -2656.0)
+rect gg_rct_chap1_plotRect6 = Rect(-4128.0, 1024.0, -3648.0, 1504.0)
+rect gg_rct_chap1_plotRect7 = Rect(-1280.0, 3744.0, -704.0, 4320.0)
+rect gg_rct_chap1_plotRect8 = Rect(-1376.0, -96.0, -800.0, 480.0)
+rect gg_rct_chap1_plotRect9 = Rect(1664.0, -2656.0, 2400.0, -1952.0)
+rect gg_rct_chap1_plotRect10 = Rect(-4576.0, 1888.0, -1664, 4480.0)
+rect gg_rct_chap1_plotRect11 = Rect(-3136.0, 2496.0, -2496, 3104.0)
+rect gg_rct_chap1_exit = Rect(1632.0, -6144.0, 2432.0, -5728.0)
+
+unit chap1_uPoR1
+unit chap1_uPoR2
+unit chap1_challenge1_uPoR
+unit chap1_challenge2_uPoR
+unit chap1_challenge3_uPoR
+
+public function startChapter1()
+    chap1_uPoR1 = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_PoR1.getCenter(), angle(0.))
+    chap1_uPoR2 = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_PoR2.getCenter(), angle(0.))
+    chap1_challenge1_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge1_PoR.getCenter(), angle(0.))
+    chap1_challenge2_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge2_PoR.getCenter(), angle(0.))
+    chap1_challenge3_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge3_PoR.getCenter(), angle(0.))                                    
+
+    setCheckPoint(chap1_uPoR1, false, false)
+    setNextChapterEnd(function chapter1)
+
+function chapter1()
+    unit uKylie = createUnitOnLevel(false, UnitDataBase.plotKylieAI,
+                                    gg_rct_chap1_plotKylie1_1.getCenter(), angle(3*PI/2))
+    ..setAnimation("death")
+    ..setColor2(PLAYER_COLOR_CYAN)
+    
+
+    // "Kylie", part 1
+    let gates1 = createGatesOnLevel(gg_rct_chap1_gates1)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect1, MainHero.MAIN_HEROES_GROUP)
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393???|r")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "Oh.")
+    uKylie.setAnimation("stand")
+    polledWait2(1.0)
+    makeDialog(uKylie, ". . .")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, "Wha. . . Where am I. . .")
+    endDialogMode()
+    
+    polledWait2(1.0)
+
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie1_2.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie1_2, uKylie)
+
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393???|r")
+    makeDialog(uKylie, ". . .")
+    endDialogMode()
+    uKylie.setFacing(angle(PI/4))
+    polledWait2(1.0)
+
+
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie1_3.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie1_3, uKylie)
+
+
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(0.))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(3*PI/2))
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393???|r")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "I see. After all. . . This happened. . .")
+    makeDialog(uKylie, "So you guys have just waken up, huh?")
+    makeDialog(uKylie, "And you. . . don't remember everything. And can't talk.")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "My name is |cff00d393Kylie|r.")
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "I'm. . . |cfff3b328portaloid|r scientist. So. . .")
+    uKylie.setFacing(angle(0))
+    makeDialog(uKylie, ". . .")
+    uKylie.setFacing(angle(PI/2))
+    makeDialog(uKylie, "Oh.")
+    uKylie.setFacing(angle(PI))
+    makeDialog(uKylie, "This place. . .")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, "Ah, you don't remember. Let me say what is that.")
+    makeDialog(uKylie, "This is the remains of the city |cfff3b328Alenheart|r.")
+    makeDialog(uKylie, "The thing is, a not much of time have passed since its destruction.")
+    makeDialog(uKylie, "It has been around two weeks.")
+    makeDialog(uKylie, "And nobody knows why. Why once a picturesque town suddenly filled with the |cfff3b328snow of death|r.")
+    makeDialog(uKylie, "Nobody knows. . . because all of the witnesses. . . are dead. As you may have noticed these corpses. . .")
+    makeDialog(uKylie, "So, let's focus on you.")
+    makeDialog(uKylie, "You guys are the special |cfff3b328clones|r. Clones from dead bodies of. . .")
+    makeDialog(uKylie, "I. . . |cfff3b328We|r were trying to |cfff3b328resurrect|r. . . former you.")
+    makeDialog(uKylie, "But something happened. We were in the local Portbuilding, and. . . there was a blackout and then I have passed.")
+    makeDialog(uKylie, "As for now, this place is. . . different from where I was. I was inside, and now I'm outside, that's what I'm sure about.")
+    makeDialog(uKylie, "I don't see my colleagues everywhere.")
+    makeDialog(uKylie, "And I have a bad feeling. Because you are here too and just have waken up, as it wasn't supposed to be.") 
+    makeDialog(uKylie, "And I'm afraid of large amount of snow all around.")
+    makeDialog(uKylie, "You see, there is danger for you. The |cfff3b328snow of death|r.")
+    makeDialog(uKylie, "This snow is just normal snow. You know, forms of ice crystals that precipitate from the atmosphere. . .")
+    makeDialog(uKylie, ". . .and undergo changes on the planet's surface?")
+    makeDialog(uKylie, "We don't understand why, but it's seem your bodies |cfff3b328aren't able to cross the snow|r.")
+    makeDialog(uKylie, "The citizens of Alenheart were the same. If they touched the snow, they. . . suddenly pass away.")
+    makeDialog(uKylie, "They stop breathing and die of oxygen starvation as a result.")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "As for me, this terrible phenomenon does not concern my body. . . I'm not from Alenheart, after all.")
+    makeDialog(uKylie, "So, please, don't touch snow on the ground. Or you will surely die.")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, ". . . ah.")
+    makeDialog(uKylie, "Someday, you will learn more about all this, but not now.")
+    makeDialog(uKylie, "We have no time, we need to undertand where are we.")
+    uKylie.setFacing(angle(3*PI/2-PI/3))
+    polledWait2(0.5)
+
+
+    uKylie.setFacing(angle(3*PI/2+PI/3))
+    makeDialog(uKylie, "So. We need to move.")
+    endDialogMode()
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie1_4.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie1_4, uKylie)
+
+
+    uKylie.setFacing(angle(3*PI/2-PI/4))
+    polledWait2(0.5)
+
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "Follow me. Don't touch the snow.")
+    endDialogMode()
+
+    gates1.destr()
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie1_5.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie1_5, uKylie)
+
+
+    uKylie.setXY(gg_rct_chap1_plotKylie2_1.getCenter())
+    uKylie.issueImmediateOrder("stop")
+    uKylie.setFacing(angle(3*PI/2+PI/4))
+
+
+    // "Kylie", part 2
+    let gates2 = createGatesOnLevel(gg_rct_chap1_gates2)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect2, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "Oh god. . . Everything here is destroyed.")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "Is that all really called by snow?")
+    uKylie.setFacing(angle(0))
+    makeDialog(uKylie, "That blue fire. . .")
+    endDialogMode()
+
+    gates2.destr()
+    let gates3 = createGatesOnLevel(gg_rct_chap1_gates3)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie2_2.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie2_2, uKylie)
+
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie2_3.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie2_3, uKylie)
+
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie2_4.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie2_4, uKylie)
+
+
+    uKylie.setFacing(angle(0.))
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    uKylie.setFacing(angle(0))
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "This is. . . But. . . Why is it here? . .")
+    uKylie.setFacing(angle(PI/2))
+    makeDialog(uKylie, "Listen up. This is the |cfff3b328turning ice|r.")
+    makeDialog(uKylie, "And there is one strange thing. We've learned that |cfff3b328ice|r doesn't work on your body, even though snow does.")
+    makeDialog(uKylie, "So, you can touch it.")
+    makeDialog(uKylie, "Such a mystery, huh? Snow killed people, but ice did not.")
+    makeDialog(uKylie, ". . .")
+    uKylie.setFacing(angle(0))
+    makeDialog(uKylie, "This ice is skating thing and you can slide on it freely. And you can also turn over!")
+    uKylie.setFacing(angle(PI/2))
+    makeDialog(uKylie, "Follow me, don't be afraid of. Hurry.")
+    endDialogMode()
+
+    gates3.destr()
+    new IceClass(uKylie, false)
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie2_5.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie2_5, uKylie)
+
+
+    uKylie.setXY(gg_rct_chap1_plotKylie3_1.getCenter())
+    uKylie.issueImmediateOrder("stop")
+    uKylie.setFacing(angle(PI/2))
+
+    // "Kylie", part 3
+    let gates4 = createGatesOnLevel(gg_rct_chap1_gates4)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect3, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "Wha? Again? Why is it here too?")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, ". . . this is the |cfff3b328non-turning ice|r.")
+    makeDialog(uKylie, "You can't turn over on this type of ice. Because the friction force is so low. . .")
+    makeDialog(uKylie, "that it is impossible to use your body to make your center of gravity turn. . .")
+    uKylie.setFacing(angle(3*PI/2 + PI/6))
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, ". . .oh. You don't know of all it, do you? Well, be careful.")
+    makeDialog(uKylie, "Oh, and one more thing.")
+    makeDialog(uKylie, "You can accidentally die because of hitting the wall with great skating speed.")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, "So, be careful.")
+    makeDialog(uKylie, "Let's go.")
+    endDialogMode()
+
+    gates4.destr()
+    uKylie.setFacing(angle(PI/2))
+    polledWait2(1.0)
+
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie3_2.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie3_2, uKylie)
+
+
+    uKylie.setXY(gg_rct_chap1_plotKylie4_1.getCenter())
+    uKylie.issueImmediateOrder("stop")
+    uKylie.setFacing(angle(PI))
+
+    // "Kylie", part 4
+    let gates5 = createGatesOnLevel(gg_rct_chap1_gates5)
+    ..makeEffect(Doodads.forcewall, angle(0), 1.0)
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect4, MainHero.MAIN_HEROES_GROUP)
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "Oh, one more ice.")
+    uKylie.setFacing(angle(3*PI/2 + PI/4))
+    makeDialog(uKylie, "This is the |cfff3b328reverse turning ice|r. It has so-called reverse friction force.")
+    makeDialog(uKylie, "To put it simply, if you turn over on this type of ice, you will turn over backwards instead.")
+    makeDialog(uKylie, "It means you will turn over around 180 degrees. That's why it's called reverse turning ice.")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, ". . .")
+    uKylie.setFacing(angle(PI))
+    makeDialog(uKylie, "It's not hard to get used to this. Just need more practice!")
+    endDialogMode()
+
+    gates5.destr()
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie4_2.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie4_2, uKylie)
+
+
+    uKylie.setXY(gg_rct_chap1_plotKylie5_1.getCenter())
+    uKylie.issueImmediateOrder("stop")
+    uKylie.setFacing(angle(3*PI/2 + PI/4))
+
+    waitUntilCheckPoint(gg_rct_chap1_PoR2, chap1_uPoR2)
+
+
+
+    // "Kylie", part 5
+
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect5, MainHero.MAIN_HEROES_GROUP)
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "Hm. . .")
+    uKylie.setFacing(angle(PI/2 + PI/4))
+    makeDialog(uKylie, "Oh. . . Looks like you've reached the |cfff3b328Circle of Resurrection|r.")
+    makeDialog(uKylie, "This thing was very common in the city. All people of town attached to these so-called \"lighthouse\".")
+    makeDialog(uKylie, "Because of changes we made in your bodies, you. . . can't completely die.")
+    makeDialog(uKylie, "When you die, your body leaves a |cfff3b328colored small circle|r.")
+    makeDialog(uKylie, "If other of you reaches this, the dead one will return to life. In that big circle.")
+    makeDialog(uKylie, "To be honest, this circle doesn't really bring the dead back to life. It's an illusion.")
+    makeDialog(uKylie, "To put it simply. . . your body endures the |cfff3b328transformation|r when it feels a great danger.")
+    makeDialog(uKylie, "You turn into a protective shell.")
+    makeDialog(uKylie, "You all have |cfff3b328portaloid particles|r inside of your body. And they reacts to this shell and. . .")
+    uKylie.setFacing(angle(0))
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "Hm.")
+    uKylie.setFacing(angle(PI/2 + PI/4))
+    makeDialog(uKylie, "Let's leave this conversation for later then. I see we have something there. . .")
+    endDialogMode()
+
+    uKylie.issuePointOrder("move", gg_rct_chap1_plotKylie5_2.getCenter())
+    waitUntilUnitJoinsRect(gg_rct_chap1_plotKylie5_2, uKylie)
+
+
+    uKylie.setFacing(angle(PI))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(3*PI/2))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(0))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(-PI/2))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(PI/2))
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "Looks like we have a problem.")
+    makeDialog(uKylie, "It seems like we in one of portal centeres of city.")
+    uKylie.setFacing(angle(3*PI/2))
+    makeDialog(uKylie, "And this. . . seems so unnatural. What happened?")
+    makeDialog(uKylie, "Why everything. . . it's like. . . everything is done as a labyrinth.")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "I'll turn on to you the portals.")
+    makeDialog(uKylie, "Could you find and turn on some switched in portals. . .")
+    makeDialog(uKylie, ". . . . please?")
+    makeDialog(uKylie, "I stay here. Need check something. . .")
+    uKylie.setFacing(angle(3*PI/2))
+    endDialogMode()
+    polledWait2(2.0)
+
+
+
+
+    // "Challenge 1"
+    let effectTp1 = addEffect2(Abilities.massTeleportTo, gg_rct_chap1_teleport1.getCenter())
+    let tpToChallenge1 = createTeleportOnLevel(gg_rct_chap1_teleport1, gg_rct_chap1_challenge1_PoR.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    let gates6 = createGatesOnLevel(gg_rct_chap1_gates6)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect6, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    waitUntilCheckPoint(gg_rct_chap1_challenge1_PoR, chap1_challenge1_uPoR)
+
+
+    effectTp1.destr()
+    tpToChallenge1.destr()
+    gates6.destr()
+    let gates9 = createGatesOnLevel(gg_rct_chap1_gates9)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    let exitChallenge1 = createTeleportOnLevel(gg_rct_chap1_challenge1_end, gg_rct_chap1_PoR2.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    waitUntilCheckPoint(gg_rct_chap1_PoR2, chap1_uPoR2)
+
+
+
+    gg_rct_chap1_teleport1.getCenter().setTerrainType(Tiles.northrend_Rocky_Snow, 0, 2, 0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect10, MainHero.MAIN_HEROES_GROUP)
+
+
+    exitChallenge1.destr()   
+    
+    // "Challenge 2"
+    let effectTp2 = addEffect2(Abilities.massTeleportTo, gg_rct_chap1_teleport2.getCenter())
+    let tpToChallenge2 = createTeleportOnLevel(gg_rct_chap1_teleport2, gg_rct_chap1_challenge2_PoR.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    let gates7 = createGatesOnLevel(gg_rct_chap1_gates7)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect7, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    waitUntilCheckPoint(gg_rct_chap1_challenge2_PoR, chap1_challenge2_uPoR)
+
+
+    effectTp2.destr()
+    tpToChallenge2.destr()
+    gates7.destr()
+
+    let exitChallenge2 = createTeleportOnLevel(gg_rct_chap1_challenge2_end, gg_rct_chap1_PoR2.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    waitUntilCheckPoint(gg_rct_chap1_PoR2, chap1_uPoR2)
+
+
+
+    gg_rct_chap1_teleport2.getCenter().setTerrainType(Tiles.northrend_Rocky_Snow, 0, 2, 0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect10, MainHero.MAIN_HEROES_GROUP)
+
+
+    exitChallenge2.destr()
+
+    // "Challenge 3"
+    let effectTp3 = addEffect2(Abilities.massTeleportTo, gg_rct_chap1_teleport3.getCenter())
+    let tpToChallenge3 = createTeleportOnLevel(gg_rct_chap1_teleport3, gg_rct_chap1_challenge3_PoR.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    let gates8 = createGatesOnLevel(gg_rct_chap1_gates8)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect8, MainHero.MAIN_HEROES_GROUP)
+
+
+
+    waitUntilCheckPoint(gg_rct_chap1_challenge3_PoR, chap1_challenge3_uPoR)
+
+
+    effectTp3.destr()
+    tpToChallenge3.destr()
+    gates8.destr()
+
+    let exitChallenge3 = createTeleportOnLevel(gg_rct_chap1_challenge3_end, gg_rct_chap1_PoR2.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    waitUntilCheckPoint(gg_rct_chap1_PoR2, chap1_uPoR2)
+
+
+
+    gg_rct_chap1_teleport3.getCenter().setTerrainType(Tiles.northrend_Rocky_Snow, 0, 2, 0)
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect10, MainHero.MAIN_HEROES_GROUP)
+
+
+    exitChallenge3.destr()
+
+
+    // "Kylie", part 6.
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_plotRect11, MainHero.MAIN_HEROES_GROUP)
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, ". . .")
+    uKylie.setFacing(angle(PI/2))
+    makeDialog(uKylie, ". . .oh. Hello again. Did you make it?")
+    makeDialog(uKylie, "I. . . understand what happened.")
+    makeDialog(uKylie, "Have you seen that some snowy rocks appeared right now? It's explain everything.")
+    makeDialog(uKylie, "This place. . . isn't . . . the city. . .")  // the city Alenheart
+    makeDialog(uKylie, "It's the. . .")  // portaloid illusion of city
+    makeDialog(uKylie, "|cfff3b328portaloid|r. . .")
+
+    // Main AI appears.
+    endDialogMode()
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ff???|r")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Stop. Well, well. Don't say anything from here.")
+    uKylie.setFacing(angle(3*PI/2))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(PI))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(0.))
+    polledWait2(1.0)
+
+
+    uKylie.setFacing(angle(3*PI/2))
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, ". . .")
+    makeDialog(uKylie, "You.")
+
+    changeDialogueNameSpeaker("|cffff00ff???|r")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Hi there. And bye.")
+    for i = 0 to 2
+        flashEffect2(PATH_GREAT_LIGHTING, uKylie.getPos())
+        polledWait2(0.5)
+
+
+    changeDialogueNameSpeaker("|cff00d393Kylie|r")
+    makeDialog(uKylie, "AAAAAAAAAAAAHHHHHH. . .")
+
+    for i = 0 to 2
+        flashEffect2(PATH_GREAT_LIGHTING, uKylie.getPos())
+        polledWait2(0.5)
+
+    makeDialog(uKylie, "And agian..a.af.s.gh.ag.ag. . .")
+    endDialogMode()
+    
+    uKylie.destr()
+    polledWait2(1.0)
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ff???|r")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Ahah. . .")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Hahahaahahhaha. . . hahahahahahahahahaaahhh!")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Did you just believe everything she said?")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "It's all about the city? That is called \"ALENHEART?\"")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "And. . . some |cfff3b328snow of death|r that destroyed the whole town?")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "And about the other things she said? Hahahaahahahaahaha...")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Of course it was all |cfff3b328lie|r.")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "That the lie she invented by herself.")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "After all, she was a robot. She is. . .  my self-produced |cfff3b328AI|r.")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "This artificial intelligence just imagined, collecting all the facts of the story and mixing them together randomly.")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Seriously, I didn't expect that she would call the usual snow as snow of death. Hahahahaha!.")
+    makeDialog(gg_rct_chap1_plotKylie5_3, ". . . hahahaha. . . hah. Hahaha. . .")
+    makeDialog(gg_rct_chap1_plotKylie5_3, "Ah, you don't see me. . . Let's see in what form should I appear. . .")
+    polledWait2(3.0)
+
+
+    makeDialog(gg_rct_chap1_plotKylie5_3, ". . . ah. . . this model is perfect.")
+    let effAppear = addEffect2(Abilities.soulBurnbuff, gg_rct_chap1_plotKylie5_3.getCenter())
+    makeDialog(gg_rct_chap1_plotKylie5_3, ". . .")
+    effAppear.destr()
+
+    unit uKid = createUnitOnLevel(UnitDataBase.plotKidAI, 
+                                    gg_rct_chap1_plotKylie5_3.getCenter(), angle(PI/2))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    
+
+
+    makeDialog(uKid, "Woah!")
+    makeDialog(uKid, "Good. Finally.")
+    makeDialog(uKid, "After years of attempts at cloning of deaf bodies. . .")
+    makeDialog(uKid, "You are. . . the first who completed first task.")
+    makeDialog(uKid, "You had to get here. Go through these portals and come back alive.")
+    makeDialog(uKid, "But. . . I got bored of making up clones again and again. They failed to get here and died.")
+    makeDialog(uKid, "In addition to that, sometimes they did suicide moves not knowing why.")
+    makeDialog(uKid, "So I made up random stories to motivate every clones to come here.")
+    makeDialog(uKid, "That woman you met. Kylie. She was just my self-contructed AI.")
+    makeDialog(uKid, "Her full story has. . . is randomly mixed up. It was all lie.")
+    makeDialog(uKid, "Although, I admit, part of this contained some truth.")
+    makeDialog(uKid, "For example. . . what did she say to you earlier?")
+    makeDialog(uKid, "She said \"this is the remains of the city |cfff3b328Alenheart|r.\"")
+
+    changeDialogueNameSpeaker("|cffff00ff???|r")
+    makeDialog(uKid, "Well. . . That was a lie. Cuz in reality |cfff3b328Alenheart|r is not a city.")
+    makeDialog(uKid, "It's a |cfff3b328planet|r.")
+    makeDialog(uKid, "Welcome. To the |cfff3b328planet Alenheart|r.")
+    makeDialog(uKid, "I wiil be your |cfff3b328guider|r.")
+    makeDialog(uKid, "The city she mentioned earlier is called by another name.")
+    makeDialog(uKid, "And. . . I won't answer all arising questions from here.")
+    makeDialog(uKid, "You know what they say, not knowing gives you the motivation to go further.")
+    makeDialog(uKid, "Ah yeah. . . you can call me |cffff00ffKid|r.")
+
+    changeDialogueNameSpeaker("|cffff00ffKid|r")
+    makeDialog(uKid, "I'm the |cfff3b328Main AI|r. Of this. . . place.")
+    makeDialog(uKid, "I construct.")
+    makeDialog(uKid, "I destroy.")
+    makeDialog(uKid, "I create.")
+    makeDialog(uKid, "I eliminate.")
+    makeDialog(uKid, "I genereate.")
+    makeDialog(uKid, "I erase.")
+    makeDialog(uKid, "Let's have some fun, shall we?")
+    makeDialog(uKid, "Let make these portals. . . more interesting.")
+    makeDialog(uKid, "From now, I'll tell you about some new things that appear.")
+    makeDialog(uKid, "And tonight. . . it would be |cfff3b328monsters|r. For example, this. Look.")
+
+    unit exTroll = createUnitOnLevel(UnitDataBase.polarTroll, 
+                                        gg_rct_chap1_teleport1.getCenter(), angle(0))
+                                        
+    exTroll.makeSpinRound(2.0, false)
+
+    polledWait2(1.0)
+
+
+
+    makeDialog(uKid, "These. . . monsters controlled by me are dangerous for you. If they touch you, you die.")
+    makeDialog(uKid, "Sounds simple. Well, let's get to know them.")
+    makeDialog(uKid, "This one is |cfff3b328Polar troll|r.")
+
+    exTroll.destr()
+    unit exBear = createUnitOnLevel(UnitDataBase.polarBear, 
+                                        gg_rct_chap1_teleport2.getCenter(), angle(0))
+    
+    exBear.makeSpinRound(2.0, false)
+
+    polledWait2(1.0)
+
+
+
+    makeDialog(uKid, "This cute guy is |cfff3b328Polar bear|r.")
+
+    exBear.destr()
+    unit exRevenant = createUnitOnLevel(UnitDataBase.frostRevenant, 
+                                        gg_rct_chap1_teleport3.getCenter(), angle(0))
+
+    exRevenant.makeSpinRound(2.0, false)
+
+    polledWait2(1.0)
+
+
+
+    makeDialog(uKid, "And this. . . is |cfff3b328Frost revenant|r.")
+    exRevenant.destr()
+
+    makeDialog(uKid, "Explanation ends here for now. Go. Die. Revive. Die. . . Revive. . .")
+    makeDialog(uKid, "And survive this place.")
+    endDialogMode()
+
+    uKid.destr()
+
+    polledWait2(1.0)
+
+    setChallenge(1, false, false)
+    waitUntilChallengeIsCompeted()
+
+    polledWait2(2.0)
+
+    setChallenge(2, false, false)
+    waitUntilChallengeIsCompeted()
+
+    polledWait2(2.0)
+
+    setChallenge(3, false, false)
+    waitUntilChallengeIsCompeted()
+
+
+
+
+    let effectExit = addEffect2(Abilities.massTeleportTo, gg_rct_chap1_challenge3_end.getCenter())
+    let tpExit = createTeleportOnLevel(gg_rct_chap1_challenge3_end, gg_rct_chap1_PoR2.getCenter(), 
+                                        Abilities.massTeleportTarget)
+
+    waitUntilCheckPoint(gg_rct_chap1_PoR2, chap1_uPoR2)
+
+    let effectTp4 = addEffect2(Abilities.massTeleportTo, gg_rct_chap1_teleport4.getCenter())
+    let tp4 = createTeleportOnLevel(gg_rct_chap1_teleport4, gg_rct_chap1_teleport5.getCenter(), 
+                                        Abilities.massTeleportTarget)
+    let gates10 = createGatesOnLevel(gg_rct_chap1_gates10)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+
+
+    waitUntilEveryoneInRect(gg_rct_chap1_plotRect9, MainHero.MAIN_HEROES_GROUP)
+
+
+    effectExit.destr()
+    tpExit.destr()
+
+
+    effectTp4.destr()
+    tp4.destr()
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ffKid|r")
+    unit uKid1 = createUnitOnLevel(false, UnitDataBase.plotKidAI, gg_rct_chap1_plotAI1_1.getCenter(), 
+                                        angle(3*PI/2 + PI/4))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    makeDialog(uKid1, "Oh.")
+    makeDialog(uKid1, "You have passed. Wonderful.")
+
+    unit uKid2 = createUnitOnLevel(false, UnitDataBase.plotKidAI, gg_rct_chap1_plotAI1_2.getCenter(), 
+                                        angle(3*PI/2 - PI/4))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    makeDialog(uKid2, "Ah.")
+    makeDialog(uKid2, "You have come. Great.")
+
+    unit uKid3 = createUnitOnLevel(false, UnitDataBase.plotKidAI, gg_rct_chap1_plotAI1_3.getCenter(), 
+                                        angle(PI/4))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    makeDialog(uKid3, "Hahahaha.")
+    makeDialog(uKid3, "Thaat's sooo coool. You are heree!")
+
+    unit uKid4 = createUnitOnLevel(false, UnitDataBase.plotKidAI, gg_rct_chap1_plotAI1_4.getCenter(), 
+                                        angle(PI/2 + PI/4))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+    makeDialog(uKid4, "Oh.")
+    makeDialog(uKid4, "Really? I don't believe it. You have passed?")
+
+    makeDialog(uKid1, uKid2, uKid3, uKid4, ". . . hahahaha. . . hahaha!")
+
+    uKid1.destr()
+    uKid2.destr()
+    uKid3.destr()
+    uKid4.destr()
+
+    endDialogMode()
+    gates10.destr()
+
+    waitUntilEveryoneInRect(gg_rct_chap1_exit, MainHero.MAIN_HEROES_GROUP)
+
+
+    gates9.destr()
+    endChapter()
+
+public function startChallenge1()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap1_challenge1_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge1_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap1_challenge1_uPoR)
+    setChallengeRectVisibility(gg_rct_chap1_challenge1_visiblity)
+
+    setNextChallengeEnd(function challenge1)
+
+function challenge1()
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap1_challenge1_spawn1.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 300.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap1_challenge1_spawn2.getCenter(), angle(PI/2 + PI/4))
+    ..issuePolarPosOrder("patrol", 750.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap1_challenge1_spawn3.getCenter(), angle(0.))
+    ..issuePolarPosOrder("patrol", 1450.)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_challenge1_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()
+
+public function startChallenge2()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap1_challenge2_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge2_PoR.getCenter(), angle(0.))
+    setCheckPoint(chap1_challenge2_uPoR)
+    setChallengeRectVisibility(gg_rct_chap1_challenge2_visiblity)
+    setNextChallengeEnd(function challenge2)
+
+public function challenge2()
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap1_challenge2_spawn1.getCenter(), angle(3*PI/2 - PI/4))
+    ..issuePolarPosOrder("patrol", 650.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap1_challenge2_spawn2.getCenter(), angle(3*PI/2 + PI/4))
+    ..issuePolarPosOrder("patrol", 800.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap1_challenge2_spawn3.getCenter(), angle(3*PI/2 + PI/4 - PI/8))
+    ..issuePolarPosOrder("patrol", 800.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap1_challenge2_spawn4.getCenter(), angle(3*PI/2 - PI/4 + PI/8))
+    ..issuePolarPosOrder("patrol", 800.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap1_challenge2_spawn5.getCenter(), angle(3*PI/2 + PI/4 + PI/8))
+    ..issuePolarPosOrder("patrol", 850.)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_challenge2_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()
+
+public function startChallenge3()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap1_challenge3_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap1_challenge3_PoR.getCenter(), angle(0.))  
+    setCheckPoint(chap1_challenge3_uPoR)
+    setChallengeRectVisibility(gg_rct_chap1_challenge3_visiblity)
+    setNextChallengeEnd(function challenge3)
+
+function challenge3()
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap1_challenge3_spawn1.getCenter(), angle(PI/2))
+    ..issuePolarPosOrder("patrol", 600.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap1_challenge3_spawn2.getCenter(), angle(0))
+    ..issuePolarPosOrder("patrol", 640.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap1_challenge3_spawn3.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 450.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap1_challenge3_spawn4.getCenter(), angle(0))
+    ..issuePolarPosOrder("patrol", 600.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap1_challenge3_spawn5.getCenter(), angle(3*PI/2))
+    ..issuePolarPosOrder("patrol", 1250.)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap1_challenge3_end, MainHero.MAIN_HEROES_GROUP)
+
+    endChallenge()

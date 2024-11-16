@@ -1,0 +1,575 @@
+package Chapter3
+
+import CircleOfResurrection
+import FuncLevels
+import UsefulFunctions
+import GameObjects
+
+import initlater Chapters
+import initlater Challengers
+import Doodads
+import Abilities
+import Tiles
+import GameState
+import AssetsConstants
+import Dialogues
+import TileImage
+import HashList
+
+
+//********** RECTS
+rect gg_rct_chap3_challenge8_spawn1=Rect(-4224.0, -3872.0, -4096.0, -3744.0)
+rect gg_rct_chap3_challenge8_spawn2=Rect(-4224.0, -1248.0, -4096.0, -1120.0)
+rect gg_rct_chap3_challenge8_spawn3=Rect(-5152.0, -96.0, -5024.0, 32.0)
+rect gg_rct_chap3_challenge8_spawn4=Rect(-4512.0, 1888.0, -4384.0, 2016.0)
+rect gg_rct_chap3_challenge8_spawn5=Rect(-2848.0, 3008.0, -2720.0, 3136.0)
+rect gg_rct_chap3_challenge8_spawn6=Rect(-1632.0, 1888.0, -1504.0, 2016.0)
+rect gg_rct_chap3_challenge8_spawn7=Rect(-2112.0, 128.0, -1984.0, 256.0)
+rect gg_rct_chap3_challenge8_spawn8=Rect(-2784.0, -3360.0, -2656.0, -3232.0)
+rect gg_rct_chap3_challenge8_spawn9=Rect(-2432.0, -4544.0, -2304.0, -4416.0)
+rect gg_rct_chap3_challenge8_spawn10=Rect(-928.0, -4512.0, -800.0, -4384.0)
+rect gg_rct_chap3_challenge8_spawn11=Rect(160.0, -3168.0, 288.0, -3040.0)
+rect gg_rct_chap3_challenge8_spawn12=Rect(800.0, -1696.0, 928.0, -1568.0)
+rect gg_rct_chap3_challenge8_spawn13=Rect(992.0, 0.0, 1120.0, 128.0)
+rect gg_rct_chap3_challenge8_spawn14=Rect(896.0, 2048.0, 1024.0, 2176.0)
+rect gg_rct_chap3_challenge8_spawn15=Rect(480.0, 4224.0, 608.0, 4352.0)
+rect gg_rct_chap3_challenge8_spawn16=Rect(-1312.0, 4800.0, -1184.0, 4928.0)
+rect gg_rct_chap3_challenge8_spawn17=Rect(-3424.0, 4320.0, -3296.0, 4448.0)
+
+rect gg_rct_chap3_challenge9_spawn1=Rect(4288.0, 1216.0, 4416.0, 1344.0)
+rect gg_rct_chap3_challenge9_spawn2=Rect(4544.0, 1344.0, 4672.0, 1472.0)
+rect gg_rct_chap3_challenge9_spawn3=Rect(5056.0, 1568.0, 5184.0, 1696.0)
+rect gg_rct_chap3_challenge9_spawn4=Rect(4896.0, 320.0, 5024.0, 448.0)
+rect gg_rct_chap3_challenge9_spawn5=Rect(2976.0, 0.0, 3104.0, 128.0)
+rect gg_rct_chap3_challenge9_spawn6=Rect(3296.0, -544.0, 3424.0, -416.0)
+rect gg_rct_chap3_challenge9_spawn7=Rect(2976.0, -1856.0, 3104.0, -1728.0)
+rect gg_rct_chap3_challenge9_spawn9=Rect(2304.0, -704.0, 2432.0, -576.0)
+rect gg_rct_chap3_challenge9_spawn10=Rect(2304.0, -960.0, 2432.0, -832.0)
+rect gg_rct_chap3_challenge9_spawn11=Rect(4000.0, -960.0, 4128.0, -832.0)
+rect gg_rct_chap3_challenge9_spawn12=Rect(5056.0, -192.0, 5184.0, -64.0)
+rect gg_rct_chap3_challenge9_spawn13=Rect(5408.0, -416.0, 5536.0, -288.0)
+rect gg_rct_chap3_challenge9_spawn14=Rect(4768.0, -480.0, 4896.0, -352.0)
+rect gg_rct_chap3_challenge9_spawn15=Rect(3168.0, -1728.0, 3264.0, -1632.0)
+rect gg_rct_chap3_challenge9_spawn16=Rect(2880.0, -1472.0, 2976.0, -1376.0)
+rect gg_rct_chap3_challenge9_spawn17=Rect(3168.0, -1152.0, 3264.0, -1056.0)
+rect gg_rct_chap3_challenge9_spawn18=Rect(2880.0, -896.0, 2976.0, -800.0)
+rect gg_rct_chap3_challenge9_spawn19=Rect(5248.0, -480.0, 5344.0, -384.0)
+rect gg_rct_chap3_challenge9_spawn20=Rect(5088.0, -320.0, 5184.0, -224.0)
+rect gg_rct_chap3_challenge9_spawn21=Rect(4896.0, -480.0, 4992.0, -384.0)
+rect gg_rct_chap3_challenge9_spawn22=Rect(4768.0, 832.0, 4896.0, 960.0)
+rect gg_rct_chap3_challenge9_spawn23=Rect(3264.0, -960.0, 3392.0, -832.0)
+rect gg_rct_chap3_challenge9_spawnKey1=Rect(3008.0, -704.0, 3136.0, -576.0)
+rect gg_rct_chap3_challenge9_spawnKey2=Rect(3264.0, -1600.0, 3392.0, -1472.0)
+rect gg_rct_chap3_challenge9_flyingTerrain3=Rect(2976.0, -1728.0, 3168.0, -800.0)
+rect gg_rct_chap3_challenge9_flyingTerrain4=Rect(3232.0, -1664.0, 3424.0, -1184.0)
+rect gg_rct_chap3_challenge9_flyingTerrain5=Rect(2432.0, -736.0, 3168.0, -544.0)
+rect gg_rct_chap3_challenge9_flyingTerrain6=Rect(2432.0, -992.0, 3424.0, -800.0)
+rect gg_rct_chap3_challenge9_flyingTerrain7=Rect(3232.0, -992.0, 4000.0, -800.0)
+rect gg_rct_chap3_challenge9_flyingTerrain8=Rect(5376.0, -608.0, 5728.0, -64.0)
+rect gg_rct_chap3_challenge9_flyingTerrain9=Rect(4736.0, -480.0, 5376.0, -224.0)
+rect gg_rct_chap3_challenge9_gates1=Rect(3872.0, -1056.0, 3968.0, -768.0)
+rect gg_rct_chap3_challenge9_gates2=Rect(4064.0, -544.0, 4352.0, -416.0)
+
+rect gg_rct_chap3_challenge9_plot1=Rect(3776.0, -1088.0, 4000.0, -640.0)
+rect gg_rct_chap3_challenge9_plot2=Rect(4000.0, -640.0, 4416.0, -384.0)
+
+
+rect gg_rct_chap3_challenge10_spawn1=Rect(2976.0, -3488.0, 3104.0, -3360.0)
+rect gg_rct_chap3_challenge10_spawn2=Rect(2304.0, -4832.0, 2432.0, -4704.0)
+rect gg_rct_chap3_challenge10_spawn3=Rect(2848.0, -5216.0, 2976.0, -5088.0)
+rect gg_rct_chap3_challenge10_spawn4=Rect(3584.0, -5376.0, 3712.0, -5248.0)
+rect gg_rct_chap3_challenge10_spawn5=Rect(3776.0, -3424.0, 3904.0, -3296.0)
+rect gg_rct_chap3_challenge10_spawn6=Rect(3776.0, -2720.0, 3904.0, -2592.0)
+rect gg_rct_chap3_challenge10_spawn7=Rect(4608.0, -2688.0, 4736.0, -2560.0)
+rect gg_rct_chap3_challenge10_spawn8=Rect(5408.0, -3456.0, 5536.0, -3328.0)
+rect gg_rct_chap3_challenge10_spawn9=Rect(4928.0, -4032.0, 5056.0, -3904.0)
+rect gg_rct_chap3_challenge10_spawn10=Rect(5120.0, -4768.0, 5248.0, -4640.0)
+rect gg_rct_chap3_challenge10_spawn12=Rect(2624.0, -4288.0, 2720.0, -4192.0)
+rect gg_rct_chap3_challenge10_spawn13=Rect(2080.0, -3328.0, 2208.0, -3200.0)
+rect gg_rct_chap3_challenge10_spawn14=Rect(2400.0, -2944.0, 2528.0, -2816.0)
+rect gg_rct_chap3_challenge10_spawn15=Rect(2080.0, -2560.0, 2208.0, -2432.0)
+rect gg_rct_chap3_challenge10_spawn16=Rect(5504.0, -3104.0, 5632.0, -2976.0)
+rect gg_rct_chap3_challenge10_spawn17=Rect(4192.0, -3936.0, 4320.0, -3808.0)
+rect gg_rct_chap3_challenge10_spawn18=Rect(4640.0, -5184.0, 4768.0, -5056.0)
+rect gg_rct_chap3_challenge10_spawn20=Rect(5408.0, -3744.0, 5536.0, -3616.0)
+rect gg_rct_chap3_challenge10_spawn21=Rect(4352.0, -3744.0, 4480.0, -3616.0)
+rect gg_rct_chap3_challenge10_flyingTerrain1=Rect(2528.0, -5472.0, 3168.0, -4992.0)
+rect gg_rct_chap3_challenge10_flyingTerrain2=Rect(2752.0, -5280.0, 3392.0, -4800.0)
+rect gg_rct_chap3_challenge10_flyingTerrain3=Rect(2976.0, -5088.0, 3616.0, -4608.0)
+rect gg_rct_chap3_challenge10_flyingTerrain4=Rect(3232.0, -4832.0, 3872.0, -4352.0)
+rect gg_rct_chap3_challenge10_flyingTerrain5=Rect(3456.0, -4576.0, 4096.0, -4096.0)
+rect gg_rct_chap3_challenge10_flyingTerrain6=Rect(3680.0, -4384.0, 4320.0, -3904.0)
+rect gg_rct_chap3_challenge10_flyingTerrain7=Rect(3904.0, -4160.0, 4544.0, -3680.0)
+rect gg_rct_chap3_challenge10_flyingTerrain8=Rect(4128.0, -3936.0, 4768.0, -3456.0)
+rect gg_rct_chap3_challenge10_flyingTerrain9=Rect(4320.0, -3776.0, 4960.0, -3296.0)
+rect gg_rct_chap3_challenge10_flyingTerrain10=Rect(4576.0, -3520.0, 5216.0, -3040.0)
+rect gg_rct_chap3_challenge10_flyingTerrain11=Rect(4800.0, -3232.0, 5440.0, -2752.0)
+rect gg_rct_chap3_challenge10_flyingTerrain12=Rect(3392.0, -5376.0, 4512.0, -4896.0)
+rect gg_rct_chap3_challenge10_flyingTerrain13=Rect(3168.0, -5344.0, 3648.0, -4864.0)
+rect gg_rct_chap3_challenge10_flyingTerrain14=Rect(2912.0, -5184.0, 3392.0, -4704.0)
+rect gg_rct_chap3_challenge10_flyingTerrain15=Rect(2624.0, -4992.0, 3104.0, -4512.0)
+rect gg_rct_chap3_challenge10_flyingTerrain16=Rect(2496.0, -4864.0, 2976.0, -3968.0)
+rect gg_rct_chap3_challenge10_flyingTerrain17=Rect(2112.0, -4096.0, 2976.0, -3520.0)
+
+
+rect gg_rct_chap3_PoR1=Rect(5440.0, 5376.0, 5568.0, 5504.0)
+rect gg_rct_chap3_challenge8_PoR=Rect(-4288.0, -4288.0, -4160.0, -4160.0)
+rect gg_rct_chap3_challenge9_PoR=Rect(3136.0, 1216.0, 3264.0, 1344.0)
+rect gg_rct_chap3_challenge10_PoR=Rect(2880.0, -2880.0, 3008.0, -2752.0)
+
+rect gg_rct_chap3_exit=Rect(5760.0, 2272.0, 6144.0, 2816.0)
+rect gg_rct_chap3_challenge8_end=Rect(-4800.0, 3520.0, -4672.0, 3648.0)
+rect gg_rct_chap3_challenge9_end=Rect(4800.0, -1344.0, 4928.0, -1216.0)
+rect gg_rct_chap3_challenge10_end=Rect(1216.0, -5568.0, 1344.0, -5440.0)
+
+rect gg_rct_chap3_challenge8_visiblity = Rect(-5216.0, -5024.0, 1728.0, 5408.0)
+rect gg_rct_chap3_challenge9_visiblity = Rect(1888.0, -2272.0, 5984.0, 2368.0)
+rect gg_rct_chap3_challenge10_visiblity = Rect(1344.0, -6080.0, 6016.0, -1952.0)
+
+
+rect gg_rct_chap3_spawn1=Rect(2496.0, 3776.0, 2624.0, 3904.0)
+rect gg_rct_chap3_spawn2=Rect(2464.0, 3232.0, 2592.0, 3360.0)
+rect gg_rct_chap3_spawn3=Rect(3392.0, 3904.0, 3520.0, 4032.0)
+rect gg_rct_chap3_spawn4=Rect(4032.0, 3904.0, 4160.0, 4032.0)
+rect gg_rct_chap3_spawn5=Rect(4064.0, 3744.0, 4128.0, 3808.0)
+rect gg_rct_chap3_spawn6=Rect(4448.0, 2624.0, 4544.0, 2720.0)
+rect gg_rct_chap3_spawn7=Rect(4448.0, 2496.0, 4544.0, 2592.0)
+rect gg_rct_chap3_spawn8=Rect(4448.0, 2368.0, 4544.0, 2464.0)
+rect gg_rct_chap3_spawn10=Rect(4672.0, 4416.0, 4800.0, 4544.0)
+rect gg_rct_chap3_spawn11=Rect(4672.0, 4864.0, 4800.0, 4992.0)
+rect gg_rct_chap3_flyingTerrain1=Rect(2304.0, 3104.0, 2752.0, 3520.0)
+rect gg_rct_chap3_flyingTerrain2=Rect(2304.0, 3520.0, 2752.0, 4064.0)
+rect gg_rct_chap3_flyingTerrain3=Rect(2304.0, 4416.0, 2752.0, 5088.0)
+rect gg_rct_chap3_flyingTerrain4=Rect(2752.0, 4672.0, 3648.0, 5088.0)
+rect gg_rct_chap3_flyingTerrain5=Rect(2848.0, 2336.0, 4416.0, 2752.0)
+rect gg_rct_chap3_flyingTerrain6=Rect(2848.0, 1472.0, 3200.0, 2752.0)
+rect gg_rct_chap3_gates1=Rect(-5184.0, 3328.0, -5056.0, 3776.0)
+rect gg_rct_chap3_gates2=Rect(5152.0, 4224.0, 5280.0, 4736.0)
+rect gg_rct_chap3_gates3=Rect(3520.0, 1376.0, 3616.0, 1664.0)
+rect gg_rct_chap3_gates4=Rect(2560.0, -3200.0, 3328.0, -3072.0)
+rect gg_rct_chap3_gatesExit=Rect(5664.0, 2240.0, 5792.0, 2848.0)
+
+rect gg_rct_chap3_plotRect1=Rect(5280.0, 4576.0, 5728.0, 4992.0)
+rect gg_rct_chap3_plotKid1=Rect(5440.0, 4384.0, 5568.0, 4512.0)
+
+rect gg_rct_chap3_teleport1=Rect(5344.0, 2560.0, 5472.0, 2688.0)
+
+unit chap3_uPoR1
+unit chap3_challenge8_uPoR
+unit chap3_challenge9_uPoR
+unit chap3_challenge10_uPoR
+
+
+public function startChapter3()
+    chap3_uPoR1 = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap3_PoR1.getCenter(), angle(0.))
+    chap3_challenge8_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap3_challenge8_PoR.getCenter(), angle(0.))   
+    chap3_challenge9_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap3_challenge9_PoR.getCenter(), angle(0.)) 
+    chap3_challenge10_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                    gg_rct_chap3_challenge10_PoR.getCenter(), angle(0.)) 
+
+    setCheckPoint(chap3_challenge8_uPoR, false, false)
+    setNextChapterEnd(function chapter3)
+
+function chapter3()
+    GameState.IS_GAME_IN_SKIP_MODE = true
+    setChallenge(8, false, false, true)
+    waitUntilChallengeIsCompeted()
+
+    gg_rct_chap3_gates1.setTerrainType(Tiles.dalaran_Black_Marble, 0)
+    
+    let gates1 = createGatesOnLevel(gg_rct_chap3_gates2)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    waitUntilCheckPoint(gg_rct_chap3_PoR1, chap3_uPoR1)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_plotRect1, MainHero.MAIN_HEROES_GROUP)
+    //plot
+
+    unit uKid = createUnitOnLevel(UnitDataBase.plotKidAI, 
+                                    gg_rct_chap3_plotKid1.getCenter(), angle(PI/2))
+    ..setColor2(PLAYER_COLOR_VIOLET)
+
+
+    startDialogMode()
+    changeDialogueNameSpeaker("|cffff00ffKid|r")
+    makeDialog(uKid, "Heh. It was for nothing.")
+    makeDialog(uKid, "These |cfff3b328frost novas|r seem to be not dangerous for you.")
+    makeDialog(uKid, "Well.")
+    makeDialog(uKid, "This time, let's show me several new things.")
+    makeDialog(uKid, "First of all. . .")
+    uKid.hide2()
+    let birdEff = addEffect2(Abilities.sorceressMissile, uKid.getPos())
+    ..setRoll(angle(PI/2))
+    ..setScale(3.0)
+    makeDialog(uKid, "Flying yellow birds called |cfff3b328Rotatebirds|r.")
+    makeDialog(uKid, "Rotatebirds live on this planet, |cfff3b328Alenheart|r.")
+    makeDialog(uKid, "And they have an amazing ability to rotate the incoming force in another direction.")
+    makeDialog(uKid, "Which means. . . these birds can rotate you on |cfff3b328non-turning ice|r.")
+    makeDialog(uKid, "Just look at where the birds are looking at. This the direction of rotation.")
+    makeDialog(uKid, "Touch them, and they will rotate you to the direction.")
+    birdEff.destr()
+    uKid.show2()
+    makeDialog(uKid, "Next. . .")
+    makeDialog(uKid, "Have you noticed that the environment has become more strange?")
+    makeDialog(uKid, "The snow and the trees became. . . stretched.")
+    makeDialog(uKid, "This is caused by local |cfff3b328portaloid anomaly|r.")
+    makeDialog(uKid, "The true nature of the anomaly is hidden from your eyes.")
+    makeDialog(uKid, "It's known this anomaly caused the emergence of |cfff3b328flying platforms|r.")
+    makeDialog(uKid, "You can meet them further. You can get to them if you |cfff3b328jump|r by some way.")
+    makeDialog(uKid, "And of course, no one has repealed the laws of gravity. You can fall down from them.")
+    makeDialog(uKid, "You can't jump very high, so I suggest you use. . .")
+    uKid.hide2()
+    let tornadoEff = addEffect2(Abilities.tornadoElementalSmall, uKid.getPos())
+    ..setScale(0.5)
+    makeDialog(uKid, "|cfff3b328Small tornados|r.")
+    makeDialog(uKid, "They are caused by anomaly, too, and are able to lift you into the air.")
+    makeDialog(uKid, "Just touch them to bounce.")
+    makeDialog(uKid, "Their power to lift up is measured by their color.")
+    makeDialog(uKid, "|cff2f00ffBlue|r means weak power. |cff008f24Green|r means usual power.")
+    makeDialog(uKid, "|cffd4b500Yellow|r means strong power. And |cffd30000red|r. . . is very powerful wind.")
+    tornadoEff.destr()
+    uKid.show2()
+    makeDialog(uKid, "Wells, time's up. Pass next challenges.")
+    makeDialog(uKid, "Go. Die. Revive. Survive.")
+    endDialogMode()
+    uKid.destr()
+    gates1.destr()
+
+    GameState.IS_GAME_IN_SKIP_MODE = false
+    for u in MainHero.MAIN_HEROES_GROUP
+        u.setPos(gg_rct_chap3_plotKid1.getCenter())
+
+    let gatesExit = createGatesOnLevel(gg_rct_chap3_gatesExit)
+    ..makeEffect(Doodads.forcewall, angle(0.), 1.0)
+
+    let bird1 = createTurnerOnLevel(gg_rct_chap3_spawn10.getCenter(), angle(PI/2))
+    let bird2 = createTurnerOnLevel(gg_rct_chap3_spawn11.getCenter(), angle(PI))
+    let bird3 = createTurnerOnLevel(gg_rct_chap3_spawn3.getCenter(), angle(0.))
+    let bird4 = createTurnerOnLevel(gg_rct_chap3_spawn4.getCenter(), angle(-PI/2))
+
+    TilesBLP tiles1 = createTilesBLPOnLevel()
+    ..setHeight(200.)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain1, Tiles.dalaran_Black_Marble, 0)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain2, ICE_NONTURNING_TILE_ID, 0)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain3, ICE_TURNING_TILE_ID, 0)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain4, ICE_TURNING_TILE_ID, 0)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain5, Tiles.dalaran_Black_Marble, 0)
+    ..setTerrainType(gg_rct_chap3_flyingTerrain6, Tiles.dalaran_Black_Marble, 0)
+
+    waitUntilSetTerrainTypeIsDone()
+    tiles1..resetImgs()..showImgs()
+
+    let bouncer1 = createBouncerOnLevel(gg_rct_chap3_spawn2.getCenter(), 250.)
+    let bouncer2 = createBouncerOnLevel(gg_rct_chap3_spawn1.getCenter(), 250.)
+    ..setHeight(200.)
+    let bouncer3 = createBouncerOnLevel(gg_rct_chap3_spawn5.getCenter(), 150.)
+
+    let bouncer4 = createBouncerOnLevel(gg_rct_chap3_spawn6.getCenter(), 400.)
+    let bouncer5 = createBouncerOnLevel(gg_rct_chap3_spawn7.getCenter(), 300.)
+    let bouncer6 = createBouncerOnLevel(gg_rct_chap3_spawn8.getCenter(), 200.)
+    let gates2 = createGatesOnLevel(gg_rct_chap3_gates3)
+    ..makeEffect(Doodads.forcewall, angle(0.), 0.5)
+    
+
+    updateVisibilityForMainHeroes()
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_challenge9_PoR, MainHero.MAIN_HEROES_GROUP)
+
+    
+    setChallenge(9, false, false, true)
+    waitUntilChallengeIsLoaded()
+
+    gates2.destr()
+    waitUntilChallengeIsCompeted()
+
+    tiles1.destr()
+    bouncer1.destr()
+    bouncer2.destr()
+    bouncer3.destr()
+    bouncer4.destr()
+    bouncer5.destr()
+    bouncer6.destr()
+
+    let effectTp1 = addEffect2(Abilities.massTeleportTo, gg_rct_chap3_challenge9_end.getCenter())
+    let tp1 = createTeleportOnLevel(gg_rct_chap3_challenge9_end, gg_rct_chap3_challenge10_PoR.getCenter(), Abilities.massTeleportTarget)
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_challenge10_PoR, MainHero.MAIN_HEROES_GROUP)
+
+    let gates3 = createGatesOnLevel(gg_rct_chap3_gates4)
+    ..makeEffect(Doodads.forcewall, angle(PI/2), 1.0)
+
+    setChallenge(10, false, false, true)
+
+    waitUntilChallengeIsLoaded()
+    gates3.destr()
+    waitUntilChallengeIsCompeted()
+
+    gatesExit.destr()
+    let effectTp2 = addEffect2(Abilities.massTeleportTo, gg_rct_chap3_challenge10_end.getCenter())
+    let tp2 = createTeleportOnLevel(gg_rct_chap3_challenge10_end, gg_rct_chap3_teleport1.getCenter(), Abilities.massTeleportTarget)
+
+    waitUntilEveryoneInRect(gg_rct_chap3_exit, MainHero.MAIN_HEROES_GROUP)
+    
+    bird1.destr()
+    bird2.destr()
+    bird3.destr()
+    bird4.destr()
+    tp1.destr()
+    tp2.destr()
+    effectTp1.destr()
+    effectTp2.destr()
+
+    endChapter()
+
+public function startChallenge8()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap3_challenge8_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                        gg_rct_chap3_challenge8_PoR.getCenter(), angle(0.))
+    
+    setChallengeRectVisibility(gg_rct_chap3_challenge8_visiblity)
+    if GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        setCheckPoint(chap3_challenge8_uPoR, false, false)
+    else
+        setCheckPoint(chap3_challenge8_uPoR)
+    setNextChallengeEnd(function challenge8)
+
+function challenge8()
+    rect array rects = [gg_rct_chap3_challenge8_spawn1, gg_rct_chap3_challenge8_spawn2,
+    gg_rct_chap3_challenge8_spawn3, gg_rct_chap3_challenge8_spawn4,
+    gg_rct_chap3_challenge8_spawn5, gg_rct_chap3_challenge8_spawn6,
+    gg_rct_chap3_challenge8_spawn7, gg_rct_chap3_challenge8_spawn8,
+    gg_rct_chap3_challenge8_spawn9, gg_rct_chap3_challenge8_spawn10,
+    gg_rct_chap3_challenge8_spawn11, gg_rct_chap3_challenge8_spawn12,
+    gg_rct_chap3_challenge8_spawn13, gg_rct_chap3_challenge8_spawn14,
+    gg_rct_chap3_challenge8_spawn15, gg_rct_chap3_challenge8_spawn16,
+    gg_rct_chap3_challenge8_spawn17]
+    real array timeEnds = [4, 4, 
+                            3, 3, 
+                            2, 2, 
+                            1.5, 1.5, 
+                            2, 2,
+                            2.5, 2.5,
+                            3, 3,
+                            3, 3]
+    int size_N = 16
+    var sum = 0.
+    for i = 0 to size_N-1
+        sum += timeEnds[i]
+
+    for i = 0 to size_N
+        createAquaSpikeOnLevel(rects[i].getCenter(), 5.)
+
+    let timeWait = sum / 10
+    let A = 128*4.5
+    var timeStart = 0.
+    let scale = 0.5
+    let raidus = 64.
+    let n = 3
+    let timeDiff = 0.05
+    for i = 0 to size_N-1
+        vec2 pos0 = rects[i].getCenter()
+        vec2 pos1 = rects[i+1].getCenter()
+        let timeEnd = timeEnds[i]
+        createDeadlyCurveSinusoidalBetween(pos0, pos1, 
+                                            A, n, Abilities.frostNovaTarget, scale, raidus, 
+                                            timeStart, timeDiff, timeEnd, timeWait-timeEnds[i])
+        timeStart += timeEnd
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_challenge8_end, MainHero.MAIN_HEROES_GROUP)
+    endChallenge()
+
+
+public function startChallenge9()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap3_challenge9_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                        gg_rct_chap3_challenge9_PoR.getCenter(), angle(0.))
+    
+
+    setCheckPoint(chap3_challenge9_uPoR)
+
+    let _tiles1 = createTilesBLPOnLevel()
+    ..setHeight(305.)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain3, Tiles.northrend_Rock, 0)
+
+    let _tiles2 = createTilesBLPOnLevel()
+    ..setHeight(355.)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain5, Tiles.northrend_Rock, 0)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain6, Tiles.northrend_Rock, 0)
+    
+    let _tiles3 = createTilesBLPOnLevel()
+    ..setHeight(455.)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain7, Tiles.northrend_Rock, 0)
+    let _tiles4 = createTilesBLPOnLevel()
+    ..setHeight(205.)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain8, Tiles.northrend_Rock, 0)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain9, Tiles.northrend_Rock, 0)
+
+    let _tiles5 = createTilesBLPOnLevel()
+    ..setHeight(395.)
+    ..setTerrainType(gg_rct_chap3_challenge9_flyingTerrain4, Tiles.northrend_Rock, 0)
+
+    waitUntilSetTerrainTypeIsDone()
+    _tiles1..resetImgs()..showImgs()
+    _tiles2..resetImgs()..showImgs()
+    _tiles3..resetImgs()..showImgs()
+    _tiles4..resetImgs()..showImgs()
+    _tiles5..resetImgs()..showImgs()
+
+
+    setChallengeRectVisibility(gg_rct_chap3_challenge9_visiblity)
+
+    setNextChallengeEnd(function challenge9)
+
+function challenge9()
+    let gates1 = createGatesOnLevel(gg_rct_chap3_challenge9_gates1)
+    ..makeEffect(Doodads.iceCrownGate, angle(0), 0.5)
+    ..setVertexColor(PLAYER_COLOR_YELLOW.toColor())
+    let gates2 = createGatesOnLevel(gg_rct_chap3_challenge9_gates2)
+    ..makeEffect(Doodads.iceCrownGate, angle(PI/2), 0.5)
+    ..setVertexColor(PLAYER_COLOR_RED.toColor())
+    let key1 = createKeyOnLevel(gg_rct_chap3_challenge9_spawnKey1, PATH_SUN_KEY, 1.0, MainHero.MAIN_HEROES_GROUP)
+    ..setHeight(355.)
+    let key2 = createKeyOnLevel(gg_rct_chap3_challenge9_spawnKey2, PATH_BLOOD_KEY, 1.0, MainHero.MAIN_HEROES_GROUP)
+    ..setHeight(405.)
+
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn1.getCenter(), 220.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn2.getCenter(), 100.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn3.getCenter(), 220.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap3_challenge9_spawn22.getCenter(), angle(0))
+    ..issuePolarPosOrder("patrol", 500.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn4.getCenter(), 100.)
+    ..issuePolarPosOrder("patrol", 300.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn5.getCenter(), angle(0))
+    ..issuePolarPosOrder("patrol", 300.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn6.getCenter(), angle(PI))
+    ..issuePolarPosOrder("patrol", 300.)
+
+    let patrol_rects = new HashList<rect>()
+    ..add(gg_rct_chap3_challenge9_spawn15, gg_rct_chap3_challenge9_spawn16,
+            gg_rct_chap3_challenge9_spawn17, gg_rct_chap3_challenge9_spawn18)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn15.getCenter(), angle(PI-PI/4))
+    ..setHeight(305.)
+    ..patrolManyRects(patrol_rects, false)
+
+
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn23.getCenter(), 200.)
+    ..setHeight(455.)
+
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn7.getCenter(), 310)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn9.getCenter(), 370.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn10.getCenter(), 370.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn11.getCenter(), 470.)
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn12.getCenter(), 250.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn19.getCenter(), angle(PI/2))
+    ..setHeight(205.)
+    ..issuePolarPosOrder("patrol", 300.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn20.getCenter(), angle(-PI/2))
+    ..setHeight(205.)
+    ..issuePolarPosOrder("patrol", 300.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge9_spawn21.getCenter(), angle(PI/2))
+    ..setHeight(205.)
+    ..issuePolarPosOrder("patrol", 300.)
+
+    createBouncerOnLevel(gg_rct_chap3_challenge9_spawn14.getCenter(), 400.)
+    ..setHeight(250.)
+
+    updateVisibilityForMainHeroes()
+    
+
+    waitUntilUnitJoinsRectWithKey(gg_rct_chap3_challenge9_plot1, MainHero.MAIN_HEROES_GROUP, key1)
+    GATE_OPEN_SOUND.play()
+    gates1.destr()
+    key1.destr()
+    waitUntilUnitJoinsRectWithKey(gg_rct_chap3_challenge9_plot2, MainHero.MAIN_HEROES_GROUP, key2)
+    GATE_OPEN_SOUND.play()
+    gates2.destr()
+    key2.destr()
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_challenge9_end, MainHero.MAIN_HEROES_GROUP)
+    endChallenge()
+
+public function startChallenge10()
+    if not GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        chap3_challenge10_uPoR = createUnitOnLevel(UnitDataBase.circleOfRes, 
+                                        gg_rct_chap3_challenge10_PoR.getCenter(), angle(0.))
+    
+    setCheckPoint(chap3_challenge10_uPoR)
+
+    let _tiles1 = createTilesBLPOnLevel()
+    ..setHeight(210.)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain12, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain13, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain14, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain15, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain16, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain17, ICE_TURNING_TILE_ID)
+
+    let _tiles2 = createTilesBLPOnLevel()
+    ..setHeight(410.)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain1, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain2, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain3, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain4, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain5, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain6, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain7, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain8, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain9, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain10, ICE_TURNING_TILE_ID)
+    ..setTerrainType(gg_rct_chap3_challenge10_flyingTerrain11, ICE_TURNING_TILE_ID)
+
+    waitUntilSetTerrainTypeIsDone()
+
+    _tiles1..resetImgs()..showImgs()
+    _tiles2..resetImgs()..showImgs()
+
+    setChallengeRectVisibility(gg_rct_chap3_challenge10_visiblity)
+
+    setNextChallengeEnd(function challenge10)
+
+function challenge10()
+    createDeadlyCurveSinusoidalBetween(gg_rct_chap3_challenge10_spawn1.getCenter(), 
+                                        gg_rct_chap3_challenge10_spawn2.getCenter(), 
+                                        128.*3, 3, Abilities.frostNovaTarget, 0.5, 64, 
+                                        0., 0.05, 4, 4)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge10_spawn3.getCenter(), angle(PI/4))
+    ..issuePolarPosOrder("patrol", 3200.)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarTroll, gg_rct_chap3_challenge10_spawn4.getCenter(), angle(PI/4))
+    ..issuePolarPosOrder("patrol", 550.)
+
+    let patrol_rects1 = new HashList<rect>()
+    ..add(gg_rct_chap3_challenge10_spawn5, gg_rct_chap3_challenge10_spawn6,
+        gg_rct_chap3_challenge10_spawn7, gg_rct_chap3_challenge10_spawn8,
+        gg_rct_chap3_challenge10_spawn20, gg_rct_chap3_challenge10_spawn21)
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.polarBear, gg_rct_chap3_challenge9_spawn5.getCenter(), angle(PI/4))
+    ..patrolManyRects(patrol_rects1, true)
+
+    createBouncerOnLevel(gg_rct_chap3_challenge10_spawn9.getCenter(), 300)
+    ..issuePolarPosOrder("patrol", 550.)
+
+    createAquaSpikeOnLevel(gg_rct_chap3_challenge10_spawn10.getCenter(), 5.)
+    createBouncerOnLevel(gg_rct_chap3_challenge10_spawn18.getCenter(), 300)
+
+    createAquaSpikeOnLevel(gg_rct_chap3_challenge10_spawn12.getCenter(), 5.)
+    ..setHeight(210.)
+
+    let patrol_rects2 = new HashList<rect>()
+    ..add(gg_rct_chap3_challenge10_spawn13, gg_rct_chap3_challenge10_spawn14,
+        gg_rct_chap3_challenge10_spawn15)
+    createBouncerOnLevel(gg_rct_chap3_challenge10_spawn13.getCenter(), 450)
+    ..patrolManyRects(patrol_rects2, false)
+
+    createBouncerOnLevel(gg_rct_chap3_challenge10_spawn16.getCenter(), 450)
+    createAquaSpikeOnLevel(gg_rct_chap3_challenge10_spawn17.getCenter(), 5.)
+    ..setHeight(410.)
+
+    createDeadlyInRangeMonsterOnLevel(UnitDataBase.frostRevenant, gg_rct_chap3_challenge10_spawn3.getCenter(), angle(PI/4))
+    ..setHeight(410.)
+    ..issuePolarPosOrder("patrol", 3200.)
+
+    updateVisibilityForMainHeroes()
+
+    waitUntilAnyoneJoinsRect(gg_rct_chap3_challenge10_end, MainHero.MAIN_HEROES_GROUP)
+    endChallenge()

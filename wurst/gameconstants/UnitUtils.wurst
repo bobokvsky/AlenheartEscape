@@ -1,0 +1,22 @@
+package UnitUtils
+
+import Table
+
+constant unitData = new Table()
+
+/** Attach Data to this unit */
+public function unit.setData(int data)
+    unitData.saveInt(this.getHandleId(), data)
+
+/** Retrieve the data attached to this unit */
+public function unit.getData() returns int
+    return unitData.loadInt(this.getHandleId())
+
+/** Remove the data attached to this unit */
+public function unit.removeData()
+    unitData.removeInt(this.getHandleId())
+
+public function unit.release()
+    this.removeData()
+    this.remove()
+    unitToIndex(this)

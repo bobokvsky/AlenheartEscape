@@ -1,0 +1,53 @@
+package SetterLevel
+
+import SetterLevelClasses
+
+import StartZonePars
+import Chapter1Pars
+import Chapter2Pars
+import Chapter3Pars
+
+public class SetterLevel
+    MakerTerrain makerTerrain
+    MakerDestructs makerDestructs
+
+    construct()
+        makerTerrain = new MakerTerrain()
+        makerDestructs = new MakerDestructs()
+
+    function setLevel(int level)
+        switch level
+            case 0
+                makerTerrain.size = getLevel0StartZone_tiles()
+                makerDestructs.size = getLevel0StartZone_destructs()
+                for i = 0 to makerTerrain.size
+                    MakerTerrain.levelStringTerrain[i] = STARTZONE_TILE[i]
+                for i = 0 to makerDestructs.size
+                    MakerDestructs.levelStringDestr[i] = STARTZONE_DESTRUCTS[i]
+            case 1
+                makerTerrain.size = getChapter1_tiles()
+                makerDestructs.size = getChapter1_destructs()
+                for i = 0 to makerTerrain.size
+                    MakerTerrain.levelStringTerrain[i] = CHAPTER1_TILE[i]
+                for i = 0 to makerDestructs.size
+                    MakerDestructs.levelStringDestr[i] = CHAPTER1_DESTRUCTS[i]
+            case 2
+                makerTerrain.size = getChapter2_tiles()
+                makerDestructs.size = getChapter2_destructs()
+                for i = 0 to makerTerrain.size
+                    MakerTerrain.levelStringTerrain[i] = CHAPTER2_TILE[i]
+                for i = 0 to makerDestructs.size
+                    MakerDestructs.levelStringDestr[i] = CHAPTER2_DESTRUCTS[i]
+            case 3
+                makerTerrain.size = getChapter3_tiles()
+                makerDestructs.size = getChapter3_destructs()
+                for i = 0 to makerTerrain.size
+                    MakerTerrain.levelStringTerrain[i] = CHAPTER3_TILE[i]
+                for i = 0 to makerDestructs.size
+                    MakerDestructs.levelStringDestr[i] = CHAPTER3_DESTRUCTS[i]
+            default
+                print("not implemented")
+                return
+        
+        makerTerrain.setLevelTerrain()
+        makerDestructs.setLevelDestruct()

@@ -1,0 +1,108 @@
+package CircleOfResurrection
+
+import TriggerUtils
+import GameObjects
+import GameState
+import AssetsConstants
+import Constants
+import initlater UsefulFunctions
+import ClosureTimers
+
+public constant group RESURRECTION_GROUP = CreateGroup()
+constant real RANGE_OF_RESURRECTION_CONST = 105.
+unit POINT_OF_RESURRECTION_UNIT
+
+public class ResCircle extends GameObject
+    unit u
+    unit circle
+    real range = RANGE_OF_RESURRECTION_CONST
+    trigger deathHappens
+    trigger resHappens
+
+    construct(unit u)
+        this.u = u
+        RESURRECTION_GROUP.addUnit(u)
+        this.deathHappens = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerPlayerUnitEvent(this.u.getOwner(), 
+                                    EVENT_PLAYER_UNIT_DEATH, null)
+        ..addCondition(Condition(
+            () -> (GetTriggeringTrigger().getData() castTo ResCircle).u == GetTriggerUnit())
+            )
+        ..addAction(function callMakeCircle)
+
+    static function callMakeCircle()
+        (GetTriggeringTrigger().getData() castTo ResCircle).makeCircle()
+
+    function makeCircle()
+        this.circle = createUnitOnLevel(this.u.getOwner(), UnitDataBase.smallCircleOfRes, 
+                                        this.u.getPos(), this.u.getFacingAngle())
+        this.setHeight(this.u.getHeight())
+
+
+        this.resHappens = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerUnitInRange(this.circle, RANGE_OF_RESURRECTION_CONST, null)
+        ..addCondition(Condition(() -> GetTriggerUnit().isAlive() and 
+                                        RESURRECTION_GROUP.contains(GetTriggerUnit())))
+        ..addAction(function callResHappens)
+
+        if GameState.IS_GAME_IN_TEST_MODE
+            doAfter(3.0) ->
+                this.resHappens()
+
+    static function callResHappens()
+        (GetTriggeringTrigger().getData() castTo ResCircle).resHappens()
+
+    function resHappens()
+        if GetTriggerUnit() != null
+            if not GetTriggerUnit().getHeight().isAtNeighbourhood(this.height, TILES_BLP_NEIGHBOURHOOD)
+                return
+        this.u.revive(POINT_OF_RESURRECTION_UNIT.getPos(), false)
+        this.u.setHeight(POINT_OF_RESURRECTION_UNIT.getHeight())
+        POINT_OF_RESURRECTION_UNIT.setColor(this.u.getOwner().getColor())
+        
+        this.circle.destr()
+        this.resHappens.release()
+
+    override function setHeight(real h)
+        super.setHeight(h)
+        if this.circle != null or not this.circle.getUnit().isDestroyed
+            this.circle.setHeight(h)
+
+    ondestroy
+        if this.circle != null or not this.circle.getUnit().isDestroyed
+            this.circle.destr()
+        deathHappens.release()
+        resHappens.release()
+
+
+public function waitUntilCheckPoint(rect rPoR, unit uPoR, bool showMsg, bool playSound)
+    waitUntilAnyoneJoinsRect(rPoR, RESURRECTION_GROUP)
+    setCheckPoint(uPoR, showMsg, playSound)
+
+public function waitUntilCheckPoint(rect rPoR, unit uPoR)
+    waitUntilAnyoneJoinsRect(rPoR, RESURRECTION_GROUP)
+    setCheckPoint(uPoR)
+
+public function setCheckPoint(unit uPoR, bool showMsg, bool playSound)
+    POINT_OF_RESURRECTION_UNIT = uPoR
+    if not GameState.IS_GAME_IN_SKIP_MODE
+        resDeadAtCheckPoint()
+        if showMsg
+            printTimed("You have reached a |cfff3b328checkpoint|r.", 7.)
+            POINT_OF_RESURRECTION_UNIT.playColors(players[25].getColor())
+        if playSound
+            HINT_SOUND.play()
+
+public function setCheckPoint(unit uPoR)
+    if GameState.IS_GAME_IN_SKIP_MODE and not GameState.IS_GAME_IN_TEST_MODE
+        return
+    if GameState.IS_GAME_IN_CHAPTER_MODE_NOW
+        setCheckPoint(uPoR, true, true)
+    else
+        setCheckPoint(uPoR, false, false)
+
+
+public function getCheckPointUnit() returns unit
+    return POINT_OF_RESURRECTION_UNIT

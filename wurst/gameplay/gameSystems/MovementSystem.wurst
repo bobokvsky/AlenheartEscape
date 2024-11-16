@@ -1,0 +1,379 @@
+package MovementSystem
+import TimerUtils
+import TriggerUtils
+import TerrainUtils
+import EventHelper
+import Tiles
+import GameObjects
+import TileImage
+import GameState
+import AssetsConstants
+import ClosureTimers
+import Constants
+import HashMap
+import UsefulFunctions
+
+
+//***********************
+
+public class Movement
+    unit mainUnit
+    timer timerMovement
+    vec3 velocity
+    vec3 acceleration
+
+    angle currentAngle
+
+    // angle angularVelocity  // in axis X-Z
+    // angle angularAcceleration
+    bool doKillOnImmobile
+    trigger onDeath
+
+    construct(unit mainUnit)
+        this.mainUnit = mainUnit
+        this.velocity = vec3(0, 0, 0)
+        this.acceleration = vec3(0, 0, 0)
+        this.currentAngle = this.mainUnit.getFacingAngle()
+        this.doKillOnImmobile = false
+
+        this.timerMovement = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callMakeMovement)
+
+        this.onDeath = CreateTrigger()
+        ..setData(this castTo int)
+        ..registerUnitEvent(this.mainUnit, EVENT_UNIT_DEATH)
+        ..addAction(function callUpdateOnDeath)
+    
+    static function callMakeMovement()
+        if not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+            (GetExpiredTimer().getData() castTo Movement).makeMovement()
+
+    static function callUpdateOnDeath()
+        (GetTriggeringTrigger().getData() castTo Movement).updateOnDeath()
+
+    function updateOnDeath()
+        skip
+
+    function makeMovement()
+        if not this.mainUnit.isAlive()
+            return
+
+        if this.velocity.x != 0. or this.velocity.y != 0.
+            vec2 new_pos = this.mainUnit.getPos() + this.velocity.toVec2()
+            if new_pos.isTerrainWalkable() or (this.mainUnit.getTerrainType() == -1 
+                                                and this.mainUnit.getHeight() > 0.)
+                this.mainUnit.setPos2(new_pos)
+            else
+                this.mainUnit.setPos2(this.mainUnit.getPos())
+                if this.doKillOnImmobile
+                    this.mainUnit.kill()
+
+        if this.velocity.z != 0.
+            real new_height = this.mainUnit.getHeight() + this.velocity.z
+            this.mainUnit.setHeight(new_height)
+
+        this.velocity += this.acceleration
+
+    function plusVelocity(vec3 velocity)
+        this.velocity += velocity
+
+    function setVelocity(vec3 velocity)
+        this.velocity = velocity
+
+    function getVelocity() returns vec3
+        return this.velocity
+
+    function plusAcceleration(vec3 acceleration)
+        this.acceleration += acceleration
+
+    function setAcceleration(vec3 acceleration)
+        this.acceleration = acceleration
+
+    function plusAccelerationOnTime(vec3 acceleration, real time)
+        this.acceleration += acceleration
+        doAfter(time) ->
+            this.acceleration -= acceleration
+            this.velocity -= acceleration * (time / MAIN_TIMER_EVENT)
+            
+    function getAcceleration() returns vec3
+        return this.acceleration
+
+    function doKillOnImmobile()
+        doKillOnImmobile = true
+
+    function doNotKillOnImmobile()
+        doKillOnImmobile = false
+
+    ondestroy
+        this.timerMovement.release()
+        this.onDeath.release()
+
+//***********************
+
+public class GravitySystem
+    unit mainUnit
+    timer timerGravityDown
+    bool isGravityDown
+    
+
+    construct(unit mainUnit)
+        this.mainUnit = mainUnit
+        this.isGravityDown = false
+        this.timerGravityDown = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callGravityDown)
+
+    static function callGravityDown()
+        if not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+            (GetExpiredTimer().getData() castTo GravitySystem).gravityDown()
+    
+    function gravityDown()
+        bool isFalling = isFalling()
+
+        if this.isGravityDown and not isFalling
+            this.mainUnit.plusAcceleration(vec3(0, 0, GRAVITY_CONSTANT_Z))
+            this.isGravityDown = false
+        
+        if not this.isGravityDown and isFalling
+            this.mainUnit.plusAcceleration(vec3(0, 0, -GRAVITY_CONSTANT_Z))
+            this.isGravityDown = true
+
+    function isFalling() returns bool
+        return (this.mainUnit.isAlive() and (this.mainUnit.getTerrainType() == -1 
+                or this.mainUnit.getHeight() > this.mainUnit.getUnit().getCurrentTiles().getCorrectHeight()))
+
+    ondestroy
+        this.timerGravityDown.release()
+
+//***********************
+
+// Ice
+constant real ICE_DIST = 400 * MAIN_TIMER_EVENT
+constant real UNIT_TURN_SPEED = 0.6
+
+// Wave of speed
+constant real WAVEOFSPEED_DIFF_DIST = 200 * MAIN_TIMER_EVENT
+constant real WAVEOFSPEED_DURATION = 0.5
+
+// Acceleration ice
+constant real DOWN_ACCELERATION = 30 * MAIN_TIMER_EVENT
+constant real UP_ACCELERATION = (6 + 2/3) * MAIN_TIMER_EVENT
+constant real ACCELERATION_MINIMUM_DIST = 33 * MAIN_TIMER_EVENT
+constant real ACCELERATION_MAXIMUM_DIST = 950 * MAIN_TIMER_EVENT
+
+public class IceClass
+    static group iceClassGroup = CreateGroup()
+    static HashMap<unit, IceClass> unitToIceClass = new HashMap<unit, IceClass>()
+
+    unit mainUnit
+    timer timerSliding
+
+    int currentTerrainType = -1
+
+    real turnSpeed
+    vec3 currentVelocity
+    angle currentAngle
+    vec2 currentPointOrder
+
+    trigger triggerTurnHeroOnIceByClick
+    bool isUnitControlledByPlayer
+    bool isSliding
+    
+    real standart_dist
+    real acceleration_dist
+    bool isAccDown
+
+    construct(unit mainUnit, bool isUnitControlledByPlayer)
+        iceClassGroup.addUnit(mainUnit)
+        unitToIceClass.put(mainUnit, this)
+        this.mainUnit = mainUnit
+        this.turnSpeed = UNIT_TURN_SPEED
+        this.currentVelocity = vec3(0, 0, 0)
+        this.currentAngle = this.mainUnit.getFacingAngle()
+        this.isUnitControlledByPlayer = isUnitControlledByPlayer
+        this.isSliding = false
+        this.standart_dist = ICE_DIST
+        this.acceleration_dist = 0
+        this.isAccDown = true
+
+        
+        this.timerSliding = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callSliding)
+
+        if this.isUnitControlledByPlayer
+            triggerTurnHeroOnIceByClick = CreateTrigger()
+            ..setData(this castTo int)
+            ..registerPlayerUnitEvent(this.mainUnit.getOwner(), 
+                                        EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null)
+            ..addCondition(Condition(() -> GetTriggerUnit().isMainHero()))
+            ..addAction(function callTurnHeroOnIce)
+
+    static function callSliding()
+        if not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+            (GetExpiredTimer().getData() castTo IceClass).sliding()
+    
+    function sliding()
+        if this.mainUnit.getTerrainType() != -1
+            this.currentTerrainType = this.mainUnit.getTerrainType()
+        
+        if this.mainUnit.isAlive() and isOnIce()
+            if not this.isSliding and this.mainUnit.getVelocity().z == 0.
+                updateFacing()
+                this.isSliding = true
+            if this.isSliding
+                checkAndKillOnNonTurningIce()
+                updateDist()
+                updateTurnSpeed()
+                updateVelocity()
+                updateFacing()
+        else if this.isSliding
+            this.isSliding = false
+            updateDist()
+            updateTurnSpeed()
+            this.mainUnit.plusVelocity((-1)*this.currentVelocity)
+            this.currentVelocity = vec3(0, 0, 0)
+            this.currentAngle = angle(0)
+
+    function checkAndKillOnNonTurningIce()
+        if this.currentTerrainType == ICE_NONTURNING_TILE_ID
+            this.mainUnit.getMovementClass().doKillOnImmobile()
+        else
+            this.mainUnit.getMovementClass().doNotKillOnImmobile()
+
+    function getDist() returns real
+        return this.standart_dist + this.acceleration_dist
+
+    function updateDist()
+        if isSliding() and this.currentTerrainType == ICE_ACCELERATING_TURNING_TILE_ID
+            updateAccelerationDist()
+        else
+            this.isAccDown = true
+            this.acceleration_dist = 0.
+
+    function getPolarVelocity() returns vec3
+        vec2 curPos = this.mainUnit.getPos()
+        vec2 polarPos = curPos.polarOffset(this.mainUnit.getFacingAngle(), getDist())
+        return (polarPos - curPos).withZ(0)
+
+    function updateVelocity()
+        this.mainUnit.plusVelocity((-1)*this.currentVelocity)
+        this.currentVelocity = getPolarVelocity()
+        this.mainUnit.plusVelocity(this.currentVelocity)
+
+    function updateTurnSpeed()
+        if currentTerrainType == ICE_NONTURNING_TILE_ID and this.mainUnit.isAlive()
+            this.mainUnit.setTurnSpeed(0.)
+        else
+            this.mainUnit.setTurnSpeed(this.turnSpeed)
+
+    function updateFacing()
+        if isOnIce()
+            if not this.isUnitControlledByPlayer
+                currentAngle = this.mainUnit.getFacingAngle()
+            else if not this.isSliding() and not this.isSliding()
+                currentAngle = this.mainUnit.getPos().angleTo(this.currentPointOrder)
+            this.mainUnit.setFacing(this.currentAngle)
+
+    function isOnIce() returns bool
+        return (this.currentTerrainType == ICE_TURNING_TILE_ID or
+                this.currentTerrainType == ICE_NONTURNING_TILE_ID or
+                this.currentTerrainType == ICE_REVERSETURNING_TILE_ID or
+                this.currentTerrainType == ICE_ACCELERATING_TURNING_TILE_ID)
+
+    function isOnTurningIce() returns bool
+        return this.currentTerrainType == ICE_TURNING_TILE_ID or
+                this.currentTerrainType == ICE_REVERSETURNING_TILE_ID or
+                this.currentTerrainType == ICE_ACCELERATING_TURNING_TILE_ID
+
+    static function callTurnHeroOnIce()
+        (GetTriggeringTrigger().getData() castTo IceClass).turnHeroOnIce()
+
+    function turnHeroOnIce()
+        this.currentPointOrder = EventData.getOrderPos()
+        if isOnIce()
+            if not isOnTurningIce()
+                return
+            
+            angle diff_angle = this.mainUnit.getPos().angleTo(this.currentPointOrder)
+            if this.currentTerrainType == ICE_REVERSETURNING_TILE_ID
+                diff_angle = angle(PI) + diff_angle
+        
+            this.currentAngle = diff_angle
+
+    function updateAccelerationDist()
+        if isAccDown 
+            if standart_dist + acceleration_dist >= ACCELERATION_MINIMUM_DIST
+                acceleration_dist -= DOWN_ACCELERATION
+            else
+                if standart_dist + acceleration_dist <= 0.
+                    acceleration_dist = -(standart_dist + acceleration_dist)
+                if standart_dist + acceleration_dist < ACCELERATION_MINIMUM_DIST
+                    isAccDown = false
+        else
+            if standart_dist + acceleration_dist <= 0.
+                acceleration_dist = -(standart_dist + acceleration_dist)
+            if standart_dist + acceleration_dist <= ACCELERATION_MAXIMUM_DIST
+                acceleration_dist += UP_ACCELERATION
+
+    function isSliding() returns bool
+        return this.isSliding
+
+    function setCurrentAngle(angle a)
+        this.currentAngle = a
+        this.mainUnit.setFacing(this.currentAngle)
+
+    function getCurrentAngle() returns angle
+        return this.currentAngle
+        
+
+    ondestroy
+        this.timerSliding.release()
+        iceClassGroup.removeUnit(this.mainUnit)
+        unitToIceClass.remove(this.mainUnit)
+
+public class SnowClass
+    static constant real RADIUS_SNOW = 10.
+    unit mainUnit
+    timer timerEvent
+
+    construct(unit u)
+        this.mainUnit = u
+        this.timerEvent = getTimer()
+        ..setData(this castTo int)
+        ..startPeriodic(MAIN_TIMER_EVENT, function callIsOnSnow)
+
+    static function callIsOnSnow()
+        if not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW
+            (GetExpiredTimer().getData() castTo SnowClass).deathOnSnow()
+    
+    function deathOnSnow()
+        if not this.mainUnit.isAlive()
+            return
+
+        let terrainType = this.mainUnit.getTerrainType()
+
+        // Death on snow
+        if (terrainType == Tiles.northrend_Snow
+            or terrainType == Tiles.icecrown_Glacier_Snow_Cliff
+            or terrainType == Tiles.icecrown_Glacier_Snow
+            or terrainType == Tiles.northrend_Rocky_Snow)
+            and this.mainUnit.getHeight().isAtNeighbourhood(this.mainUnit.getCurrentTiles().getCorrectHeight(), RADIUS_SNOW)
+            and not GameState.IS_GAME_IS_CHANGING_LEVEL_NOW and not GameState.IS_GAME_IS_CHANGING_CHALLENGE_NOW
+            
+            if not GameState.IS_GAME_IN_TEST_MODE
+                this.mainUnit.kill()
+
+    ondestroy
+        this.timerEvent.release()
+
+//************
+
+public function unit.getIceClass() returns IceClass
+    if IceClass.iceClassGroup.contains(this)
+        return IceClass.unitToIceClass.get(this)
+    return null
+
+public function unit.isSliding() returns bool
+    return IceClass.iceClassGroup.contains(this) and this.getIceClass().isSliding()
