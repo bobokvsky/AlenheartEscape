@@ -1,0 +1,78 @@
+package WurstExportedObjects_w3d
+import ObjEditingNatives
+
+// Modified Table (contains all custom objects)
+
+@compiletime function create_w3d_D000()
+	let def = createObjectDefinition("w3d", 'D000', 'YSll')
+	..setLvlDataString("dptx", 0, 0, "")
+	..setLvlDataString("dfil", 0, 0, "Abilities\\Spells\\NightElf\\TrueshotAura\\TrueshotAura.mdl")
+
+
+@compiletime function create_w3d_D001()
+	let def = createObjectDefinition("w3d", 'D001', 'NOfl')
+	..setLvlDataString("dptx", 0, 0, "")
+	..setLvlDataUnreal("ddes", 0, 0, 0.4)
+
+
+@compiletime function create_w3d_D002()
+	let def = createObjectDefinition("w3d", 'D002', 'NOfl')
+	..setLvlDataString("dptx", 0, 0, "")
+	..setLvlDataString("dfil", 0, 0, "war3mapImported\\SnowPine.mdl")
+	..setLvlDataUnreal("dmis", 0, 0, 0.65)
+	..setLvlDataUnreal("dmas", 0, 0, 1.5)
+	..setLvlDataString("dnam", 0, 0, "Указатель патруля")
+
+
+// Original Table (contains all modified default objects)
+// Wurst does not support modifying default objects
+// but you can copy these functions and replace 'xxxx' with a new, custom id.
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'YOfb')
+	..setLvlDataUnreal("dmas", 0, 0, 10.0)
+	..setLvlDataString("dfil", 0, 0, "Abilities\\Weapons\\FrostWyrmMissile\\FrostWyrmMissile.mdl")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'YOks')
+	..setLvlDataString("dtil", 0, 0, "*")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'XOcl')
+	..setLvlDataString("dtil", 0, 0, "*")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'XOmr')
+	..setLvlDataString("dtil", 0, 0, "*")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'GOlc')
+	..setLvlDataString("dtil", 0, 0, "*")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'NPth')
+	..setLvlDataString("dptx", 0, 0, "")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'OOal')
+	..setLvlDataString("dfil", 0, 0, "buildings\\human\\Farm\\Farm.mdl")
+	..setLvlDataString("dnam", 0, 0, "Мусор в руинах")
+	..setLvlDataString("dptx", 0, 0, "")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'NOal')
+	..setLvlDataString("dptx", 0, 0, "")
+
+
+@compiletime function create_w3d_xxxx()
+	let def = createObjectDefinition("w3d", 'xxxx', 'NOfl')
+	..setLvlDataString("dptx", 0, 0, "")
+
+

@@ -95,7 +95,7 @@ public class DeadlyCurve extends GameObject
             pos = vec3(pos2.x, pos2.y, pos.z)
 
         forUnitsInRange(pos.toVec2(), radius) u ->
-            if whichGroupShouldDie.contains(u) 
+            if IsUnitInGroup(u, whichGroupShouldDie)
                 and u.getHeight().isAtNeighbourhood(getHeight(), this.radius)
                 
                 u.kill()

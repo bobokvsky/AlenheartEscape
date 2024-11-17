@@ -10,7 +10,7 @@ int array ALPHABET_REVERSE
 
 init
     for i = 0 to BASE
-        int char_id = char(ALPHABET.charAt(i)).toInt()
+        let char_id = char(ALPHABET.charAt(i)).toInt()
         ALPHABET_REVERSE[char_id] = i
 
 function num_encode(int n) returns string
@@ -20,7 +20,7 @@ function num_encode(int n) returns string
     string s = ""
     int a = n
     while a > 0
-        int r = a mod BASE
+        let r = a mod BASE
         a = a div BASE
         s = s + ALPHABET.charAt(r)
     return s.reversed()
@@ -31,6 +31,6 @@ function num_decode(string s) returns int
         return -num_decode(s.substring(1, s.length()))
     int n = 0
     for c in s
-        int char_id = char(c).toInt()
+        let char_id = char(c).toInt()
         n = n * BASE + ALPHABET_REVERSE[char_id]
     return n

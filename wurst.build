@@ -1,6 +1,8 @@
 ---
 projectName: MyNewPolar
+dependencies:
+- https://github.com/wurstscript/wurstStdlib2
 buildMapData:
-  name: Alenheart Escape alpha-3chapters
-  fileName: Alenheart Escape alpha-3chapters
+  name: Alenheart Escape alpha-3chapters-build1
+  fileName: Alenheart Escape alpha-3chapters-build1
   author: bobok1

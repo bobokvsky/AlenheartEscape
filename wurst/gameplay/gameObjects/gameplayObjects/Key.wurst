@@ -65,7 +65,7 @@ public class Key extends GameObject
         (GetTriggeringTrigger().getData() castTo Key).takeKey(GetTriggerUnit())
 
     function takeKey(unit triggerUnit)
-        if not whichGroupCanTake.contains(triggerUnit) or not triggerUnit.isAlive()
+        if not IsUnitInGroup(triggerUnit, whichGroupCanTake) or not triggerUnit.isAlive()
             or not triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.keyRect.getMinRadius())
             return
         cirEff = createCircularEffect2D(triggerUnit, path, scale, triggerUnit.getHeight(), true,

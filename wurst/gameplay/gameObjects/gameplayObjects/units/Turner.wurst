@@ -35,7 +35,7 @@ public class Turner extends DummyUnitEffect
         this.typeClass = "Turner"
 
     override function makeAction(unit triggerUnit)
-        if this.whichGroupToTurn.contains(triggerUnit) 
+        if IsUnitInGroup(triggerUnit, this.whichGroupToTurn) 
             and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.radius)
 
             if triggerUnit.isSliding()

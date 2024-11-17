@@ -1,0 +1,16 @@
+package WurstExportedObjects_w3h
+import ObjEditingNatives
+
+// Modified Table (contains all custom objects)
+
+@compiletime function create_w3h_B000()
+	let def = createObjectDefinition("w3h", 'B000', 'BOwk')
+	..setString("fart", "ReplaceableTextures\\CommandButtons\\BTNCrushingWave.blp")
+	..setString("fube", "Повышение скорости катания на льду.")
+	..setString("ftip", "Волна скорости")
+
+
+// Original Table (contains all modified default objects)
+// Wurst does not support modifying default objects
+// but you can copy these functions and replace 'xxxx' with a new, custom id.
+

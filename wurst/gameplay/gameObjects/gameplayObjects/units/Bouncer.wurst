@@ -80,15 +80,15 @@ public class Bouncer extends DummyUnitEffect
 
 
     override function makeAction(unit triggerUnit)
-        if not Bouncer.waitGroup.contains(triggerUnit) and this.whichGroupCanJump.contains(triggerUnit) 
+        if not IsUnitInGroup(triggerUnit, Bouncer.waitGroup) and IsUnitInGroup(triggerUnit, this.whichGroupCanJump) 
             and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), this.radius)
             
             if triggerUnit.getVelocity().z < 0
                 triggerUnit.plusVelocity(vec3(0, 0, -triggerUnit.getVelocity().z))
             triggerUnit.plusVelocity(vec3(0, 0, this.velocity))
-            Bouncer.waitGroup.addUnit(triggerUnit)
+            GroupAddUnit(Bouncer.waitGroup, triggerUnit)
             doAfter(MAIN_WAITER_TIMER_EVENT) ->
-                waitGroup.removeUnit(triggerUnit)
+                GroupRemoveUnit(Bouncer.waitGroup, triggerUnit)
 
     function setVelocity(real velocity)
         this.velocity = velocity

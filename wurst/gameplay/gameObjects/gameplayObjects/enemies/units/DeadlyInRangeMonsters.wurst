@@ -41,13 +41,13 @@ public class DeadlyInRangeMonsters extends Unit
 
     construct(player p, UnitDataBase db, vec2 pos, angle facing, group whichGroupShouldDie)
         super(p, db, pos, facing)
-        DEADLY_RADIUS_GROUP.addUnit(this.mainUnit)
+        DEADLY_RADIUS_GROUP.add(this.mainUnit)
         unitToDIRM.put(this.mainUnit, this)
         this.whichGroupShouldDie = whichGroupShouldDie
         this.triggerMakeAction = CreateTrigger()
-        ..setData(this castTo int)
-        ..registerUnitInRange(this.mainUnit, this.getDeadlyRadius(), null)
-        ..addAction(function callCheck)
+        this.triggerMakeAction.setData(this castTo int)
+        this.triggerMakeAction.registerUnitInRange(this.mainUnit, this.getDeadlyRadius(), null)
+        this.triggerMakeAction.addAction(function callCheck)
 
         this.typeClass = "DeadlyInRangeMonsters"
 
@@ -55,7 +55,7 @@ public class DeadlyInRangeMonsters extends Unit
         (GetTriggeringTrigger().getData() castTo DeadlyInRangeMonsters).checkAndKill(GetTriggerUnit())
 
     function checkAndKill(unit triggerUnit)
-        if whichGroupShouldDie.contains(triggerUnit) 
+        if IsUnitInGroup(triggerUnit, whichGroupShouldDie)
             and triggerUnit.getHeight().isAtNeighbourhood(getHeight(), getDeadlyRadius())
             
             triggerUnit.kill()

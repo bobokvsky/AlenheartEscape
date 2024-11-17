@@ -71,9 +71,8 @@ public class AquaSpike extends GameObject
 
     function flashEffectAndKill()
         forUnitsInRange(originPos.toVec2(), radius) u ->
-            if whichGroupShouldDie.contains(u) 
-                and u.getHeight().isAtNeighbourhood(getHeight(), this.radius)
-                
+            if IsUnitInGroup(u, whichGroupShouldDie)
+                and u.getHeight().isAtNeighbourhood(getHeight(), this.radius)                
                 u.kill()
         flashEffect2(path, originPos, scale, this.getVertexColorA())
 

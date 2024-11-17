@@ -21,7 +21,7 @@ public class ResCircle extends GameObject
 
     construct(unit u)
         this.u = u
-        RESURRECTION_GROUP.addUnit(u)
+        GroupAddUnit(RESURRECTION_GROUP, u)
         this.deathHappens = CreateTrigger()
         ..setData(this castTo int)
         ..registerPlayerUnitEvent(this.u.getOwner(), 
@@ -44,7 +44,7 @@ public class ResCircle extends GameObject
         ..setData(this castTo int)
         ..registerUnitInRange(this.circle, RANGE_OF_RESURRECTION_CONST, null)
         ..addCondition(Condition(() -> GetTriggerUnit().isAlive() and 
-                                        RESURRECTION_GROUP.contains(GetTriggerUnit())))
+                                        IsUnitInGroup(GetTriggerUnit(), RESURRECTION_GROUP)))
         ..addAction(function callResHappens)
 
         if GameState.IS_GAME_IN_TEST_MODE

@@ -185,7 +185,7 @@ public class IceClass
     bool isAccDown
 
     construct(unit mainUnit, bool isUnitControlledByPlayer)
-        iceClassGroup.addUnit(mainUnit)
+        GroupAddUnit(IceClass.iceClassGroup, mainUnit)
         unitToIceClass.put(mainUnit, this)
         this.mainUnit = mainUnit
         this.turnSpeed = UNIT_TURN_SPEED
@@ -330,7 +330,7 @@ public class IceClass
 
     ondestroy
         this.timerSliding.release()
-        iceClassGroup.removeUnit(this.mainUnit)
+        GroupRemoveUnit(IceClass.iceClassGroup, this.mainUnit)
         unitToIceClass.remove(this.mainUnit)
 
 public class SnowClass
@@ -371,9 +371,9 @@ public class SnowClass
 //************
 
 public function unit.getIceClass() returns IceClass
-    if IceClass.iceClassGroup.contains(this)
+    if IsUnitInGroup(this, IceClass.iceClassGroup)
         return IceClass.unitToIceClass.get(this)
     return null
 
 public function unit.isSliding() returns bool
-    return IceClass.iceClassGroup.contains(this) and this.getIceClass().isSliding()
+    return IsUnitInGroup(this, IceClass.iceClassGroup) and this.getIceClass().isSliding()

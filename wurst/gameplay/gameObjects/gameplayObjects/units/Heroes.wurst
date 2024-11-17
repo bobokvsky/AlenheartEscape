@@ -2,7 +2,6 @@ package Heroes
 
 import GameObject
 import TriggerUtils
-import EventHelper
 import Orders
 import UI
 import HashMap
@@ -40,7 +39,7 @@ class MainHero extends Unit
 
     construct(player p, UnitDataBase db, vec2 pos, angle facing)
         super(p, db, pos, facing)
-        MainHero.MAIN_HEROES_GROUP.addUnit(this.mainUnit)
+        GroupAddUnit(MainHero.MAIN_HEROES_GROUP, this.mainUnit)
         unitToMainHero.put(this.mainUnit, this)
 
         this.iceClass = new IceClass(this.mainUnit, true)
@@ -81,7 +80,7 @@ class MainHero extends Unit
 
         let currentPointOrder = EventData.getOrderPos()
         let cameraPos = getCameraEyePosition3()
-        var lambda = height / cameraPos.z
+        let lambda = height / cameraPos.z
 
         // if this.currentTiles != null and this.currentTiles.getTerrainTypeBLP(currentPointOrder) == -1
         //     int i = this.currentTiles.getPreviousTilesIndex()
@@ -171,7 +170,7 @@ class MainHero extends Unit
         this.updateObjectsVisibility(null, null)
 
     override function setHeight(real h)
-        real before_h = getHeight()
+        let before_h = getHeight()
         super.setHeight(h)
         if this.mainUnit.getOwner().isCameraAttachedToMainHero()
             this.mainUnit.getOwner().plusCameraFieldDistance(h-before_h)
@@ -219,14 +218,14 @@ public function loadHeroes()
 
 
 public function unit.isMainHero() returns bool
-    return MainHero.MAIN_HEROES_GROUP.contains(this)
+    return IsUnitInGroup(this, MainHero.MAIN_HEROES_GROUP)
 
 public function unit.getMainHero() returns MainHero
     return (this.getUnit() castTo MainHero)
 
 
 public function unit.reviveAtCheckPoint()
-    if MainHero.MAIN_HEROES_GROUP.contains(this)
+    if IsUnitInGroup(this, MainHero.MAIN_HEROES_GROUP)
         (this.getMainHero()).getResCircle().resHappens()
 
 public function resDeadAtCheckPoint()
