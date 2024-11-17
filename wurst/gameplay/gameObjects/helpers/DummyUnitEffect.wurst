@@ -48,7 +48,7 @@ public class DummyUnitEffect extends Unit
 
     override function setHeight(real h)
         super.setHeight(h)
-        this.mainEffect.setHeight(h)
+        // this.mainEffect.setHeight(h)
 
     ondestroy
         this.triggerMakeAction.release()
